@@ -1,0 +1,10 @@
+.sidebar-dark{
+    --cui-body-color: rgba(255, 255, 255, 0.87);
+    --cui-body-bg: #39A900 !important;
+    --cui-emphasis-color: #fff;
+    --cui-secondary-color: rgba(255, 255, 255, 0.6);
+    --cui-secondary-bg: #39A900;
+    --cui-tertiary-color: rgba(255, 255, 255, 0.38);
+    --cui-tertiary-bg: #39A900 !important;
+    --cui-border-color: #39A900 !important;
+}
