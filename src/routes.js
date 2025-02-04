@@ -29,7 +29,7 @@ const routes = [
   { path: '/notifications/modals', name: 'Modals', element: Modals },
   { path: '/notifications/toasts', name: 'Toasts', element: Toasts },
   { path: '/widgets', name: 'Widgets', element: Widgets },
-  { path: '/Solicitudes', name: 'Application', element: Application },
+  { path: '/application', name: 'Application', element: Application },
   { path: '/Seguimiento', name: 'Tracking', element: Tracking },
   { path: '/Asignamientos', name: 'Assignment', element: Assignment },
 
