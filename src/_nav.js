@@ -48,19 +48,19 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Solicitudes',
-    to: '/',
+    to: '/application',
     icon: <CIcon icon={cilUserFollow} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'Asignamientos',
-    to: '/',
+    to: '/assignment',
     icon: <CIcon icon={cilShare} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'Seguimiento',
-    to: '/',
+    to: '/tracking',
     icon: <CIcon icon={cilPlaylistAdd} customClassName="nav-icon" />,
   },
   {
