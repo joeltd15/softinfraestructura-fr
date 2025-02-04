@@ -1,8 +1,15 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { FaPencilAlt } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
+import { FaEye } from "react-icons/fa";
+import { FaCirclePlus } from "react-icons/fa6";
+import ModalAssignment from "./modalAssignment";
+
 
 const Assignment = () => {
     const [assignmentData, setAssignmentData] = useState([]);
+    const [show, setShow] = useState(false);
 
     const getAssignment = () => {
         axios.get("http://localhost:2025/api/assignment")
@@ -19,22 +26,26 @@ const Assignment = () => {
     }, []);
 
     return (
+    <>
         <div className="container">
             <div className="row">
                 <div className="panel panel-primary filterable">
-                    <div className="panel-heading">
-                        <h3 className="panel-title">Asignamientos</h3>
-                    </div>
+                <div class="panel-heading mb-3">
+                            <button className="Register-button" onClick={() => setShow(true)}>
+                                <FaCirclePlus /> Registrar
+                            </button>
+                        </div>
                     <table className="table">
-                        <thead>
+                        <thead className="thead">
                             <tr className="filters">
                                 <th>#</th>
                                 <th>Fecha de asignamiento</th>
                                 <th>Solicitud</th>
                                 <th>Responsable</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="tbody">
                             {assignmentData.length > 0 ? (
                                 assignmentData.map((assignment, i) => (
                                     <tr key={i}>
@@ -42,6 +53,11 @@ const Assignment = () => {
                                         <td>{assignment.assignmentDate}</td>
                                         <td>{assignment.applicationId}</td>
                                         <td>{assignment.responsibleId}</td>
+                                        <td className="content-buttons">
+                                                <button className="Table-button Show-button"><FaEye /></button>
+                                                <button className="Table-button Update-button"><FaPencilAlt /></button>
+                                                <button className="Table-button Delete-button"><MdDelete /></button>
+                                            </td>
                                     </tr>
                                 ))
                             ) : (
@@ -54,6 +70,9 @@ const Assignment = () => {
                 </div>
             </div>
         </div>
+         {/* Modal */}
+         <ModalAssignment show={show} handleClose={() => setShow(false)} />
+    </>
     );
 };
 

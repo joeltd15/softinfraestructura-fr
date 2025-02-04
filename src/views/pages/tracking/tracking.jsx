@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { FaPencilAlt } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
+import { FaEye } from "react-icons/fa";
+import { FaCirclePlus } from "react-icons/fa6";
+import ModalTracking from "./modalTracking";
 
 const Tracking = () => {
     const [trackingData, setTrackingData] = useState([]);
+    const [show, setShow] = useState(false);
 
     const getTracking = () => {
         axios.get("http://localhost:2025/api/tracking")
@@ -19,14 +25,17 @@ const Tracking = () => {
     }, []);
 
     return (
+    <>
         <div className="container">
             <div className="row">
                 <div className="panel panel-primary filterable">
-                    <div className="panel-heading">
-                        <h3 className="panel-title">Tracking</h3>
-                    </div>
+                <div class="panel-heading mb-3">
+                            <button className="Register-button" onClick={() => setShow(true)}>
+                                <FaCirclePlus /> Registrar
+                            </button>
+                        </div>
                     <table className="table">
-                        <thead>
+                        <thead className="thead">
                             <tr className="filters">
                                 <th>#</th>
                                 <th>Observaciones</th>
@@ -36,9 +45,10 @@ const Tracking = () => {
                                 <th>Evidencia Fotográfica</th>
                                 <th>Estado</th>
                                 <th>Asignación</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="tbody">
                             {trackingData.length > 0 ? (
                                 trackingData.map((tracking, i) => (
                                     <tr key={i}>
@@ -58,6 +68,11 @@ const Tracking = () => {
                                         </td>
                                         <td>{tracking.status}</td>
                                         <td>{tracking.assignmentId}</td>
+                                        <td className="content-buttons">
+                                                <button className="Table-button Show-button"><FaEye /></button>
+                                                <button className="Table-button Update-button"><FaPencilAlt /></button>
+                                                <button className="Table-button Delete-button"><MdDelete /></button>
+                                            </td>
                                     </tr>
                                 ))
                             ) : (
@@ -70,6 +85,9 @@ const Tracking = () => {
                 </div>
             </div>
         </div>
+         {/* Modal */}
+         <ModalTracking show={show} handleClose={() => setShow(false)} />
+    </>
     );
 };
 
