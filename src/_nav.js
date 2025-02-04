@@ -54,13 +54,13 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Asignamientos',
-    to: '/assignment',
+    to: '/Asignamientos',
     icon: <CIcon icon={cilShare} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'Seguimiento',
-    to: '/tracking',
+    to: '/Seguimiento',
     icon: <CIcon icon={cilPlaylistAdd} customClassName="nav-icon" />,
   },
   {
