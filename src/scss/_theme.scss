@@ -54,11 +54,11 @@ body {
 @if $enable-dark-mode {
   @include color-mode(dark) {
     body {
-      background-color: var(--cui-dark-bg-subtle);
+      background-color: #202630 !important;
     }
 
     .footer {
-      --cui-footer-bg: var(--cui-body-bg);
+      --cui-footer-bg: #202630 !important;
     }
   }
 }
