@@ -9,6 +9,10 @@
     --cui-border-color: #39A900 !important;
 }
 
+.breadcrumb a{
+    color: #39A900 !important;
+}
+
 /* Tables estyles*/
 
 .filterable {
@@ -33,4 +37,77 @@
 }
 .filterable .filters input[disabled]:-ms-input-placeholder {
     color: #333;
+}
+
+.content-buttons{
+    display: flex;
+    align-items: center;
+}
+
+.Table-button{
+    border-radius: 8px;
+    height: 28px;
+    width: 28px;
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    margin: 17px 8px;
+    border-color: transparent;
+}
+
+.Update-button{
+    background: #00783249;
+}
+
+.Update-button svg{
+    color: #007832;
+}
+
+.Delete-button{
+    background: #78000049;
+}
+
+.Delete-button svg{
+    color: #780000;
+}
+
+.Show-button{
+    background: #003e7859;
+}
+
+.Show-button svg{
+    color: #003e78;
+}
+
+.Register-button{
+    background: #007832;
+    border-radius: 5px;
+    font-weight: 600;
+    font-size: 17px;
+    color: #fff;
+    border-color: transparent;
+    padding: 7px;
+    display: flex;
+    align-items: center;
+}
+
+.Register-button svg{
+    font-size: 16px;
+    color: white;
+    margin-right: 5px;
+}
+
+.table .thead tr th{
+    text-align: center;
+    background: #007832;
+    color: white;
+}
+
+.table .tbody tr td{
+    text-align: center;
+}
+
+.table .tbody tr td img{
+    width: 50px !important;
+    height: 50px !important;
 }
