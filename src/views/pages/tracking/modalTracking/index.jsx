@@ -4,8 +4,10 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import { Col, Row } from "react-bootstrap";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const CustomModal = ({ show, handleClose }) => {
+const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
   const [observations, setObservations] = useState("");
   const [buildingMaterials, setBuildingMaterials] = useState("");
   const [dateService, setDateService] = useState("");
@@ -36,21 +38,31 @@ const CustomModal = ({ show, handleClose }) => {
     formData.append("dateService", dateService);
     formData.append("actionsTaken", actionsTaken);
     if (photographicEvidence) {
-      formData.append("photographicEvidence", photographicEvidence);
+        formData.append("photographicEvidence", photographicEvidence);
     }
     formData.append("status", status);
     formData.append("assignmentId", assignmentId);
 
-    try {
-      const response = await axios.post("http://localhost:2025/api/tracking", formData, {
+    const registerRequest = axios.post("http://localhost:2025/api/tracking", formData, {
         headers: { "Content-Type": "multipart/form-data" },
-      });
-      console.log("Seguimiento registrado:", response.data);
-      handleClose(); // Cierra la modal tras el éxito
+    });
+
+    toast.promise(registerRequest, {
+        pending: "Registrando seguimiento...",
+        success: "Seguimiento registrado correctamente",
+        error: "Error al registrar el seguimiento",
+    });
+
+    try {
+        const response = await registerRequest;
+        console.log("Seguimiento registrado:", response.data);
+        onSolicitudCreated();
+        handleClose();
     } catch (error) {
-      console.error("Error al registrar seguimiento:", error);
+        console.error("Error al registrar seguimiento:", error);
     }
-  };
+};
+
 
   return (
     <Modal show={show} onHide={handleClose} backdrop="static">

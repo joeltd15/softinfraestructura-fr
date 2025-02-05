@@ -7,7 +7,6 @@ import { FaCirclePlus } from "react-icons/fa6";
 import ModalTracking from "./modalTracking";
 import ModalTrackingEdit from "./modalTrackingEdit";
 
-
 const Tracking = () => {
     const [trackingData, setTrackingData] = useState([]);
     const [show, setShow] = useState(false);
@@ -29,6 +28,10 @@ const Tracking = () => {
         getTracking();
     }, []);
 
+    const handleSeguimientoCreated = () => {
+        getTracking();
+    }
+
     const handleEdit = (tracking) => {
         setSelectedTracking(tracking)
         setShowModalEdit(true)
@@ -36,18 +39,18 @@ const Tracking = () => {
 
     const handleUpdate = (formData) => {
         axios
-          .put(`http://localhost:2025/api/tracking/${selectedTracking.id}`, formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          })
-          .then((response) => {
-            console.log("Respuesta del servidor:", response.data);
-            getTracking();
-            setShowModalEdit(false);
-          })
-          .catch((error) => {
-            console.error("Error al actualizar el tracking:", error.response ? error.response.data : error.message);
-          });
-      };      
+            .put(`http://localhost:2025/api/tracking/${selectedTracking.id}`, formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            })
+            .then((response) => {
+                console.log("Respuesta del servidor:", response.data);
+                getTracking();
+                setShowModalEdit(false);
+            })
+            .catch((error) => {
+                console.error("Error al actualizar el tracking:", error.response ? error.response.data : error.message);
+            });
+    };
 
     return (
         <>
@@ -113,7 +116,7 @@ const Tracking = () => {
                 </div>
             </div>
             {/* Modal */}
-            <ModalTracking show={show} handleClose={() => setShow(false)} />
+            <ModalTracking show={show} handleClose={() => setShow(false)} onSolicitudCreated={handleSeguimientoCreated} />
             <ModalTrackingEdit show={showModalEdit} handleClose={() => setShowModalEdit(false)} tracking={selectedTracking} handleUpdate={handleUpdate}
             />
         </>
