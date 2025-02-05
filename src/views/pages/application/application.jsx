@@ -5,11 +5,16 @@ import { MdDelete } from "react-icons/md";
 import { FaEye } from "react-icons/fa";
 import { FaCirclePlus } from "react-icons/fa6";
 import ModalApplication from "./modalApplication";
+import { FaUserPlus } from "react-icons/fa";
+import ModalAssignment from "../asssignment/modalAssignment/index";
+
 
 const Application = () => {
     const url = 'http://localhost:2025/api/application'
     const [applications, setApplication] = useState([]);
     const [show, setShow] = useState(false);
+    const [showAssign, setShowAssign] = useState(false);
+    const [Title, setTitle] = useState('');
 
     useEffect(() => {
         getApplications();
@@ -25,7 +30,7 @@ const Application = () => {
                 <div class="row">
                     <div class="panel panel-primary filterable">
                         <div class="panel-heading mb-3">
-                            <button className="Register-button" onClick={() => setShow(true)}>
+                            <button className="Register-button" onClick={() => {setShow(true); setTitle('Registrar')}}>
                                 <FaCirclePlus /> Registrar
                             </button>
                         </div>
@@ -59,8 +64,9 @@ const Application = () => {
                                             <td>{application.userId}</td>
                                             <td className="content-buttons">
                                                 <button className="Table-button Show-button"><FaEye /></button>
-                                                <button className="Table-button Update-button"><FaPencilAlt /></button>
+                                                <button className="Table-button Update-button" onClick={() => {setShow(true); setTitle('Editar')}}><FaPencilAlt /></button>
                                                 <button className="Table-button Delete-button"><MdDelete /></button>
+                                                <button className="Table-button Asign-button" onClick={() => setShowAssign(true)}><FaUserPlus /></button>
                                             </td>
                                         </tr>
                                     ))
@@ -71,7 +77,9 @@ const Application = () => {
                 </div>
             </div>
             {/* Modal */}
-            <ModalApplication show={show} handleClose={() => setShow(false)} />
+            <ModalApplication show={show} handleClose={() => setShow(false)} Title={Title}/>
+            {/* Modal Asignamiento*/}
+         <ModalAssignment show={showAssign} handleClose={() => setShowAssign(false)} />
         </>
     )
 }

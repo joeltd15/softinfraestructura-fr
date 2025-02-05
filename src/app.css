@@ -57,7 +57,7 @@
     display: flex;
     align-items: center;
     padding: 5px;
-    margin: 17px 8px;
+    margin: 22px 8px;
     border-color: transparent;
 }
 
@@ -83,6 +83,14 @@
 
 .Show-button svg {
     color: #003e78;
+}
+
+.Asign-button {
+    background: #fdc2004b;
+}
+
+.Asign-button svg {
+    color: #fdc300;
 }
 
 .Register-button {

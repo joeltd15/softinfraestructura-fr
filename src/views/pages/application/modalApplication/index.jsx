@@ -5,11 +5,11 @@ import Modal from "react-bootstrap/Modal";
 import { Col, Row } from 'react-bootstrap';
 
 
-const CustomModal = ({ show, handleClose }) => {
+const CustomModal = ({ show, handleClose, Title }) => {
     return (
         <Modal show={show} onHide={handleClose} backdrop="static">
             <Modal.Header closeButton>
-                <Modal.Title>Registrar solicitud</Modal.Title>
+                <Modal.Title>{Title} solicitud</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>

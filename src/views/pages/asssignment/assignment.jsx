@@ -4,12 +4,12 @@ import { FaPencilAlt } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { FaEye } from "react-icons/fa";
 import { FaCirclePlus } from "react-icons/fa6";
-import ModalAssignment from "./modalAssignment";
+import ModalAssignment from "./modalAssignment/index";
 
 
 const Assignment = () => {
     const [assignmentData, setAssignmentData] = useState([]);
-    const [show, setShow] = useState(false);
+    const [showModal, setShow] = useState(false);
 
     const getAssignment = () => {
         axios.get("http://localhost:2025/api/assignment")
@@ -71,7 +71,7 @@ const Assignment = () => {
             </div>
         </div>
          {/* Modal */}
-         <ModalAssignment show={show} handleClose={() => setShow(false)} />
+         <ModalAssignment show={showModal} handleClose={() => setShow(false)} />
     </>
     );
 };
