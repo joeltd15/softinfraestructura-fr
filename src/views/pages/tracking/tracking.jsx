@@ -34,18 +34,20 @@ const Tracking = () => {
         setShowModalEdit(true)
     }
 
-    const handleUpdate = (updatedTracking) => {
+    const handleUpdate = (formData) => {
         axios
-            .put(`http://localhost:2025/api/tracking/${updatedTracking.id}`, updatedTracking)
-            .then(() => {
-                getTracking() // Refresh the data after update
-                setShowModalEdit(false)
-            })
-            .catch((error) => {
-                console.error("Error al actualizar el tracking:", error)
-            })
-    }
-
+          .put(`http://localhost:2025/api/tracking/${selectedTracking.id}`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          })
+          .then((response) => {
+            console.log("Respuesta del servidor:", response.data);
+            getTracking();
+            setShowModalEdit(false);
+          })
+          .catch((error) => {
+            console.error("Error al actualizar el tracking:", error.response ? error.response.data : error.message);
+          });
+      };      
 
     return (
         <>
@@ -112,11 +114,7 @@ const Tracking = () => {
             </div>
             {/* Modal */}
             <ModalTracking show={show} handleClose={() => setShow(false)} />
-            <ModalTrackingEdit
-                show={showModalEdit}
-                handleClose={() => setShowModalEdit(false)}
-                tracking={selectedTracking}
-                handleUpdate={handleUpdate}
+            <ModalTrackingEdit show={showModalEdit} handleClose={() => setShowModalEdit(false)} tracking={selectedTracking} handleUpdate={handleUpdate}
             />
         </>
     );

@@ -51,7 +51,7 @@ const CustomModal = ({ show, handleClose }) => {
               <option value="">Seleccione una solicitud</option>
               {applications.map((app) => (
                 <option key={app.id} value={app.id}>
-                  {app.reportType}
+                  {app.id}
                 </option>
               ))}
             </Form.Select>
