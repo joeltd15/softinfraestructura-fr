@@ -9,6 +9,7 @@ import ModalTracking from "./modalTracking";
 const Tracking = () => {
     const [trackingData, setTrackingData] = useState([]);
     const [show, setShow] = useState(false);
+    const [Title, setTitle] = useState('');
 
     const getTracking = () => {
         axios.get("http://localhost:2025/api/tracking")
@@ -30,7 +31,7 @@ const Tracking = () => {
             <div className="row">
                 <div className="panel panel-primary filterable">
                 <div class="panel-heading mb-3">
-                            <button className="Register-button" onClick={() => setShow(true)}>
+                <button className="Register-button" onClick={() => {setShow(true); setTitle('Registrar')}}>
                                 <FaCirclePlus /> Registrar
                             </button>
                         </div>
@@ -70,7 +71,7 @@ const Tracking = () => {
                                         <td>{tracking.assignmentId}</td>
                                         <td className="content-buttons">
                                                 <button className="Table-button Show-button"><FaEye /></button>
-                                                <button className="Table-button Update-button"><FaPencilAlt /></button>
+                                                <button className="Table-button Update-button" onClick={() => {setShow(true); setTitle('Editar')}}><FaPencilAlt /></button>
                                                 <button className="Table-button Delete-button"><MdDelete /></button>
                                             </td>
                                     </tr>
@@ -86,7 +87,9 @@ const Tracking = () => {
             </div>
         </div>
          {/* Modal */}
-         <ModalTracking show={show} handleClose={() => setShow(false)} />
+         <ModalTracking show={show} handleClose={() => setShow(false)} Title={Title} />
+
+
     </>
     );
 };

@@ -3,34 +3,59 @@ import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
-import { Col, Row } from 'react-bootstrap';
+import { Col, Row } from "react-bootstrap";
 
-const CustomModal = ({ show, handleClose }) => {
+const CustomModal = ({ show, handleClose, Title }) => {
   const [observations, setObservations] = useState("");
   const [buildingMaterials, setBuildingMaterials] = useState("");
   const [dateService, setDateService] = useState("");
   const [actionsTaken, setActionsTaken] = useState("");
-  const [photographicEvidence, setPhotographicEvidence] = useState("");
+  const [photographicEvidence, setPhotographicEvidence] = useState(null);
   const [status, setStatus] = useState("En proceso");
   const [assignmentId, setAssignmentId] = useState("");
   const [assignments, setAssignments] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:2025/api/assignment").then((response) => {
-      setAssignments(response.data);
-    });
+    axios.get("http://localhost:2025/api/assignment")
+      .then((response) => {
+        setAssignments(response.data);
+      })
+      .catch(error => {
+        console.error("Error al obtener asignaciones:", error);
+      });
   }, []);
 
-  const handleSubmit = () => {
-    const data = {};
-    console.log("Datos enviados:", data);
-    handleClose();
+  const handleFileChange = (e) => {
+    setPhotographicEvidence(e.target.files[0]); // Guardamos el archivo seleccionado
+  };
+
+  const handleSubmit = async () => {
+    const formData = new FormData();
+    formData.append("observations", observations);
+    formData.append("buildingMaterials", buildingMaterials);
+    formData.append("dateService", dateService);
+    formData.append("actionsTaken", actionsTaken);
+    if (photographicEvidence) {
+      formData.append("photographicEvidence", photographicEvidence);
+    }
+    formData.append("status", status);
+    formData.append("assignmentId", assignmentId);
+
+    try {
+      const response = await axios.post("http://localhost:2025/api/tracking", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      console.log("Seguimiento registrado:", response.data);
+      handleClose(); // Cierra la modal tras el éxito
+    } catch (error) {
+      console.error("Error al registrar seguimiento:", error);
+    }
   };
 
   return (
     <Modal show={show} onHide={handleClose} backdrop="static">
       <Modal.Header closeButton>
-        <Modal.Title>Registrar Seguimiento</Modal.Title>
+        <Modal.Title>{Title} seguimiento</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
@@ -56,6 +81,7 @@ const CustomModal = ({ show, handleClose }) => {
               </Form.Group>
             </Col>
           </Row>
+
           <Row className="mb-3">
             <Col sm={6}>
               <Form.Group>
@@ -87,8 +113,8 @@ const CustomModal = ({ show, handleClose }) => {
                 <Form.Label>Evidencia Fotográfica</Form.Label>
                 <Form.Control
                   type="file"
-                  value={photographicEvidence}
-                  onChange={(e) => setPhotographicEvidence(e.target.value)}
+                  onChange={handleFileChange}
+                  accept="image/*"
                 />
               </Form.Group>
             </Col>
