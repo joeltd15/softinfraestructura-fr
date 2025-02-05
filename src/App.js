@@ -1,11 +1,13 @@
 import React, { Suspense, useEffect } from 'react'
 import { HashRouter, Route, Routes } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-
+import {ToastContainer} from 'react-toastify';
 import { CSpinner, useColorModes } from '@coreui/react'
 import './scss/style.scss'
 import './app.css'
 import Application from './views/pages/application/application'
+
+
 
 // Containers
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
@@ -51,6 +53,7 @@ const App = () => {
           <Route path="*" name="Home" element={<DefaultLayout />} />
         </Routes>
       </Suspense>
+      <ToastContainer />
     </HashRouter>
   )
 }
