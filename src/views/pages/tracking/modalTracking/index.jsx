@@ -5,7 +5,7 @@ import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import { Col, Row } from "react-bootstrap";
 
-const CustomModal = ({ show, handleClose, Title }) => {
+const CustomModal = ({ show, handleClose }) => {
   const [observations, setObservations] = useState("");
   const [buildingMaterials, setBuildingMaterials] = useState("");
   const [dateService, setDateService] = useState("");
@@ -55,7 +55,7 @@ const CustomModal = ({ show, handleClose, Title }) => {
   return (
     <Modal show={show} onHide={handleClose} backdrop="static">
       <Modal.Header closeButton>
-        <Modal.Title>{Title} seguimiento</Modal.Title>
+        <Modal.Title>Registrar Seguimiento</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
