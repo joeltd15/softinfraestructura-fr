@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
+import axios from "axios";
 
 const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
   const [editedTracking, setEditedTracking] = useState({
@@ -11,6 +12,20 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
     assignmentId: "",
     photographicEvidence: "",
   });
+
+  const [assignments, setAssignments] = useState([]); // Estado para almacenar las asignaciones
+
+  // Cargar las asignaciones desde la API
+  useEffect(() => {
+    axios
+      .get("http://localhost:2025/api/assignment")
+      .then((response) => {
+        setAssignments(response.data);
+      })
+      .catch((error) => {
+        console.error("Error cargando asignaciones:", error);
+      });
+  }, []);
 
   useEffect(() => {
     if (tracking) {
@@ -60,7 +75,10 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
             <Col sm={6}>
               <Form.Group>
                 <Form.Label className="required">Materiales de Construcción</Form.Label>
-                <Form.Control type="text" name="buildingMaterials" value={editedTracking.buildingMaterials}
+                <Form.Control
+                  type="text"
+                  name="buildingMaterials"
+                  value={editedTracking.buildingMaterials}
                   onChange={handleChange}
                 />
               </Form.Group>
@@ -129,7 +147,14 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
             <Col sm={12}>
               <Form.Group>
                 <Form.Label className="required">Asignación</Form.Label>
-                <Form.Control type="text" name="assignmentId" value={editedTracking.assignmentId} onChange={handleChange} />
+                <Form.Select name="assignmentId" value={editedTracking.assignmentId} onChange={handleChange}>
+                  <option value="">Seleccione una asignación</option>
+                  {assignments.map((assignment) => (
+                    <option key={assignment.id} value={assignment.id}>
+                      {`${assignment.id}`}
+                    </option>
+                  ))}
+                </Form.Select>
               </Form.Group>
             </Col>
           </Row>

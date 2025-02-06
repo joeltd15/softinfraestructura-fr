@@ -1,29 +1,9 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
+import Form from "react-bootstrap/Form";
 import { Col, Row } from "react-bootstrap";
 
-const CustomModalView = ({ show, handleClose, tracking }) => {
-  const [observations, setObservations] = useState(tracking?.observations || "");
-  const [buildingMaterials, setBuildingMaterials] = useState(tracking?.buildingMaterials || "");
-  const [dateService, setDateService] = useState(tracking?.dateService || "");
-  const [actionsTaken, setActionsTaken] = useState(tracking?.actionsTaken || "");
-  const [photographicEvidence, setPhotographicEvidence] = useState(tracking?.photographicEvidence || null);
-  const [status, setStatus] = useState(tracking?.status || "En proceso");
-  const [assignmentId, setAssignmentId] = useState(tracking?.assignmentId || "");
-  const [assignments, setAssignments] = useState([]);
-
-  useEffect(() => {
-    axios.get("http://localhost:2025/api/assignment")
-      .then((response) => {
-        setAssignments(response.data);
-      })
-      .catch(error => {
-        console.error("Error al obtener asignaciones:", error);
-      });
-  }, []);
+const ModalTrackingView = ({ show, handleClose, tracking }) => {
+  if (!tracking) return null; // Evita errores si tracking es null al abrir el modal
 
   return (
     <Modal show={show} onHide={handleClose} backdrop="static">
@@ -36,21 +16,13 @@ const CustomModalView = ({ show, handleClose, tracking }) => {
             <Col sm={6}>
               <Form.Group>
                 <Form.Label>Materiales de Construcción</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={buildingMaterials}
-                  readOnly
-                />
+                <Form.Control type="text" value={tracking.buildingMaterials || "N/A"} readOnly />
               </Form.Group>
             </Col>
             <Col sm={6}>
               <Form.Group>
                 <Form.Label>Fecha de Servicio</Form.Label>
-                <Form.Control
-                  type="date"
-                  value={dateService}
-                  readOnly
-                />
+                <Form.Control type="date" value={tracking.dateService || "N/A"} readOnly />
               </Form.Group>
             </Col>
           </Row>
@@ -59,23 +31,13 @@ const CustomModalView = ({ show, handleClose, tracking }) => {
             <Col sm={6}>
               <Form.Group>
                 <Form.Label>Observaciones</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  value={observations}
-                  readOnly
-                />
+                <Form.Control as="textarea" rows={3} value={tracking.observations || "N/A"} readOnly />
               </Form.Group>
             </Col>
             <Col sm={6}>
               <Form.Group>
                 <Form.Label>Acciones Tomadas</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  value={actionsTaken}
-                  readOnly
-                />
+                <Form.Control as="textarea" rows={3} value={tracking.actionsTaken || "N/A"} readOnly />
               </Form.Group>
             </Col>
           </Row>
@@ -84,40 +46,31 @@ const CustomModalView = ({ show, handleClose, tracking }) => {
             <Col sm={6}>
               <Form.Group>
                 <Form.Label>Evidencia Fotográfica</Form.Label>
-                {photographicEvidence && (
+                {tracking.photographicEvidence ? (
                   <img
-                    src={`http://localhost:2025/uploads/${photographicEvidence}`}
+                    src={`http://localhost:2025/uploads/${tracking.photographicEvidence}`}
                     alt="Evidencia Fotográfica"
-                    width="100"
+                    width="80"
                   />
+                ) : (
+                  <p>No disponible</p>
                 )}
               </Form.Group>
             </Col>
             <Col sm={6}>
               <Form.Group>
                 <Form.Label>Asignación</Form.Label>
-                <Form.Control
-                  as="select"
-                  value={assignmentId}
-                  readOnly
-                >
-                  {assignments.map((assign) => (
-                    <option key={assign.id} value={assign.id}>
-                      {assign.id}
-                    </option>
-                  ))}
-                </Form.Control>
+                <p>{tracking.assignmentId || "No asignado"}</p>
               </Form.Group>
             </Col>
           </Row>
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button className="buttons-form Button-next" onClick={handleClose}>
-          Cerrar
-        </Button>
+        <button className="btn btn-secondary" onClick={handleClose}>Cerrar</button>
       </Modal.Footer>
     </Modal>
   );
 };
-export default CustomModalView;
+
+export default ModalTrackingView;
