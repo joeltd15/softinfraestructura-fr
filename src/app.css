@@ -133,20 +133,24 @@
 }
 
 .buttons-form{
-    border-radius: 5px;
-    font-weight: 600;
-    font-size: 14px;
-    color: #fff;
-    border-color: transparent;
-    padding: 7px;
-    display: flex;
-    align-items: center;
+    border-radius: 5px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    color: #fff !important;
+    border-color: transparent !important;
+    padding: 7px !important;
+    display: flex !important;
+    align-items: center !important;
 }
 
 .Button-save {
-    background: #007832;
+    background: #007832 !important;
 }
 
 .Button-next{
-    background: #dd0505;
+    background: #dd0505 !important;
+}
+
+.Button-blue{
+    background: #055bdd !important;
 }
