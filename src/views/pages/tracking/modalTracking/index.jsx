@@ -10,7 +10,6 @@ import 'react-toastify/dist/ReactToastify.css';
 const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignmentId }) => {
   const [observations, setObservations] = useState("");
   const [buildingMaterials, setBuildingMaterials] = useState("");
-  const [dateService, setDateService] = useState("");
   const [actionsTaken, setActionsTaken] = useState("");
   const [photographicEvidence, setPhotographicEvidence] = useState(null);
   const [status, setStatus] = useState("En proceso");
@@ -19,7 +18,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
 
   useEffect(() => {
     if (selectedAssignmentId) {
-      setAssignmentId(selectedAssignmentId); // Asignar el ID automáticamente
+      setAssignmentId(selectedAssignmentId);
     }
   }, [selectedAssignmentId]);
 
@@ -41,39 +40,40 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
     }
   }, [show]);
   
-
   const handleSubmit = async () => {
+    const today = new Date().toISOString().split("T")[0];
+  
     const formData = new FormData();
     formData.append("observations", observations);
     formData.append("buildingMaterials", buildingMaterials);
-    formData.append("dateService", dateService);
     formData.append("actionsTaken", actionsTaken);
     if (photographicEvidence) {
       formData.append("photographicEvidence", photographicEvidence);
     }
     formData.append("status", status);
     formData.append("assignmentId", assignmentId);
-
+    formData.append("dateService", today); // Se envía la fecha actual
+  
     const registerRequest = axios.post("http://localhost:2025/api/tracking", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
-
+  
     toast.promise(registerRequest, {
       pending: "Registrando seguimiento...",
       success: "Seguimiento registrado correctamente",
       error: "Error al registrar el seguimiento",
     });
-
+  
     try {
       const response = await registerRequest;
       console.log("Seguimiento registrado:", response.data);
       onSolicitudCreated();
-      setTimeout(() => handleClose(), 500); // Cierra el modal con un pequeño delay
+      setTimeout(() => handleClose(), 500);
     } catch (error) {
       console.error("Error al registrar seguimiento:", error);
-    }    
+    }
   };
-
+  
 
   return (
     <Modal show={show} onHide={handleClose} backdrop="static">
@@ -90,16 +90,6 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
                   type="text"
                   value={buildingMaterials}
                   onChange={(e) => setBuildingMaterials(e.target.value)}
-                />
-              </Form.Group>
-            </Col>
-            <Col sm={6}>
-              <Form.Group>
-                <Form.Label className="required">Fecha de Servicio</Form.Label>
-                <Form.Control
-                  type="date"
-                  value={dateService}
-                  onChange={(e) => setDateService(e.target.value)}
                 />
               </Form.Group>
             </Col>
