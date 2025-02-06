@@ -59,10 +59,12 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
         try {
             const response = await registerRequest;
             console.log("Solicitud registrada:", response.data);
+            toast.success("Solicitud registrada correctamente");
             onSolicitudCreated();
             handleClose();
         } catch (error) {
             console.error("Error al registrar seguimiento:", error);
+            toast.error("Error al registrar la solicitud");
         }
     };
 

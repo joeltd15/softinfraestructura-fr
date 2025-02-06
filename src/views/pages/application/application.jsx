@@ -46,9 +46,10 @@ const Application = () => {
     }
 
     const handleShow = (application) => {
-        setSelectedApplication(application)
-        setShowModal(true)
-    }
+        if (!application) return;
+        setSelectedApplication(application);
+        setShowModal(true);
+    };
 
     const handleUpdate = (formData) => {
         if (!selectedApplication) {
@@ -137,7 +138,7 @@ const Application = () => {
                                                 <button className="Table-button Update-button" onClick={() => handleEdit(application)}><FaPencilAlt /></button>
                                                 <button className="Table-button Delete-button" onClick={() => handleOpenDeleteDialog(application.id)}><MdDelete /></button>
                                                 <Tooltip title="Asignar encargado">
-                                                    <button className="Table-button Asign-button" onClick={() => { console.log("Asignando ID:", application.id); setShowAssign(true); setSelectId(application.id)}}><FaUserPlus /></button>
+                                                    <button className="Table-button Asign-button" onClick={() => { console.log("Asignando ID:", application.id); setShowAssign(true); setSelectId(application.id) }}><FaUserPlus /></button>
                                                 </Tooltip>
                                             </td>
                                         </tr>
@@ -151,9 +152,9 @@ const Application = () => {
             {/* Modal */}
             <ModalApplication show={show} handleClose={() => setShow(false)} onSolicitudCreated={handleSolicitudCreated} />
             {/* Modal Asignamiento*/}
-            <ModalAssignment show={showAssign} handleClose={() => setShowAssign(false)} assignmentApplication={selectId}/>
-            <ModalEditApplication show={showModalEdit} handleClose={() => setShowModalEdit(false)} application={selectedApplication} handleUpdate={handleUpdate}/>
-            <ModalShowApplication show={showModal} handleClose={() => setShowModal(false)} application={selectedApplication}/>
+            <ModalAssignment show={showAssign} handleClose={() => setShowAssign(false)} assignmentApplication={selectId} />
+            <ModalEditApplication show={showModalEdit} handleClose={() => setShowModalEdit(false)} application={selectedApplication} handleUpdate={handleUpdate} />
+            <ModalShowApplication show={showModal} handleClose={() => setShowModal(false)} application={selectedApplication} />
             {/* Diálogo de Confirmación de Eliminación */}
             <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
                 <DialogTitle>¿Estás seguro?</DialogTitle>
@@ -164,7 +165,7 @@ const Application = () => {
                     <Button className="buttons-form Button-blue" onClick={handleCloseDeleteDialog} >Cancelar</Button>
                     <Button className="buttons-form Button-next" onClick={handleConfirmDelete}>Eliminar</Button>
                 </DialogActions>
-            </Dialog> 
+            </Dialog>
         </>
     )
 }

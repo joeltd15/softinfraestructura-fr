@@ -53,7 +53,7 @@ const App = () => {
           <Route path="*" name="Home" element={<DefaultLayout />} />
         </Routes>
       </Suspense>
-      <ToastContainer />
+      <ToastContainer/>
     </HashRouter>
   )
 }
