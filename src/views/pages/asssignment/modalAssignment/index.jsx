@@ -25,16 +25,25 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
   }, [assignmentApplication]);
 
   useEffect(() => {
-    axios.get("http://localhost:2025/api/application")
-      .then(response => setApplications(response.data))
-      .catch(error => console.error("Error al obtener solicitudes:", error));
+    const fetchData = async () => {
+      try {
+        const [appsRes, respsRes, usersRes] = await Promise.all([
+          axios.get("http://localhost:2025/api/application"),
+          axios.get("http://localhost:2025/api/responsible"),
+          axios.get(urlUsers)
+        ]);
 
-    axios.get("http://localhost:2025/api/responsible")
-      .then(response => setResponsibles(response.data))
-      .catch(error => console.error("Error al obtener responsables:", error));
+        setApplications(appsRes.data);
+        setResponsibles(respsRes.data);
+        setUsers(usersRes.data);
+      } catch (error) {
+        console.error("Error al obtener datos:", error);
+      }
+    };
 
-    getUsers();
+    fetchData();
   }, []);
+
 
   const getUsers = async () => {
     const response = await axios.get(urlUsers);
@@ -45,6 +54,14 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
     const user = Users.find(user => user.id === userId);
     return user ? user.name : 'Desconocido';
   };
+
+  const responsibleName = (responsibleId) => {
+    if (!Users.length) return "Cargando..."; // Si Users aún no tiene datos, mostrar mensaje temporal
+
+    const responsible = responsibles.find(resp => resp.id === responsibleId);
+    return responsible ? userName(responsible.userId) : "Desconocido";
+  };
+
 
   const handleSubmit = async () => {
     if (!assignmentDate || !applicationId || !responsibleId) {
@@ -97,7 +114,7 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
                 >
                   <option value="">Seleccione un responsable</option>
                   {responsibles.map(resp => (
-                    <option key={resp.id} value={resp.id}>{resp.id}</option>
+                    <option key={resp.id} value={resp.id}>{responsibleName(resp.id)}</option>
                   ))}
                 </Form.Select>
               </Form.Group>
