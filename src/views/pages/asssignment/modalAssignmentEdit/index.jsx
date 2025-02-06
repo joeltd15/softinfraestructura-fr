@@ -5,9 +5,9 @@ import axios from "axios";
 const ModalAssignmentEdit = ({ show, handleClose, assignment, handleUpdate }) => {
   const [editedAssignment, setEditedAssignment] = useState({
     id: "",
-    assignmentDate: "",
     applicationId: "",
     responsibleId: "",
+    assignmentDate: new Date().toISOString().split("T")[0], // Fecha automática
   });
 
   const [applications, setApplications] = useState([]);
@@ -17,31 +17,21 @@ const ModalAssignmentEdit = ({ show, handleClose, assignment, handleUpdate }) =>
     if (assignment) {
       setEditedAssignment({
         id: assignment.id,
-        assignmentDate: assignment.assignmentDate.split('T')[0], // Format date for input
         applicationId: assignment.applicationId,
         responsibleId: assignment.responsibleId,
+        assignmentDate: new Date().toISOString().split("T")[0], // Se actualiza automáticamente al editar
       });
     }
   }, [assignment]);
 
   useEffect(() => {
-    // Fetch applications
     axios.get("http://localhost:2025/api/application")
-      .then((response) => {
-        setApplications(response.data);
-      })
-      .catch((error) => {
-        console.error("Error loading applications:", error);
-      });
+      .then((response) => setApplications(response.data))
+      .catch((error) => console.error("Error loading applications:", error));
 
-    // Fetch responsibles (assuming there's an API endpoint for this)
     axios.get("http://localhost:2025/api/responsible")
-      .then((response) => {
-        setResponsibles(response.data);
-      })
-      .catch((error) => {
-        console.error("Error loading responsibles:", error);
-      });
+      .then((response) => setResponsibles(response.data))
+      .catch((error) => console.error("Error loading responsibles:", error));
   }, []);
 
   const handleChange = (e) => {
@@ -61,20 +51,6 @@ const ModalAssignmentEdit = ({ show, handleClose, assignment, handleUpdate }) =>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
-          <Row className="mb-3">
-            <Col sm={12}>
-              <Form.Group>
-                <Form.Label className="required">Fecha de Asignación</Form.Label>
-                <Form.Control
-                  type="date"
-                  name="assignmentDate"
-                  value={editedAssignment.assignmentDate}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-
           <Row className="mb-3">
             <Col sm={12}>
               <Form.Group>

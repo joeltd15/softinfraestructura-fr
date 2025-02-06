@@ -6,16 +6,15 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
   const [editedTracking, setEditedTracking] = useState({
     observations: "",
     buildingMaterials: "",
-    dateService: "",
+    dateService: new Date().toISOString().split("T")[0], // Fecha automática
     actionsTaken: "",
     status: "",
     assignmentId: "",
     photographicEvidence: "",
   });
 
-  const [assignments, setAssignments] = useState([]); // Estado para almacenar las asignaciones
+  const [assignments, setAssignments] = useState([]);
 
-  // Cargar las asignaciones desde la API
   useEffect(() => {
     axios
       .get("http://localhost:2025/api/assignment")
@@ -29,16 +28,16 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
 
   useEffect(() => {
     if (tracking) {
-      setEditedTracking({
+      setEditedTracking((prev) => ({
+        ...prev,
         id: tracking.id,
         observations: tracking.observations,
         buildingMaterials: tracking.buildingMaterials,
-        dateService: tracking.dateService,
         actionsTaken: tracking.actionsTaken,
         status: tracking.status,
         assignmentId: tracking.assignmentId,
         photographicEvidence: tracking.photographicEvidence || "",
-      });
+      }));
     }
   }, [tracking]);
 
@@ -79,17 +78,6 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
                   type="text"
                   name="buildingMaterials"
                   value={editedTracking.buildingMaterials}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-            </Col>
-            <Col sm={6}>
-              <Form.Group>
-                <Form.Label className="required">Fecha de Servicio</Form.Label>
-                <Form.Control
-                  type="date"
-                  name="dateService"
-                  value={editedTracking.dateService}
                   onChange={handleChange}
                 />
               </Form.Group>

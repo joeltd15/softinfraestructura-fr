@@ -3,72 +3,52 @@ import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
-import { Col } from 'react-bootstrap';
-import { Row } from 'react-bootstrap';
+import { Col, Row } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Select from 'react-select';
 
-
 const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApplication = null }) => {
-  const urlUsers = 'http://localhost:2025/api/user'
-  const [assignmentDate, setAssignmentDate] = useState("");
+  const urlUsers = 'http://localhost:2025/api/user';
   const [applicationId, setApplicationId] = useState("");
   const [responsibleId, setResponsibleId] = useState("");
   const [applications, setApplications] = useState([]);
   const [responsibles, setResponsibles] = useState([]);
   const [Users, setUsers] = useState([]);
 
-
   useEffect(() => {
     setApplicationId(assignmentApplication || "");
   }, [assignmentApplication]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [appsRes, respsRes, usersRes] = await Promise.all([
-          axios.get("http://localhost:2025/api/application"),
-          axios.get("http://localhost:2025/api/responsible"),
-          axios.get(urlUsers)
-        ]);
+    axios.get("http://localhost:2025/api/application")
+      .then(response => setApplications(response.data))
+      .catch(error => console.error("Error al obtener solicitudes:", error));
 
-        setApplications(appsRes.data);
-        setResponsibles(respsRes.data);
-        setUsers(usersRes.data);
-      } catch (error) {
-        console.error("Error al obtener datos:", error);
-      }
-    };
+    axios.get("http://localhost:2025/api/responsible")
+      .then(response => setResponsibles(response.data))
+      .catch(error => console.error("Error al obtener responsables:", error));
 
-    fetchData();
+    getUsers();
   }, []);
-
 
   const getUsers = async () => {
     const response = await axios.get(urlUsers);
     setUsers(response.data);
-  }
+  };
 
   const userName = (userId) => {
     const user = Users.find(user => user.id === userId);
     return user ? user.name : 'Desconocido';
   };
 
-  const responsibleName = (responsibleId) => {
-    if (!Users.length) return "Cargando..."; // Si Users aún no tiene datos, mostrar mensaje temporal
-
-    const responsible = responsibles.find(resp => resp.id === responsibleId);
-    return responsible ? userName(responsible.userId) : "Desconocido";
-  };
-
-
   const handleSubmit = async () => {
-    if (!assignmentDate || !applicationId || !responsibleId) {
+    if (!applicationId || !responsibleId) {
       toast.warning("Todos los campos son obligatorios.");
       return;
     }
 
+    const assignmentDate = new Date().toISOString().split("T")[0]; // Fecha automática
     const assignmentData = { assignmentDate, applicationId, responsibleId };
 
     try {
@@ -95,17 +75,7 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
       <Modal.Body>
         <Form>
           <Row className="mb-3">
-            <Col sm={6}>
-              <Form.Group>
-                <Form.Label className="required">Fecha de Asignación</Form.Label>
-                <Form.Control
-                  type="date"
-                  value={assignmentDate}
-                  onChange={(e) => setAssignmentDate(e.target.value)}
-                />
-              </Form.Group>
-            </Col>
-            <Col sm={6}>
+            <Col sm={12}>
               <Form.Group>
                 <Form.Label className="required">Responsable</Form.Label>
                 <Form.Select
@@ -114,7 +84,7 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
                 >
                   <option value="">Seleccione un responsable</option>
                   {responsibles.map(resp => (
-                    <option key={resp.id} value={resp.id}>{responsibleName(resp.id)}</option>
+                    <option key={resp.id} value={resp.id}>{resp.id}</option>
                   ))}
                 </Form.Select>
               </Form.Group>
@@ -127,7 +97,7 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
               onChange={(selectedOption) => setApplicationId(selectedOption.value)}
               options={options}
               placeholder="Seleccione una solicitud"
-              isSearchable // Habilita la búsqueda
+              isSearchable
             />
           </Form.Group>
         </Form>
