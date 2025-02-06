@@ -7,7 +7,7 @@ import { Col, Row } from "react-bootstrap";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
+const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignmentId }) => {
   const [observations, setObservations] = useState("");
   const [buildingMaterials, setBuildingMaterials] = useState("");
   const [dateService, setDateService] = useState("");
@@ -18,18 +18,29 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
   const [assignments, setAssignments] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:2025/api/assignment")
-      .then((response) => {
-        setAssignments(response.data);
-      })
-      .catch(error => {
-        console.error("Error al obtener asignaciones:", error);
-      });
-  }, []);
+    if (selectedAssignmentId) {
+      setAssignmentId(selectedAssignmentId); // Asignar el ID automáticamente
+    }
+  }, [selectedAssignmentId]);
 
   const handleFileChange = (e) => {
-    setPhotographicEvidence(e.target.files[0]); // Guardamos el archivo seleccionado
+    setPhotographicEvidence(e.target.files[0]);
   };
+
+  useEffect(() => {
+    const fetchAssignments = async () => {
+      try {
+        const response = await axios.get("http://localhost:2025/api/assignment");
+        setAssignments(response.data);
+      } catch (error) {
+        console.error("Error al obtener asignaciones:", error);
+      }
+    };
+    if (show) {
+      fetchAssignments();
+    }
+  }, [show]);
+  
 
   const handleSubmit = async () => {
     const formData = new FormData();
@@ -38,30 +49,30 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
     formData.append("dateService", dateService);
     formData.append("actionsTaken", actionsTaken);
     if (photographicEvidence) {
-        formData.append("photographicEvidence", photographicEvidence);
+      formData.append("photographicEvidence", photographicEvidence);
     }
     formData.append("status", status);
     formData.append("assignmentId", assignmentId);
 
     const registerRequest = axios.post("http://localhost:2025/api/tracking", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      headers: { "Content-Type": "multipart/form-data" },
     });
 
     toast.promise(registerRequest, {
-        pending: "Registrando seguimiento...",
-        success: "Seguimiento registrado correctamente",
-        error: "Error al registrar el seguimiento",
+      pending: "Registrando seguimiento...",
+      success: "Seguimiento registrado correctamente",
+      error: "Error al registrar el seguimiento",
     });
 
     try {
-        const response = await registerRequest;
-        console.log("Seguimiento registrado:", response.data);
-        onSolicitudCreated();
-        handleClose();
+      const response = await registerRequest;
+      console.log("Seguimiento registrado:", response.data);
+      onSolicitudCreated();
+      setTimeout(() => handleClose(), 500); // Cierra el modal con un pequeño delay
     } catch (error) {
-        console.error("Error al registrar seguimiento:", error);
-    }
-};
+      console.error("Error al registrar seguimiento:", error);
+    }    
+  };
 
 
   return (

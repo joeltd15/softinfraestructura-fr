@@ -8,7 +8,8 @@ import ModalTrackingEdit from "./modalTrackingEdit";
 import ModalTrackingView from "./modalTrackingShow";
 import { FaPencilAlt } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
-import { FaFilePdf } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+
 
 const Tracking = () => {
     const [trackingData, setTrackingData] = useState([]);
@@ -36,14 +37,29 @@ const Tracking = () => {
     };
 
     const handleEdit = (tracking) => {
-        setSelectedTracking(tracking);
-        setShowModalEdit(true);
-    };
+        setSelectedTracking(tracking)
+        setShowModalEdit(true)
+    }
 
     const handleView = (tracking) => {
         setSelectedTracking(tracking);
         setShowModalView(true);
     };
+
+    const handleUpdate = (formData) => {
+        axios
+          .put(`http://localhost:2025/api/tracking/${selectedTracking.id}`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          })
+          .then((response) => {
+            console.log("Respuesta del servidor:", response.data);
+            getTracking();
+            setShowModalEdit(false);
+          })
+          .catch((error) => {
+            console.error("Error al actualizar el tracking:", error.response ? error.response.data : error.message);
+          });
+      };  
 
     const handleDelete = (id) => {
         Swal.fire({
@@ -70,28 +86,9 @@ const Tracking = () => {
         });
     };
 
-    const handleDownloadPDF = (id) => {
-        axios({
-            url: `http://localhost:2025/api/tracking/${id}/pdf`,
-            method: "GET",
-            responseType: "blob",
-        })
-            .then((response) => {
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-                const link = document.createElement("a");
-                link.href = url;
-                link.setAttribute("download", `Tracking_${id}.pdf`);
-                document.body.appendChild(link);
-                link.click();
-            })
-            .catch((error) => {
-                console.error("Error al descargar PDF:", error);
-                Swal.fire("Error", "No se pudo descargar el PDF.", "error");
-            });
-    };
-
     return (
         <>
+        <ToastContainer position="top-right" autoClose={3000} />
             <div className="container">
                 <div className="row">
                     <div className="panel panel-primary filterable">
@@ -144,9 +141,6 @@ const Tracking = () => {
                                                 <button className="Table-button Delete-button" onClick={() => handleDelete(tracking.id)}>
                                                     <MdDelete />
                                                 </button>
-                                                <button className="Table-button Pdf-button" onClick={() => handleDownloadPDF(tracking.id)}>
-                                                    <FaFilePdf />
-                                                </button>
                                             </td>
                                         </tr>
                                     ))
@@ -163,7 +157,7 @@ const Tracking = () => {
 
             {/* Modales */}
             <ModalTracking show={show} handleClose={() => setShow(false)} onSolicitudCreated={handleSeguimientoCreated} />
-            <ModalTrackingEdit show={showModalEdit} handleClose={() => setShowModalEdit(false)} tracking={selectedTracking} handleUpdate={getTracking} />
+            <ModalTrackingEdit show={showModalEdit} handleClose={() => setShowModalEdit(false)} tracking={selectedTracking} handleUpdate={handleUpdate}/>
             <ModalTrackingView show={showModalView} handleClose={() => setShowModalView(false)} tracking={selectedTracking} />
         </>
     );
