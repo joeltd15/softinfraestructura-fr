@@ -35,7 +35,7 @@ function ShowModal({ show, handleClose, application = null }) {
                 <div className="col-sm-4"><p><strong>Tipo de reporte:</strong> {application.reportType}</p></div>
                 <div className="col-sm-4"><p><strong>Estado:</strong> {application.status}</p></div>
               </div>
-              <p className='text-center'><strong>Novedades:</strong> {application.news}</p>
+              <p className='text-center'><strong>Detalles:</strong> {application.news}</p>
               <p className='text-center'><strong>Evidencia:</strong></p>
               <div className='d-flex align-items-center justify-content-center'>
                 <img src={application.photographicEvidence && application.photographicEvidence.trim() !== "" ? `http://localhost:2025/uploads/${application.photographicEvidence}` : "/noImage.png"} width={'200px'} height={'200px'} alt="" />

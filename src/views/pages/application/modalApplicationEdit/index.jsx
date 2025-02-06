@@ -102,14 +102,14 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
                                 placeholder="Ingrese el lugar" />
                         </Col>
                         <Col sm="6">
-                            <Form.Label className="required">Novedades</Form.Label>
+                            <Form.Label className="required">Detalles</Form.Label>
                             <Form.Control
                                 as="textarea"
                                 name="news"
                                 rows={2}
                                 value={editedApplication.news}
                                 onChange={handleChange}
-                                placeholder="Describa las novedades" />
+                                placeholder="Describa los detalles del reporte" />
                         </Col>
                     </Form.Group>
                     <Form.Group className="mb-3" as={Row} controlId="formLocation">

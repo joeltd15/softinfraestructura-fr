@@ -13,10 +13,12 @@ import Tooltip from '@mui/material/Tooltip';
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import { FaFilePdf } from "react-icons/fa";
 
 const Application = () => {
-    const url = 'http://localhost:2025/api/application'
+    const url = 'http://localhost:2025/api/application';
+    const urlUsers = 'http://localhost:2025/api/user';
+    const [Users, setUsers] = useState([]);
     const [applications, setApplication] = useState([]);
     const [show, setShow] = useState(false);
     const [showAssign, setShowAssign] = useState(false);
@@ -29,6 +31,7 @@ const Application = () => {
 
     useEffect(() => {
         getApplications();
+        getUsers();
     }, [])
 
     const getApplications = async () => {
@@ -36,9 +39,19 @@ const Application = () => {
         setApplication(response.data)
     }
 
+    const getUsers = async () => {
+        const response = await axios.get(urlUsers);
+        setUsers(response.data);
+    }
+
     const handleSolicitudCreated = () => {
         getApplications();
     }
+
+    const userName = (userId) => {
+        const user = Users.find(user => user.id === userId);
+        return user ? user.name : 'Desconocido';
+    };
 
     const handleEdit = (application) => {
         setSelectedApplication(application)
@@ -112,7 +125,7 @@ const Application = () => {
                                     <th>Fecha del reporte</th>
                                     <th>Centro/dependencia</th>
                                     <th>Lugar</th>
-                                    <th>Novedades</th>
+                                    <th>Detalles</th>
                                     <th>Evidencia</th>
                                     <th>Tipo de reporte</th>
                                     <th>Estado</th>
@@ -132,7 +145,7 @@ const Application = () => {
                                             <td><img src={application.photographicEvidence && application.photographicEvidence.trim() !== "" ? `http://localhost:2025/uploads/${application.photographicEvidence}` : "/noImage.png"} alt="" /></td>
                                             <td>{application.reportType}</td>
                                             <td>{application.status}</td>
-                                            <td>{application.userId}</td>
+                                            <td>{userName(application.userId)}</td>
                                             <td className="content-buttons">
                                                 <button className="Table-button Show-button" onClick={() => handleShow(application)}><FaEye /></button>
                                                 <button className="Table-button Update-button" onClick={() => handleEdit(application)}><FaPencilAlt /></button>

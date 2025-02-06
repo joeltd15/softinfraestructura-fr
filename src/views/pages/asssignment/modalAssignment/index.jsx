@@ -67,7 +67,7 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
 
   const options = applications.map(app => ({
     value: app.id,
-    label: `${app.location} | Fecha: ${new Date(app.reportDate).toISOString().split('T')[0]} | Codigo: ${app.id} | Usuario: ${userName(app.userId)}`,
+    label: `${app.location} | Fecha: ${new Date(app.reportDate).toISOString().split('T')[0]} | Codigo: ${app.reportType} | Usuario: ${userName(app.userId)}`,
   }));
 
   return (
