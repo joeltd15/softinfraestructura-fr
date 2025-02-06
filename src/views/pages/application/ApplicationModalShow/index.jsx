@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
-import {Modal, Col, Row} from 'react-bootstrap/Modal';
+import Modal from 'react-bootstrap/Modal';
 
 function ShowModal({ show, handleClose, application }) {
   return (
