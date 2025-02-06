@@ -165,7 +165,7 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
           Salir
         </Button>
         <Button className="buttons-form Button-save" type="submit" onClick={handleSubmit}>
-          Guardar Cambios
+          Guardar
         </Button>
       </Modal.Footer>
     </Modal>

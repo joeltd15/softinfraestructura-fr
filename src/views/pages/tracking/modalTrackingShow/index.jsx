@@ -1,73 +1,43 @@
 import Modal from "react-bootstrap/Modal";
-import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
 import { Col, Row } from "react-bootstrap";
 
 const ModalTrackingView = ({ show, handleClose, tracking }) => {
-  if (!tracking) return null; // Evita errores si tracking es null al abrir el modal
-
   return (
-    <Modal show={show} onHide={handleClose} backdrop="static">
+    <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
       <Modal.Header closeButton>
-        <Modal.Title>Ver Seguimiento</Modal.Title>
+        <Modal.Title>Detalles del Seguimiento</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form>
-          <Row className="mb-3">
-            <Col sm={6}>
-              <Form.Group>
-                <Form.Label>Materiales de Construcción</Form.Label>
-                <Form.Control type="text" value={tracking.buildingMaterials || "N/A"} readOnly />
-              </Form.Group>
-            </Col>
-            <Col sm={6}>
-              <Form.Group>
-                <Form.Label>Fecha de Servicio</Form.Label>
-                <Form.Control type="date" value={tracking.dateService || "N/A"} readOnly />
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <Row className="mb-3">
-            <Col sm={6}>
-              <Form.Group>
-                <Form.Label>Observaciones</Form.Label>
-                <Form.Control as="textarea" rows={3} value={tracking.observations || "N/A"} readOnly />
-              </Form.Group>
-            </Col>
-            <Col sm={6}>
-              <Form.Group>
-                <Form.Label>Acciones Tomadas</Form.Label>
-                <Form.Control as="textarea" rows={3} value={tracking.actionsTaken || "N/A"} readOnly />
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <Row className="mb-3">
-            <Col sm={6}>
-              <Form.Group>
-                <Form.Label>Evidencia Fotográfica</Form.Label>
-                {tracking.photographicEvidence ? (
-                  <img
-                    src={`http://localhost:2025/uploads/${tracking.photographicEvidence}`}
-                    alt="Evidencia Fotográfica"
-                    width="80"
-                  />
-                ) : (
-                  <p>No disponible</p>
-                )}
-              </Form.Group>
-            </Col>
-            <Col sm={6}>
-              <Form.Group>
-                <Form.Label>Asignación</Form.Label>
-                <p>{tracking.assignmentId || "No asignado"}</p>
-              </Form.Group>
-            </Col>
-          </Row>
-        </Form>
+        {tracking && (
+          <div>
+            <div className='d-flex align-items-center justify-content-center row'>
+            <div className='col-sm-4'>
+                  <p><strong>Fecha:</strong> {tracking.dateService}</p>
+                </div>
+                <div className='col-sm-4'>
+                  <p><strong>Materiales:</strong> {tracking.buildingMaterials}</p>
+                </div>
+            </div>
+            <div className='d-flex align-items-center justify-content-center row'>
+              <div className="col-sm-4"><p><strong>Observaciones:</strong> {tracking.observations }</p></div>
+              <div className="col-sm-4"><p><strong>Acciones:</strong> {tracking.actionsTaken }</p></div>
+            </div>
+            <p className='text-center'><strong>Asignamiento:</strong> {tracking.id}</p>
+            <p className='text-center'><strong>Evidencia Fotográfica:</strong></p>
+            <div className='d-flex align-items-center justify-content-center'>
+              <img 
+                src={tracking.photographicEvidence ? `http://localhost:2025/uploads/${tracking.photographicEvidence}` : "/noImage.png"} 
+                width={'170px'} 
+                height={'170px'} 
+                alt="Evidencia" 
+              />
+            </div>
+          </div>
+        )}
       </Modal.Body>
       <Modal.Footer>
-        <button className="btn btn-secondary" onClick={handleClose}>Cerrar</button>
+        <Button variant="secondary" onClick={handleClose}>Cerrar</Button>
       </Modal.Footer>
     </Modal>
   );

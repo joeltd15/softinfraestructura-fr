@@ -2,14 +2,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { MdDelete } from "react-icons/md";
 import { FaCirclePlus } from "react-icons/fa6";
-import Swal from "sweetalert2";
 import ModalTracking from "./modalTracking";
 import ModalTrackingEdit from "./modalTrackingEdit";
 import ModalTrackingView from "./modalTrackingShow";
-import { FaPencilAlt } from "react-icons/fa";
-import { FaEye } from "react-icons/fa";
+import { FaPencilAlt, FaEye } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
-
+import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
+import "react-toastify/dist/ReactToastify.css";
 
 const Tracking = () => {
     const [trackingData, setTrackingData] = useState([]);
@@ -17,6 +16,8 @@ const Tracking = () => {
     const [showModalEdit, setShowModalEdit] = useState(false);
     const [showModalView, setShowModalView] = useState(false);
     const [selectedTracking, setSelectedTracking] = useState(null);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [selectedId, setSelectedId] = useState(null);
 
     const getTracking = () => {
         axios.get("http://localhost:2025/api/tracking")
@@ -32,14 +33,10 @@ const Tracking = () => {
         getTracking();
     }, []);
 
-    const handleSeguimientoCreated = () => {
-        getTracking();
-    };
-
     const handleEdit = (tracking) => {
-        setSelectedTracking(tracking)
-        setShowModalEdit(true)
-    }
+        setSelectedTracking(tracking);
+        setShowModalEdit(true);
+    };
 
     const handleView = (tracking) => {
         setSelectedTracking(tracking);
@@ -47,48 +44,46 @@ const Tracking = () => {
     };
 
     const handleUpdate = (formData) => {
-        axios
-          .put(`http://localhost:2025/api/tracking/${selectedTracking.id}`, formData, {
+        axios.put(`http://localhost:2025/api/tracking/${selectedTracking.id}`, formData, {
             headers: { "Content-Type": "multipart/form-data" },
-          })
-          .then((response) => {
-            console.log("Respuesta del servidor:", response.data);
+        })
+        .then(() => {
             getTracking();
             setShowModalEdit(false);
-          })
-          .catch((error) => {
+        })
+        .catch((error) => {
             console.error("Error al actualizar el tracking:", error.response ? error.response.data : error.message);
-          });
-      };  
-
-    const handleDelete = (id) => {
-        Swal.fire({
-            title: "¿Estás seguro?",
-            text: "Esta acción no se puede deshacer",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "Sí, eliminar",
-            cancelButtonText: "Cancelar"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                axios.delete(`http://localhost:2025/api/tracking/${id}`)
-                    .then(() => {
-                        Swal.fire("Eliminado", "El registro ha sido eliminado.", "success");
-                        getTracking();
-                    })
-                    .catch(error => {
-                        Swal.fire("Error", "No se pudo eliminar el registro.", "error");
-                        console.error("Error al eliminar:", error);
-                    });
-            }
         });
+    };
+
+    const handleOpenDeleteDialog = (id) => {
+        setSelectedId(id);
+        setOpenDeleteDialog(true);
+    };
+
+    const handleCloseDeleteDialog = () => {
+        setOpenDeleteDialog(false);
+        setSelectedId(null);
+    };
+
+    const handleConfirmDelete = () => {
+        if (!selectedId) return;
+
+        axios.delete(`http://localhost:2025/api/tracking/${selectedId}`)
+            .then(() => {
+                toast.success("El registro ha sido eliminado.");
+                getTracking();
+            })
+            .catch(error => {
+                toast.error("No se pudo eliminar el registro.");
+                console.error("Error al eliminar:", error);
+            })
+            .finally(() => handleCloseDeleteDialog());
     };
 
     return (
         <>
-        <ToastContainer position="top-right" autoClose={3000} />
+            <ToastContainer position="top-right" autoClose={3000} />
             <div className="container">
                 <div className="row">
                     <div className="panel panel-primary filterable">
@@ -138,7 +133,7 @@ const Tracking = () => {
                                                 <button className="Table-button Update-button" onClick={() => handleEdit(tracking)}>
                                                     <FaPencilAlt />
                                                 </button>
-                                                <button className="Table-button Delete-button" onClick={() => handleDelete(tracking.id)}>
+                                                <button className="Table-button Delete-button" onClick={() => handleOpenDeleteDialog(tracking.id)}>
                                                     <MdDelete />
                                                 </button>
                                             </td>
@@ -155,9 +150,21 @@ const Tracking = () => {
                 </div>
             </div>
 
+            {/* Diálogo de confirmación de eliminación */}
+            <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
+                <DialogTitle>¿Estás seguro?</DialogTitle>
+                <DialogContent>
+                    Esta acción no se puede deshacer.
+                </DialogContent>
+                <DialogActions>
+                    <Button className="buttons-form Button-blue" onClick={handleCloseDeleteDialog} >Cancelar</Button>
+                    <Button className="buttons-form Button-next" onClick={handleConfirmDelete}>Eliminar</Button>
+                </DialogActions>
+            </Dialog>
+
             {/* Modales */}
-            <ModalTracking show={show} handleClose={() => setShow(false)} onSolicitudCreated={handleSeguimientoCreated} />
-            <ModalTrackingEdit show={showModalEdit} handleClose={() => setShowModalEdit(false)} tracking={selectedTracking} handleUpdate={handleUpdate}/>
+            <ModalTracking show={show} handleClose={() => setShow(false)} onSolicitudCreated={getTracking} />
+            <ModalTrackingEdit show={showModalEdit} handleClose={() => setShowModalEdit(false)} tracking={selectedTracking} handleUpdate={handleUpdate} />
             <ModalTrackingView show={showModalView} handleClose={() => setShowModalView(false)} tracking={selectedTracking} />
         </>
     );
