@@ -42,6 +42,13 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
     return user ? user.name : 'Desconocido';
   };
 
+  const responsibleName = (responsibleId) => {
+    if (!Users.length) return "Cargando..."; // Si Users aún no tiene datos, mostrar mensaje temporal
+  
+    const responsible = responsibles.find(resp => resp.id === responsibleId);
+    return responsible ? userName(responsible.userId) : "Desconocido";
+  };
+
   const handleSubmit = async () => {
     if (!applicationId || !responsibleId) {
       toast.warning("Todos los campos son obligatorios.");
@@ -64,7 +71,7 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
 
   const options = applications.map(app => ({
     value: app.id,
-    label: `${app.location} | Fecha: ${new Date(app.reportDate).toISOString().split('T')[0]} | Codigo: ${app.reportType} | Usuario: ${userName(app.userId)}`,
+    label: `${app.location} | Fecha: ${new Date(app.reportDate).toISOString().split('T')[0]} | Codigo: ${app.id} | Tipo: ${userName(app.reportType)}`,
   }));
 
   return (
@@ -84,7 +91,7 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
                 >
                   <option value="">Seleccione un responsable</option>
                   {responsibles.map(resp => (
-                    <option key={resp.id} value={resp.id}>{resp.id}</option>
+                    <option key={resp.id} value={resp.id}>{responsibleName(resp.id)}</option>
                   ))}
                 </Form.Select>
               </Form.Group>
@@ -98,6 +105,7 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
               options={options}
               placeholder="Seleccione una solicitud"
               isSearchable
+              isDisabled
             />
           </Form.Group>
         </Form>

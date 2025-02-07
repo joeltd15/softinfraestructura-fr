@@ -11,7 +11,6 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
     const urlUsers = 'http://localhost:2025/api/user';
     const url = 'http://localhost:2025/api/application';
     const [Users, setUsers] = useState([]);
-    const [Date, setDate] = useState("");
     const [Dependence, setDependence] = useState("");
     const [Place, setPlace] = useState("");
     const [News, setNews] = useState("");
@@ -34,8 +33,9 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
     };
 
     const handleSubmit = async () => {
+        const today = new Date().toISOString().split("T")[0];
         const formData = new FormData();
-        formData.append("reportDate", Date);
+        formData.append("reportDate", today);
         formData.append("dependence", Dependence);
         formData.append("location", Place);
         formData.append("news", News);
@@ -45,17 +45,17 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
         formData.append("reportType", TypeReport);
         formData.append("status", status);
         formData.append("userId", IdUser);
-    
+
         const registerRequest = axios.post(url, formData, {
             headers: { "Content-Type": "multipart/form-data" },
         });
-    
+
         toast.promise(registerRequest, {
             pending: "Registrando solicitud...",
             success: "Solicitud registrada correctamente",
             error: "Error al registrar la solicitud",
         });
-    
+
         try {
             const response = await registerRequest;
             console.log("Solicitud registrada:", response.data);
@@ -77,10 +77,6 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
                 <Form>
                     <Form.Group className="mb-3" as={Row} controlId="formReportDate">
                         <Col sm="6">
-                            <Form.Label className="required">Fecha</Form.Label>
-                            <Form.Control type="date" value={Date} onChange={(e) => setDate(e.target.value)} />
-                        </Col>
-                        <Col sm="6">
                             <Form.Label className="required">Centro/dependencia</Form.Label>
                             <Form.Control
                                 type="text"
@@ -88,8 +84,6 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
                                 onChange={(e) => setDependence(e.target.value)}
                                 placeholder="Ingrese la dependencia" />
                         </Col>
-                    </Form.Group>
-                    <Form.Group className="mb-3" as={Row} controlId="formDependence">
                         <Col sm="6">
                             <Form.Label className="required">Lugar</Form.Label>
                             <Form.Control
@@ -98,15 +92,15 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
                                 onChange={(e) => setPlace(e.target.value)}
                                 placeholder="Ingrese el lugar" />
                         </Col>
-                        <Col sm="6">
-                            <Form.Label className="required">Detalles</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                rows={2}
-                                value={News}
-                                onChange={(e) => setNews(e.target.value)}
-                                placeholder="Describa los detalles del reporte" />
-                        </Col>
+                    </Form.Group>
+                    <Form.Group className="mb-3 p-3" as={Row} controlId="formDependence">
+                        <Form.Label className="required">Detalles</Form.Label>
+                        <Form.Control
+                            as="textarea"
+                            rows={2}
+                            value={News}
+                            onChange={(e) => setNews(e.target.value)}
+                            placeholder="Describa los detalles del reporte" />
                     </Form.Group>
                     <Form.Group className="mb-3" as={Row} controlId="formLocation">
                         <Col sm="6">

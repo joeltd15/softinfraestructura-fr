@@ -72,7 +72,7 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
     return (
         <Modal show={show} onHide={handleClose} backdrop="static">
             <Modal.Header closeButton>
-                <Modal.Title>Registrar Solicitud</Modal.Title>
+                <Modal.Title>Editar Solicitud</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form onSubmit={handleSubmit}>
