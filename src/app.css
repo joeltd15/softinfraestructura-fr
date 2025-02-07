@@ -154,3 +154,15 @@
 .Button-blue{
     background: #055bdd !important;
 }
+
+.card-body{
+    width: 400px;
+}
+
+.card{
+    width: 400px !important;
+}
+
+.pattern{
+    background-image: url(assets/images/fondoRegister.png);
+}

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Col, Row } from 'react-bootstrap';
 import {
   CButton,
   CCard,
@@ -58,49 +60,57 @@ const Register = () => {
   };
 
   return (
-    <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
-      <CContainer>
-        <CRow className="justify-content-center">
-          <CCol md={9} lg={7} xl={6}>
-            <CCard className="mx-4">
-              <CCardBody className="p-4">
-                <CForm onSubmit={handleSubmit}>
-                  <h1>Register</h1>
-                  <p className="text-body-secondary">Create your account</p>
-                  <CInputGroup className="mb-3">
-                    <CInputGroupText>
-                      <CIcon icon={cilUser} />
-                    </CInputGroupText>
-                    <CFormInput name="name" placeholder="Username" autoComplete="username" value={formData.name} onChange={handleChange} required />
-                  </CInputGroup>
-                  <CInputGroup className="mb-3">
-                    <CInputGroupText>@</CInputGroupText>
-                    <CFormInput type="email" name="email" placeholder="Email" autoComplete="email" value={formData.email} onChange={handleChange} required />
-                  </CInputGroup>
-                  <CInputGroup className="mb-3">
-                    <CInputGroupText>
-                      <CIcon icon={cilLockLocked} />
-                    </CInputGroupText>
-                    <CFormInput type="password" name="password" placeholder="Password" autoComplete="new-password" value={formData.password} onChange={handleChange} required />
-                  </CInputGroup>
-                  <CInputGroup className="mb-3">
-                    <CInputGroupText>
-                      <CIcon icon={cilLockLocked} />
-                    </CInputGroupText>
-                    <CFormInput type="password" name="confirmPassword" placeholder="Repeat password" autoComplete="new-password" value={formData.confirmPassword} onChange={handleChange} required />
-                  </CInputGroup>
-                  <CInputGroup className="mb-3">
-                    <CInputGroupText>📞</CInputGroupText>
-                    <CFormInput type="tel" name="phone" placeholder="Phone" autoComplete="tel" value={formData.phone} onChange={handleChange} required />
-                  </CInputGroup>
-                  <div className="d-grid">
-                    <CButton color="success" type="submit">Create Account</CButton>
-                  </div>
-                </CForm>
-              </CCardBody>
-            </CCard>
-          </CCol>
-        </CRow>
+    <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center pattern">
+      <CContainer className="p-4 d-flex align-items-center justify-content-center">
+        <CCol md={9} lg={7} xl={6} className="p-4 d-flex align-items-center justify-content-center">
+          <CCard className="mx-4" >
+            <CCardBody >
+              <CForm onSubmit={handleSubmit}>
+                <h2 className='pb-4 text-center'>Registro</h2>
+                <Row>
+                  <Col sm={6}>
+                    <CInputGroup className="mb-3">
+                      <CInputGroupText>
+                        <CIcon icon={cilUser} />
+                      </CInputGroupText>
+                      <CFormInput name="name" placeholder="Nombre" autoComplete="username" value={formData.name} onChange={handleChange} required />
+                    </CInputGroup>
+                  </Col>
+                  <Col sm={6}>
+                    <CInputGroup className="mb-3">
+                      <CInputGroupText>📞</CInputGroupText>
+                      <CFormInput type="tel" name="phone" placeholder="Telefono" autoComplete="tel" value={formData.phone} onChange={handleChange} required />
+                    </CInputGroup>
+                  </Col>
+                </Row>
+                <CInputGroup className="mb-3">
+                  <CInputGroupText>@</CInputGroupText>
+                  <CFormInput type="email" name="email" placeholder="Correo" autoComplete="email" value={formData.email} onChange={handleChange} required />
+                </CInputGroup>
+                <CInputGroup className="mb-3">
+                  <CInputGroupText>
+                    <CIcon icon={cilLockLocked} />
+                  </CInputGroupText>
+                  <CFormInput type="password" name="password" placeholder="Contraseña" autoComplete="new-password" value={formData.password} onChange={handleChange} required />
+                </CInputGroup>
+                <CInputGroup className="mb-3">
+                  <CInputGroupText>
+                    <CIcon icon={cilLockLocked} />
+                  </CInputGroupText>
+                  <CFormInput type="password" name="confirmPassword" placeholder="Confirme su contraseña" autoComplete="new-password" value={formData.confirmPassword} onChange={handleChange} required />
+                </CInputGroup>
+                <div className="d-flex align-items-center justify-content-center">
+                  <CButton color="success" className='.buttons-form' type="submit">Registrarme</CButton>
+                </div>
+                <div className="d-flex align-items-center justify-content-center p-3">
+                  <Link to="/login">
+                      ¿Ya tienes cuentas? Ingresar
+                  </Link>
+                </div>
+              </CForm>
+            </CCardBody>
+          </CCard>
+        </CCol>
       </CContainer>
     </div>
   );
