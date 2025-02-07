@@ -1,5 +1,6 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   CButton,
   CCard,
@@ -12,11 +13,46 @@ import {
   CInputGroup,
   CInputGroupText,
   CRow,
-} from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import { cilLockLocked, cilUser } from '@coreui/icons'
+} from '@coreui/react';
+import CIcon from '@coreui/icons-react';
+import { cilLockLocked, cilUser } from '@coreui/icons';
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post('http://localhost:2025/api/auth/login', {
+        email,
+        password,
+      });
+
+      const { token } = response.data;
+      localStorage.setItem('token', token);
+
+      toast.success('Inicio de sesión exitoso!', {
+        position: 'top-right',
+        autoClose: 3000,
+      });
+
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 3000); // Redirige después de 3 segundos
+    } catch (error) {
+      toast.error('Error en el inicio de sesión. Verifica tus credenciales.', {
+        position: 'top-right',
+        autoClose: 3000,
+      });
+    }
+  };
+
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
@@ -25,14 +61,21 @@ const Login = () => {
             <CCardGroup>
               <CCard className="p-4">
                 <CCardBody>
-                  <CForm>
+                  <CForm onSubmit={handleLogin}>
                     <h1>Login</h1>
                     <p className="text-body-secondary">Sign In to your account</p>
                     <CInputGroup className="mb-3">
                       <CInputGroupText>
                         <CIcon icon={cilUser} />
                       </CInputGroupText>
-                      <CFormInput placeholder="Username" autoComplete="username" />
+                      <CFormInput
+                        type="email"
+                        placeholder="Email"
+                        autoComplete="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                      />
                     </CInputGroup>
                     <CInputGroup className="mb-4">
                       <CInputGroupText>
@@ -42,11 +85,14 @@ const Login = () => {
                         type="password"
                         placeholder="Password"
                         autoComplete="current-password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
                       />
                     </CInputGroup>
                     <CRow>
                       <CCol xs={6}>
-                        <CButton color="primary" className="px-4">
+                        <CButton type="submit" color="primary" className="px-4">
                           Login
                         </CButton>
                       </CCol>
@@ -79,8 +125,9 @@ const Login = () => {
           </CCol>
         </CRow>
       </CContainer>
+      <ToastContainer />
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

@@ -1,17 +1,21 @@
 import { useState, useEffect } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import axios from "axios";
+import Select from 'react-select';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ModalAssignmentEdit = ({ show, handleClose, assignment, handleUpdate }) => {
   const [editedAssignment, setEditedAssignment] = useState({
     id: "",
     applicationId: "",
     responsibleId: "",
-    assignmentDate: new Date().toISOString().split("T")[0], // Fecha automática
+    assignmentDate: new Date().toISOString().split("T")[0],
   });
 
   const [applications, setApplications] = useState([]);
   const [responsibles, setResponsibles] = useState([]);
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     if (assignment) {
@@ -19,19 +23,23 @@ const ModalAssignmentEdit = ({ show, handleClose, assignment, handleUpdate }) =>
         id: assignment.id,
         applicationId: assignment.applicationId,
         responsibleId: assignment.responsibleId,
-        assignmentDate: new Date().toISOString().split("T")[0], // Se actualiza automáticamente al editar
+        assignmentDate: new Date().toISOString().split("T")[0],
       });
     }
   }, [assignment]);
 
   useEffect(() => {
     axios.get("http://localhost:2025/api/application")
-      .then((response) => setApplications(response.data))
-      .catch((error) => console.error("Error loading applications:", error));
+      .then(response => setApplications(response.data))
+      .catch(error => console.error("Error al obtener solicitudes:", error));
 
     axios.get("http://localhost:2025/api/responsible")
-      .then((response) => setResponsibles(response.data))
-      .catch((error) => console.error("Error loading responsibles:", error));
+      .then(response => setResponsibles(response.data))
+      .catch(error => console.error("Error al obtener responsables:", error));
+
+    axios.get("http://localhost:2025/api/user")
+      .then(response => setUsers(response.data))
+      .catch(error => console.error("Error al obtener usuarios:", error));
   }, []);
 
   const handleChange = (e) => {
@@ -42,6 +50,22 @@ const ModalAssignmentEdit = ({ show, handleClose, assignment, handleUpdate }) =>
   const handleSubmit = (e) => {
     e.preventDefault();
     handleUpdate(editedAssignment);
+  };
+
+  const options = applications.map(app => ({
+    value: app.id,
+    label: `${app.location} | Fecha: ${new Date(app.reportDate).toISOString().split('T')[0]} | Codigo: ${app.id} | Tipo: ${app.reportType}`,
+  }));
+
+  const userName = (userId) => {
+    const user = users.find(user => user.id === userId);
+    return user ? user.name : 'Desconocido';
+  };
+
+  const responsibleName = (responsibleId) => {
+    if (!users.length) return "Cargando...";
+    const responsible = responsibles.find(resp => resp.id === responsibleId);
+    return responsible ? userName(responsible.userId) : "Desconocido";
   };
 
   return (
@@ -55,18 +79,11 @@ const ModalAssignmentEdit = ({ show, handleClose, assignment, handleUpdate }) =>
             <Col sm={12}>
               <Form.Group>
                 <Form.Label className="required">Solicitud</Form.Label>
-                <Form.Select 
-                  name="applicationId" 
-                  value={editedAssignment.applicationId} 
-                  onChange={handleChange}
-                >
-                  <option value="">Seleccione una solicitud</option>
-                  {applications.map((app) => (
-                    <option key={app.id} value={app.id}>
-                      {`${app.id}`}
-                    </option>
-                  ))}
-                </Form.Select>
+                <Select
+                  value={options.find(option => option.value === editedAssignment.applicationId)}
+                  options={options}
+                  isDisabled
+                />
               </Form.Group>
             </Col>
           </Row>
@@ -75,16 +92,14 @@ const ModalAssignmentEdit = ({ show, handleClose, assignment, handleUpdate }) =>
             <Col sm={12}>
               <Form.Group>
                 <Form.Label className="required">Responsable</Form.Label>
-                <Form.Select 
-                  name="responsibleId" 
-                  value={editedAssignment.responsibleId} 
+                <Form.Select
+                  name="responsibleId"
+                  value={editedAssignment.responsibleId}
                   onChange={handleChange}
                 >
                   <option value="">Seleccione un responsable</option>
-                  {responsibles.map((resp) => (
-                    <option key={resp.id} value={resp.id}>
-                      {`${resp.id}`} 
-                    </option>
+                  {responsibles.map(resp => (
+                    <option key={resp.id} value={resp.id}>{responsibleName(resp.id)}</option>
                   ))}
                 </Form.Select>
               </Form.Group>
@@ -97,7 +112,7 @@ const ModalAssignmentEdit = ({ show, handleClose, assignment, handleUpdate }) =>
           Salir
         </Button>
         <Button className="buttons-form Button-save" type="submit" onClick={handleSubmit}>
-          Guardar Cambios
+          Guardar
         </Button>
       </Modal.Footer>
     </Modal>
