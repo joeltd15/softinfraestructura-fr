@@ -21,7 +21,7 @@ const _nav = [
     name: "Dashboard",
     to: "/dashboard",
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-    permission: "dashboard", // Asumiendo que este es el nombre del permiso en tu base de datos
+    permission: "view_dashboard",
   },
   {
     component: CNavTitle,
@@ -58,14 +58,14 @@ const _nav = [
   {
     component: CNavItem,
     name: "Asignamientos",
-    to: "/assignments",
+    to: "/Asignamientos",
     icon: <CIcon icon={cilShare} customClassName="nav-icon" />,
     permission: "manage_assignments",
   },
   {
     component: CNavItem,
     name: "Seguimiento",
-    to: "/tracking",
+    to: "/Seguimiento",
     icon: <CIcon icon={cilPlaylistAdd} customClassName="nav-icon" />,
     permission: "manage_tracking",
   },

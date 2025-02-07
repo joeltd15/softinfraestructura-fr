@@ -32,6 +32,7 @@ const AppHeaderDropdown = () => {
     localStorage.removeItem('user');
     navigate('/login');
   };
+
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>
@@ -92,8 +93,8 @@ const AppHeaderDropdown = () => {
         </CDropdownItem>
         <CDropdownDivider />
         <CDropdownItem href="#">
-          <CIcon icon={cilLockLocked} className="me-2" />
-          Lock Account
+          <CIcon icon={cilLockLocked} className="me-2" onClick={handleLogout()}/>
+          Cerrar sesion
         </CDropdownItem>
       </CDropdownMenu>
     </CDropdown>

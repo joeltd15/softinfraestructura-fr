@@ -32,7 +32,6 @@ const routes = [
   { path: '/application', name: 'Application', element: Application },
   { path: '/Seguimiento', name: 'Tracking', element: Tracking },
   { path: '/Asignamientos', name: 'Assignment', element: Assignment },
-
 ]
 
 export default routes
