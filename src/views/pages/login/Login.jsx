@@ -26,61 +26,73 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     try {
-      const response = await axios.post('http://localhost:2025/api/auth/login', {
+      // 1. Login request
+      const response = await axios.post("http://localhost:2025/api/auth/login", {
         email,
         password,
-      });
+      })
 
-      const { user, token } = response.data;
+      const { user, token } = response.data
 
       if (!token || !user) {
-        throw new Error('La respuesta del servidor no contiene token o información de usuario');
+        throw new Error("La respuesta del servidor no contiene token o información de usuario")
       }
 
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      // 2. Get role permissions
+      const permissionsResponse = await axios.get(`http://localhost:2025/api/permissionRole?roleId=${user.roleId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
 
-      // Obtener los permisos del usuario
-      const permissionsResponse = await axios.get(`http://localhost:2025/api/users/${user.id}/permissions`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const permissions = permissionsResponse.data;
-      localStorage.setItem('permissions', JSON.stringify(permissions));
+      // 3. Get permission names
+      const permissionIds = permissionsResponse.data.map((pr) => pr.permissionId)
+      const permissionsDetailsResponse = await axios.get(`http://localhost:2025/api/permission`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
 
-      toast.success('Inicio de sesión exitoso!', {
-        position: 'top-right',
+      // 4. Filter and store only the permissions that belong to the user's role
+      const userPermissions = permissionsDetailsResponse.data
+        .filter((p) => permissionIds.includes(p.id))
+        .map((p) => p.name)
+
+      // Store everything in localStorage
+      localStorage.setItem("token", token)
+      localStorage.setItem("user", JSON.stringify(user))
+      localStorage.setItem("permissions", JSON.stringify(userPermissions))
+
+      toast.success("Inicio de sesión exitoso!", {
+        position: "top-right",
         autoClose: 3000,
-      });
+      })
 
       setTimeout(() => {
-        navigate('/dashboard');
-      }, 3000);
+        navigate("/dashboard")
+      }, 3000)
     } catch (error) {
-      console.error('Error completo:', error);
+      console.error("Error completo:", error)
 
-      let errorMessage = 'Error en el inicio de sesión. Verifica tus credenciales.';
+      let errorMessage = "Error en el inicio de sesión. Verifica tus credenciales."
 
       if (error.response) {
-        console.error('Datos del error:', error.response.data);
-        console.error('Estado del error:', error.response.status);
-        errorMessage = error.response.data.message || errorMessage;
+        console.error("Datos del error:", error.response.data)
+        console.error("Estado del error:", error.response.status)
+        errorMessage = error.response.data.message || errorMessage
       } else if (error.request) {
-        console.error('Error de red:', error.request);
-        errorMessage = 'Error de conexión. Intenta de nuevo más tarde.';
+        console.error("Error de red:", error.request)
+        errorMessage = "Error de conexión. Intenta de nuevo más tarde."
       } else {
-        console.error('Error:', error.message);
-        errorMessage = 'Error inesperado. Intenta de nuevo.';
+        console.error("Error:", error.message)
+        errorMessage = "Error inesperado. Intenta de nuevo."
       }
 
       toast.error(errorMessage, {
-        position: 'top-right',
+        position: "top-right",
         autoClose: 3000,
-      });
+      })
     }
-  };
+  }
 
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">

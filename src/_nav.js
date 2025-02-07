@@ -1,5 +1,4 @@
-import React from 'react'
-import CIcon from '@coreui/icons-react'
+import CIcon from "@coreui/icons-react"
 import {
   cilBell,
   cilCalculator,
@@ -9,95 +8,106 @@ import {
   cilSettings,
   cilShare,
   cilSpeedometer,
-  cilStar,
   cilUser,
   cilUserFollow,
   cilWc,
-} from '@coreui/icons'
-import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
-import { checkPermission } from './authUtils'
+} from "@coreui/icons"
+import { CNavGroup, CNavItem, CNavTitle } from "@coreui/react"
+import { checkPermission } from "./authUtils"
 
 const _nav = [
   {
     component: CNavItem,
-    name: 'Dashboard',
-    to: '/dashboard',
+    name: "Dashboard",
+    to: "/dashboard",
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+    permission: "dashboard", // Asumiendo que este es el nombre del permiso en tu base de datos
   },
   {
     component: CNavTitle,
-    name: 'MÓDULOS',
+    name: "MÓDULOS",
   },
-  checkPermission('manage_roles') && {
+  {
     component: CNavItem,
-    name: 'Roles',
-    to: '/roles',
+    name: "Roles",
+    to: "/roles",
     icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
+    permission: "manage_roles",
   },
-  checkPermission('manage_users') && {
+  {
     component: CNavItem,
-    name: 'Usuarios',
-    to: '/users',
+    name: "Usuarios",
+    to: "/users",
     icon: <CIcon icon={cilWc} customClassName="nav-icon" />,
+    permission: "manage_users",
   },
-  checkPermission('manage_managers') && {
+  {
     component: CNavItem,
-    name: 'Encargados',
-    to: '/managers',
+    name: "Encargados",
+    to: "/managers",
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+    permission: "manage_managers",
   },
-  checkPermission('manage_applications') && {
+  {
     component: CNavItem,
-    name: 'Solicitudes',
-    to: '/application',
+    name: "Solicitudes",
+    to: "/application",
     icon: <CIcon icon={cilUserFollow} customClassName="nav-icon" />,
+    permission: "manage_applications",
   },
-  checkPermission('manage_assignments') && {
+  {
     component: CNavItem,
-    name: 'Asignamientos',
-    to: '/assignments',
+    name: "Asignamientos",
+    to: "/assignments",
     icon: <CIcon icon={cilShare} customClassName="nav-icon" />,
+    permission: "manage_assignments",
   },
-  checkPermission('manage_tracking') && {
+  {
     component: CNavItem,
-    name: 'Seguimiento',
-    to: '/tracking',
+    name: "Seguimiento",
+    to: "/tracking",
     icon: <CIcon icon={cilPlaylistAdd} customClassName="nav-icon" />,
+    permission: "manage_tracking",
   },
-  checkPermission('manage_reservations') && {
+  {
     component: CNavItem,
-    name: 'Reservas',
-    to: '/reservations',
+    name: "Reservas",
+    to: "/reservations",
     icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
+    permission: "manage_reservations",
   },
-  checkPermission('view_charts') && {
+  {
     component: CNavItem,
-    name: 'Charts',
-    to: '/charts',
+    name: "Charts",
+    to: "/charts",
     icon: <CIcon icon={cilChartPie} customClassName="nav-icon" />,
+    permission: "view_charts",
   },
-  checkPermission('view_notifications') && {
+  {
     component: CNavGroup,
-    name: 'Notifications',
+    name: "Notifications",
     icon: <CIcon icon={cilBell} customClassName="nav-icon" />,
+    permission: "view_notifications",
     items: [
       {
         component: CNavItem,
-        name: 'Toasts',
-        to: '/notifications/toasts',
+        name: "Toasts",
+        to: "/notifications/toasts",
       },
     ],
   },
-  checkPermission('view_widgets') && {
+  {
     component: CNavItem,
-    name: 'Widgets',
-    to: '/widgets',
+    name: "Widgets",
+    to: "/widgets",
     icon: <CIcon icon={cilCalculator} customClassName="nav-icon" />,
+    permission: "view_widgets",
     badge: {
-      color: 'info',
-      text: 'NEW',
+      color: "info",
+      text: "NEW",
     },
-  }
-].filter(Boolean)
+  },
+]
 
-export default _nav
+// Filtra los elementos de navegación basados en los permisos
+export default _nav.filter((item) => !item.permission || checkPermission(item.permission))

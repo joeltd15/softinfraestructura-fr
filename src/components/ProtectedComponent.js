@@ -1,13 +1,12 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { checkPermission } from '../authUtils';
+import { Navigate } from "react-router-dom"
+import { checkPermission } from "../authUtils"
 
 const ProtectedComponent = ({ children, permission }) => {
   if (!checkPermission(permission)) {
-    return <Navigate to="/404" replace />;
+    return <Navigate to="/404" replace />
   }
 
-  return children;
-};
+  return children
+}
 
-export default ProtectedComponent;
+export default ProtectedComponent
