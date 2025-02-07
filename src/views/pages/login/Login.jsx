@@ -34,8 +34,21 @@ const Login = () => {
         password,
       });
 
-      const { token } = response.data;
+      const { user, token } = response.data;
+
+      if (!token || !user) {
+        throw new Error('La respuesta del servidor no contiene token o información de usuario');
+      }
+
       localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+
+      // Obtener los permisos del usuario
+      const permissionsResponse = await axios.get(`http://localhost:2025/api/users/${user.id}/permissions`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const permissions = permissionsResponse.data;
+      localStorage.setItem('permissions', JSON.stringify(permissions));
 
       toast.success('Inicio de sesión exitoso!', {
         position: 'top-right',
@@ -44,9 +57,25 @@ const Login = () => {
 
       setTimeout(() => {
         navigate('/dashboard');
-      }, 3000); // Redirige después de 3 segundos
+      }, 3000);
     } catch (error) {
-      toast.error('Error en el inicio de sesión. Verifica tus credenciales.', {
+      console.error('Error completo:', error);
+
+      let errorMessage = 'Error en el inicio de sesión. Verifica tus credenciales.';
+
+      if (error.response) {
+        console.error('Datos del error:', error.response.data);
+        console.error('Estado del error:', error.response.status);
+        errorMessage = error.response.data.message || errorMessage;
+      } else if (error.request) {
+        console.error('Error de red:', error.request);
+        errorMessage = 'Error de conexión. Intenta de nuevo más tarde.';
+      } else {
+        console.error('Error:', error.message);
+        errorMessage = 'Error inesperado. Intenta de nuevo.';
+      }
+
+      toast.error(errorMessage, {
         position: 'top-right',
         autoClose: 3000,
       });
