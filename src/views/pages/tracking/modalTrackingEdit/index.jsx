@@ -82,10 +82,23 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
                 />
               </Form.Group>
             </Col>
+            <Col sm={6}>
+              <Form.Group>
+                <Form.Label className="required">Asignación</Form.Label>
+                <Form.Select name="assignmentId" value={editedTracking.assignmentId} onChange={handleChange}>
+                  <option value="">Seleccione una asignación</option>
+                  {assignments.map((assignment) => (
+                    <option key={assignment.id} value={assignment.id}>
+                      {`${assignment.id}`}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+            </Col>
           </Row>
 
           <Row className="mb-3">
-            <Col sm={6}>
+            <Col sm={12}>
               <Form.Group>
                 <Form.Label className="required">Observaciones</Form.Label>
                 <Form.Control
@@ -97,7 +110,7 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
                 />
               </Form.Group>
             </Col>
-            <Col sm={6}>
+            <Col sm={12}>
               <Form.Group>
                 <Form.Label className="required">Acciones Tomadas</Form.Label>
                 <Form.Control
@@ -126,22 +139,6 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
                   <option value="completado">Completado</option>
                   <option value="cancelado">Cancelado</option>
                   <option value="en proceso">En proceso</option>
-                </Form.Select>
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <Row className="mb-3">
-            <Col sm={12}>
-              <Form.Group>
-                <Form.Label className="required">Asignación</Form.Label>
-                <Form.Select name="assignmentId" value={editedTracking.assignmentId} onChange={handleChange}>
-                  <option value="">Seleccione una asignación</option>
-                  {assignments.map((assignment) => (
-                    <option key={assignment.id} value={assignment.id}>
-                      {`${assignment.id}`}
-                    </option>
-                  ))}
                 </Form.Select>
               </Form.Group>
             </Col>

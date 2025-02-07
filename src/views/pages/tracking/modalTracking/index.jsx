@@ -52,7 +52,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
     }
     formData.append("status", status);
     formData.append("assignmentId", assignmentId);
-    formData.append("dateService", today); // Se envía la fecha actual
+    formData.append("dateService", today);
   
     const registerRequest = axios.post("http://localhost:2025/api/tracking", formData, {
       headers: { "Content-Type": "multipart/form-data" },
@@ -73,7 +73,6 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
       console.error("Error al registrar seguimiento:", error);
     }
   };
-  
 
   return (
     <Modal show={show} onHide={handleClose} backdrop="static">
@@ -82,6 +81,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
       </Modal.Header>
       <Modal.Body>
         <Form>
+          {/* Primera fila: Materiales de Construcción y Asignación */}
           <Row className="mb-3">
             <Col sm={6}>
               <Form.Group>
@@ -90,44 +90,6 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
                   type="text"
                   value={buildingMaterials}
                   onChange={(e) => setBuildingMaterials(e.target.value)}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <Row className="mb-3">
-            <Col sm={6}>
-              <Form.Group>
-                <Form.Label className="required">Observaciones</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  value={observations}
-                  onChange={(e) => setObservations(e.target.value)}
-                />
-              </Form.Group>
-            </Col>
-            <Col sm={6}>
-              <Form.Group>
-                <Form.Label className="required">Acciones Tomadas</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  value={actionsTaken}
-                  onChange={(e) => setActionsTaken(e.target.value)}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <Row className="mb-3">
-            <Col sm={6}>
-              <Form.Group>
-                <Form.Label>Evidencia Fotográfica</Form.Label>
-                <Form.Control
-                  type="file"
-                  onChange={handleFileChange}
-                  accept="image/*"
                 />
               </Form.Group>
             </Col>
@@ -145,6 +107,49 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
                     </option>
                   ))}
                 </Form.Select>
+              </Form.Group>
+            </Col>
+          </Row>
+
+          {/* Segunda fila: Observaciones y Acciones Tomadas (Ocupan toda la fila) */}
+          <Row className="mb-3">
+            <Col sm={12}>
+              <Form.Group>
+                <Form.Label className="required">Observaciones</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  value={observations}
+                  onChange={(e) => setObservations(e.target.value)}
+                />
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Row className="mb-3">
+            <Col sm={12}>
+              <Form.Group>
+                <Form.Label className="required">Acciones Tomadas</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  value={actionsTaken}
+                  onChange={(e) => setActionsTaken(e.target.value)}
+                />
+              </Form.Group>
+            </Col>
+          </Row>
+
+          {/* Última fila: Evidencia Fotográfica */}
+          <Row className="mb-3">
+            <Col sm={12}>
+              <Form.Group>
+                <Form.Label>Evidencia Fotográfica</Form.Label>
+                <Form.Control
+                  type="file"
+                  onChange={handleFileChange}
+                  accept="image/*"
+                />
               </Form.Group>
             </Col>
           </Row>
