@@ -44,8 +44,8 @@ function ShowModal({ show, handleClose, application = null }) {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
+          <Button className="buttons-form Button-next" onClick={handleClose}>
+            Salir
           </Button>
         </Modal.Footer>
       </Modal>

@@ -15,7 +15,7 @@
     text-decoration: none;
 }
 
-.simplebar-content{
+.simplebar-content {
     border-top: 1px solid #007832c7 !important;
 }
 
@@ -40,7 +40,7 @@
 .user-login .info-user {
     font-size: 13px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.473);
+    color: #01642a ;
     margin: 5px;
     font-family: "Open Sans", sans-serif !important;
 }

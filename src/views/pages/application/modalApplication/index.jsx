@@ -109,7 +109,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
                             onChange={(e) => setNews(e.target.value)}
                             placeholder="Describa los detalles del reporte" />
                     </Form.Group>
-                    <Form.Group className="mb-3" as={Row} controlId="formLocation">
+                    <Form.Group className="mb-3 p-2" as={Row} controlId="formLocation">
                         <Form.Label className='required'>Tipo de solicitud</Form.Label>
                         <Form.Select
                             value={TypeReport}

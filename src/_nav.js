@@ -17,6 +17,10 @@ import { checkPermission } from "./authUtils"
 
 const _nav = [
   {
+    component: CNavTitle,
+    name: "Indicadores de desempeño",
+  },
+  {
     component: CNavItem,
     name: "Dashboard",
     to: "/dashboard",
@@ -25,7 +29,7 @@ const _nav = [
   },
   {
     component: CNavTitle,
-    name: "MÓDULOS",
+    name: "Configuración",
   },
   {
     component: CNavItem,
@@ -40,6 +44,10 @@ const _nav = [
     to: "/users",
     icon: <CIcon icon={cilWc} customClassName="nav-icon" />,
     permission: "manage_users",
+  },
+  {
+    component: CNavTitle,
+    name: "Mantenimiento",
   },
   {
     component: CNavItem,
@@ -68,6 +76,10 @@ const _nav = [
     to: "/Seguimiento",
     icon: <CIcon icon={cilPlaylistAdd} customClassName="nav-icon" />,
     permission: "manage_tracking",
+  },
+  {
+    component: CNavTitle,
+    name: "Reservas",
   },
   {
     component: CNavItem,

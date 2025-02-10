@@ -153,7 +153,7 @@ const Application = () => {
                         <table class="table">
                             <thead className="thead">
                                 <tr>
-                                    <th>Codigo</th>
+                                    <th>Código</th>
                                     <th>Fecha del reporte</th>
                                     <th>Centro/dependencia</th>
                                     <th>Lugar</th>
@@ -182,7 +182,7 @@ const Application = () => {
                                                 <button className="Table-button Show-button" onClick={() => handleShow(application)}><FaEye /></button>
                                                 <button className="Table-button Update-button" onClick={() => handleEdit(application)}><FaPencilAlt /></button>
                                                 <button className="Table-button Delete-button" onClick={() => handleOpenDeleteDialog(application.id)}><MdDelete /></button>
-                                                {application.status != 'Asignada' && (
+                                                {application.status != 'Asignada' || 'Completado' && (
                                                     <>
                                                         <Tooltip title="Asignar encargado">
                                                             <button className="Table-button Asign-button" onClick={() => { console.log("Asignando ID:", application.id); setShowAssign(true); setSelectId(application.id) }}><FaUserPlus /></button>
