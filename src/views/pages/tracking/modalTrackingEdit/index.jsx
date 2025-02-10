@@ -85,7 +85,7 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
             <Col sm={6}>
               <Form.Group>
                 <Form.Label className="required">Asignación</Form.Label>
-                <Form.Select name="assignmentId" value={editedTracking.assignmentId} onChange={handleChange}>
+                <Form.Select name="assignmentId" value={editedTracking.assignmentId} disabled>
                   <option value="">Seleccione una asignación</option>
                   {assignments.map((assignment) => (
                     <option key={assignment.id} value={assignment.id}>
@@ -93,6 +93,7 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
                     </option>
                   ))}
                 </Form.Select>
+
               </Form.Group>
             </Col>
           </Row>

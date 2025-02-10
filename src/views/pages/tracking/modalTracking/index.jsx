@@ -12,7 +12,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
   const [buildingMaterials, setBuildingMaterials] = useState("");
   const [actionsTaken, setActionsTaken] = useState("");
   const [photographicEvidence, setPhotographicEvidence] = useState(null);
-  const [status, setStatus] = useState("En proceso");
+  const [status, setStatus] = useState("Completado");
   const [assignmentId, setAssignmentId] = useState("");
   const [assignments, setAssignments] = useState([]);
 
