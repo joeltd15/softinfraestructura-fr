@@ -92,10 +92,11 @@ const AppHeaderDropdown = () => {
           </CBadge>
         </CDropdownItem>
         <CDropdownDivider />
-        <CDropdownItem href="#">
-          <CIcon icon={cilLockLocked} className="me-2" onClick={handleLogout()}/>
-          Cerrar sesion
+        <CDropdownItem onClick={handleLogout}>
+          <CIcon icon={cilLockLocked} className="me-2" />
+          Cerrar sesión
         </CDropdownItem>
+
       </CDropdownMenu>
     </CDropdown>
   )
