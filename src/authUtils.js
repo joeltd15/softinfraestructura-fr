@@ -1,6 +1,8 @@
 export const checkPermission = (requiredPermission) => {
   try {
     const permissions = JSON.parse(localStorage.getItem("permissions") || "[]")
+    console.log("Checking permission:", requiredPermission)
+    console.log("User permissions:", permissions)
     return permissions.includes(requiredPermission)
   } catch (error) {
     console.error("Error checking permission:", error)

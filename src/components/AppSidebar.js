@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 import {
@@ -18,11 +18,36 @@ import { FaScroll } from "react-icons/fa6";
 
 // sidebar nav config
 import navigation from '../_nav'
+import axios from 'axios'
 
 const AppSidebar = () => {
+  const urlRole = 'http://localhost:2025/api/role';
   const dispatch = useDispatch()
   const unfoldable = useSelector((state) => state.sidebarUnfoldable)
   const sidebarShow = useSelector((state) => state.sidebarShow)
+  const [role, setRole] = useState([]);
+
+  useEffect(() => {
+    getRoles();
+  }, [])
+
+  const getRoles = async () => {
+    const response = await axios.get(urlRole);
+    setRole(response.data)
+  }
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user || !user.id) {
+    toast.error("No se pudo obtener la información del usuario.");
+    return;
+  };
+
+  const userRole = (RoleId) => {
+    if (!role.length) return "Cargando...";
+    const foundRole = role.find(r => r.id === RoleId);
+    return foundRole ? foundRole.name : "Desconocido";
+  };
+
 
   return (
     <CSidebar
@@ -38,10 +63,10 @@ const AppSidebar = () => {
       <CSidebarHeader className="border-bottom">
         <CSidebarBrand to="/">
           <div className='user-login'>
-            <p><FaUserCircle />miguel Perez</p>
+            <p><FaUserCircle />{user.name}</p>
             <div className='user-content'>
-              <span className='info-user'>123miguelfps@gmail.com</span>
-              <span className='info-user'>Administrador</span>
+              <span className='info-user'>{user.email}</span>
+              <span className='info-user'>{userRole(user.roleId)}</span>
             </div>
           </div>
         </CSidebarBrand>

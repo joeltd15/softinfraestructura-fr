@@ -41,21 +41,36 @@ const Login = () => {
         throw new Error("La respuesta del servidor no contiene token o información de usuario")
       }
 
+      console.log("User data:", user);
+
       // 2. Get role permissions
       const permissionsResponse = await axios.get(`http://localhost:2025/api/permissionRole?roleId=${user.roleId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
 
-      // 3. Get permission names
-      const permissionIds = permissionsResponse.data.map((pr) => pr.permissionId)
+      console.log("Permissions response:", permissionsResponse.data);
+
+      // 3. Filter permissions for the user's role
+      const userRolePermissions = permissionsResponse.data.filter(
+        (permission) => permission.roleId === user.roleId
+      )
+
+      console.log("Filtered user role permissions:", userRolePermissions);
+
+      // 4. Get permission details
+      const permissionIds = userRolePermissions.map((pr) => pr.permissionId)
       const permissionsDetailsResponse = await axios.get(`http://localhost:2025/api/permission`, {
         headers: { Authorization: `Bearer ${token}` },
       })
 
-      // 4. Filter and store only the permissions that belong to the user's role
+      console.log("Permissions details:", permissionsDetailsResponse.data);
+
+      // 5. Filter and store only the permissions that belong to the user's role
       const userPermissions = permissionsDetailsResponse.data
         .filter((p) => permissionIds.includes(p.id))
         .map((p) => p.name)
+
+      console.log("Filtered user permissions:", userPermissions);
 
       // Store everything in localStorage
       localStorage.setItem("token", token)
@@ -93,6 +108,7 @@ const Login = () => {
       })
     }
   }
+
 
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">

@@ -40,14 +40,14 @@ const Application = () => {
                 axios.get(url),
                 axios.get("http://localhost:2025/api/assignment")
             ]);
-    
+
             const applicationsData = applicationsResponse.data;
             const assignmentsData = assignmentsResponse.data;
             const user = JSON.parse(localStorage.getItem("user")); // Obtiene el usuario logueado
             if (!user) return;
-    
+
             let filteredApplications = [];
-    
+
             if (user.roleId === 1) {
                 // Si es admin, ve todas las aplicaciones
                 filteredApplications = applicationsData;
@@ -56,19 +56,19 @@ const Application = () => {
                 const assignedApps = assignmentsData
                     .filter(assignment => assignment.responsibleId === user.id)
                     .map(assignment => assignment.applicationId);
-    
+
                 filteredApplications = applicationsData.filter(app => assignedApps.includes(app.id));
             } else if (user.roleId === 3) {
                 // Si es usuario normal, solo ve las aplicaciones que él creó
                 filteredApplications = applicationsData.filter(app => app.userId === user.id);
             }
-    
+
             setApplication(filteredApplications);
         } catch (error) {
             console.error("Error obteniendo aplicaciones:", error);
         }
     };
-    
+
 
     const getUsers = async () => {
         const response = await axios.get(urlUsers);
@@ -182,12 +182,16 @@ const Application = () => {
                                                 <button className="Table-button Show-button" onClick={() => handleShow(application)}><FaEye /></button>
                                                 <button className="Table-button Update-button" onClick={() => handleEdit(application)}><FaPencilAlt /></button>
                                                 <button className="Table-button Delete-button" onClick={() => handleOpenDeleteDialog(application.id)}><MdDelete /></button>
-                                                {application.status != 'Asignada' || 'Completado' && (
-                                                    <>
-                                                        <Tooltip title="Asignar encargado">
-                                                            <button className="Table-button Asign-button" onClick={() => { console.log("Asignando ID:", application.id); setShowAssign(true); setSelectId(application.id) }}><FaUserPlus /></button>
-                                                        </Tooltip>
-                                                    </>
+                                                {(application.status !== 'Asignada' && application.status !== 'Completado') && (
+                                                    <Tooltip title="Asignar encargado">
+                                                        <button className="Table-button Asign-button" onClick={() => {
+                                                            console.log("Asignando ID:", application.id);
+                                                            setShowAssign(true);
+                                                            setSelectId(application.id);
+                                                        }}>
+                                                            <FaUserPlus />
+                                                        </button>
+                                                    </Tooltip>
                                                 )}
                                             </td>
                                         </tr>
@@ -201,7 +205,7 @@ const Application = () => {
             {/* Modal */}
             <ModalApplication show={show} handleClose={() => setShow(false)} onSolicitudCreated={handleSolicitudCreated} />
             {/* Modal Asignamiento*/}
-            <ModalAssignment show={showAssign} handleClose={() => setShowAssign(false)} onAssignmentCreated={handleSolicitudCreated} assignmentApplication={selectId}/>
+            <ModalAssignment show={showAssign} handleClose={() => setShowAssign(false)} onAssignmentCreated={handleSolicitudCreated} assignmentApplication={selectId} />
             <ModalEditApplication show={showModalEdit} handleClose={() => setShowModalEdit(false)} application={selectedApplication} handleUpdate={handleUpdate} />
             <ModalShowApplication show={showModal} handleClose={() => setShowModal(false)} application={selectedApplication} />
             {/* Diálogo de Confirmación de Eliminación */}

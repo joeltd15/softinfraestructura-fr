@@ -19,6 +19,7 @@ const _nav = [
   {
     component: CNavTitle,
     name: "Indicadores de desempeño",
+    permission: "view_dashboard",
   },
   {
     component: CNavItem,
@@ -30,6 +31,7 @@ const _nav = [
   {
     component: CNavTitle,
     name: "Configuración",
+    permission: "manage_users",
   },
   {
     component: CNavItem,
@@ -48,6 +50,7 @@ const _nav = [
   {
     component: CNavTitle,
     name: "Mantenimiento",
+    permission: "manage_applications",
   },
   {
     component: CNavItem,
@@ -80,6 +83,7 @@ const _nav = [
   {
     component: CNavTitle,
     name: "Reservas",
+    permission: "manage_reservations",
   },
   {
     component: CNavItem,
@@ -121,5 +125,30 @@ const _nav = [
   },
 ]
 
-// Filtra los elementos de navegación basados en los permisos
-export default _nav.filter((item) => !item.permission || checkPermission(item.permission))
+// Función para filtrar los elementos de navegación basados en los permisos
+const filterNavItems = (items) => {
+  return items
+    .filter((item) => {
+      if (item.permission) {
+        return checkPermission(item.permission)
+      }
+      if (item.items) {
+        const filteredItems = filterNavItems(item.items)
+        return filteredItems.length > 0
+      }
+      return true
+    })
+    .map((item) => {
+      if (item.items) {
+        return {
+          ...item,
+          items: filterNavItems(item.items),
+        }
+      }
+      return item
+    })
+}
+
+// Exporta los elementos de navegación filtrados
+export default filterNavItems(_nav)
+
