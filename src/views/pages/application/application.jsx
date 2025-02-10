@@ -35,9 +35,40 @@ const Application = () => {
     }, [])
 
     const getApplications = async () => {
-        const response = await axios.get(url)
-        setApplication(response.data)
-    }
+        try {
+            const [applicationsResponse, assignmentsResponse] = await Promise.all([
+                axios.get(url),
+                axios.get("http://localhost:2025/api/assignment")
+            ]);
+    
+            const applicationsData = applicationsResponse.data;
+            const assignmentsData = assignmentsResponse.data;
+            const user = JSON.parse(localStorage.getItem("user")); // Obtiene el usuario logueado
+            if (!user) return;
+    
+            let filteredApplications = [];
+    
+            if (user.roleId === 1) {
+                // Si es admin, ve todas las aplicaciones
+                filteredApplications = applicationsData;
+            } else if (user.roleId === 2) {
+                // Si es responsable, filtra por asignaciones
+                const assignedApps = assignmentsData
+                    .filter(assignment => assignment.responsibleId === user.id)
+                    .map(assignment => assignment.applicationId);
+    
+                filteredApplications = applicationsData.filter(app => assignedApps.includes(app.id));
+            } else if (user.roleId === 3) {
+                // Si es usuario normal, solo ve las aplicaciones que él creó
+                filteredApplications = applicationsData.filter(app => app.userId === user.id);
+            }
+    
+            setApplication(filteredApplications);
+        } catch (error) {
+            console.error("Error obteniendo aplicaciones:", error);
+        }
+    };
+    
 
     const getUsers = async () => {
         const response = await axios.get(urlUsers);
@@ -122,7 +153,7 @@ const Application = () => {
                         <table class="table">
                             <thead className="thead">
                                 <tr>
-                                    <th>#</th>
+                                    <th>Codigo</th>
                                     <th>Fecha del reporte</th>
                                     <th>Centro/dependencia</th>
                                     <th>Lugar</th>
@@ -138,7 +169,7 @@ const Application = () => {
                                 {
                                     applications.map((application, i) => (
                                         <tr key={application.id}>
-                                            <td>{i + 1}</td>
+                                            <td>{application.id}</td>
                                             <td>{new Date(application.reportDate).toISOString().split('T')[0]}</td>
                                             <td>{application.dependence}</td>
                                             <td>{application.location}</td>

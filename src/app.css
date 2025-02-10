@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
 .sidebar-dark {
     --cui-body-color: rgba(255, 255, 255, 0.87);
     --cui-body-bg: #39A900 !important;
@@ -7,6 +9,40 @@
     --cui-tertiary-color: rgba(255, 255, 255, 0.38);
     --cui-tertiary-bg: #39A900 !important;
     --cui-border-color: #39A900 !important;
+}
+
+.sidebar-brand {
+    text-decoration: none;
+}
+
+.simplebar-content{
+    border-top: 1px solid #007832c7 !important;
+}
+
+.user-login p {
+    font-size: 17px;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding-bottom: 0px;
+    padding-top: 10px;
+    font-family: "Open Sans", sans-serif !important;
+}
+
+.user-login p svg {
+    margin-right: 10px;
+}
+
+.user-content {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+.user-login .info-user {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.473);
+    margin: 5px;
+    font-family: "Open Sans", sans-serif !important;
 }
 
 .breadcrumb a {
@@ -132,7 +168,7 @@
     color: #39A900;
 }
 
-.buttons-form{
+.buttons-form {
     border-radius: 5px !important;
     font-weight: 600 !important;
     font-size: 14px !important;
@@ -147,22 +183,22 @@
     background: #007832 !important;
 }
 
-.Button-next{
+.Button-next {
     background: #dd0505 !important;
 }
 
-.Button-blue{
+.Button-blue {
     background: #055bdd !important;
 }
 
-.card-body{
+.card-body {
     width: 400px;
 }
 
-.card{
+.card {
     width: 400px !important;
 }
 
-.pattern{
+.pattern {
     background-image: url(assets/images/fondoRegister.png);
 }

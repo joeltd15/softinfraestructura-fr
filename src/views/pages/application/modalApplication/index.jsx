@@ -34,6 +34,13 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
 
     const handleSubmit = async () => {
         const today = new Date().toISOString().split("T")[0];
+
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user || !user.id) {
+            toast.error("No se pudo obtener la información del usuario.");
+            return;
+        };
+
         const formData = new FormData();
         formData.append("reportDate", today);
         formData.append("dependence", Dependence);
@@ -44,7 +51,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
         }
         formData.append("reportType", TypeReport);
         formData.append("status", status);
-        formData.append("userId", IdUser);
+        formData.append("userId", user.id);
 
         const registerRequest = axios.post(url, formData, {
             headers: { "Content-Type": "multipart/form-data" },
@@ -103,31 +110,18 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
                             placeholder="Describa los detalles del reporte" />
                     </Form.Group>
                     <Form.Group className="mb-3" as={Row} controlId="formLocation">
-                        <Col sm="6">
-                            <Form.Label className='required'>Usuario</Form.Label>
-                            <Form.Select value={IdUser}
-                                onChange={(e) => setIdUser(e.target.value)}>
-                                <option hidden="">...</option>
-                                {
-                                    Users.map((user) => (
-                                        <option key={user.id} value={user.id}>{user.id}</option>
-                                    ))
-                                }
-                            </Form.Select>
-                        </Col>
-                        <Col sm="6">
-                            <Form.Label className='required'>Tipo de solicitud</Form.Label>
-                            <Form.Select
-                                value={TypeReport}
-                                onChange={(e) => setTypeReport(e.target.value)}>
-                                <option>Seleccione un tipo</option>
-                                <option value="Electrico">Electricidad</option>
-                                <option value="Mobiliario">Mobiliario</option>
-                                <option value="Plomeria">Plomeria</option>
-                                <option value="Redes">Redes</option>
-                                <option value="Acabados">Acabados</option>
-                            </Form.Select>
-                        </Col>
+                        <Form.Label className='required'>Tipo de solicitud</Form.Label>
+                        <Form.Select
+                            value={TypeReport}
+                            onChange={(e) => setTypeReport(e.target.value)}>
+                            <option>Seleccione un tipo</option>
+                            <option value="Electrico">Electricidad</option>
+                            <option value="Mobiliario">Mobiliario</option>
+                            <option value="Plomeria">Plomeria</option>
+                            <option value="Redes">Redes</option>
+                            <option value="Acabados">Acabados</option>
+                        </Form.Select>
+
                     </Form.Group>
                     <Form.Group className="mb-3 p-2" as={Row} controlId="forType">
                         <Form.Label>Evidencia</Form.Label>

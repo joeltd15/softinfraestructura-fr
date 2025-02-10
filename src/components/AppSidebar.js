@@ -13,7 +13,8 @@ import CIcon from '@coreui/icons-react'
 
 import { AppSidebarNav } from './AppSidebarNav'
 
-import { logo } from 'src/assets/brand/logo'
+import { FaUserCircle } from "react-icons/fa";
+import { FaScroll } from "react-icons/fa6";
 
 // sidebar nav config
 import navigation from '../_nav'
@@ -36,7 +37,13 @@ const AppSidebar = () => {
     >
       <CSidebarHeader className="border-bottom">
         <CSidebarBrand to="/">
-          <CIcon customClassName="sidebar-brand-full" icon={logo} height={32} />
+          <div className='user-login'>
+            <p><FaUserCircle />miguel Perez</p>
+            <div className='user-content'>
+              <span className='info-user'>123miguelfps@gmail.com</span>
+              <span className='info-user'>Administrador</span>
+            </div>
+          </div>
         </CSidebarBrand>
         <CCloseButton
           className="d-lg-none"

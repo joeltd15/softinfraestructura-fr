@@ -20,7 +20,7 @@ const Assignment = () => {
 
   useEffect(() => {
     getAssignment();
-    getUsers(); // Llamar la función para obtener los usuarios
+    getUsers();
   }, []);
 
   const getAssignment = async () => {
