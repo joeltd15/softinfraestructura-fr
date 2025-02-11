@@ -65,7 +65,6 @@ const AppSidebar = () => {
           <div className='user-login'>
             <p><FaUserCircle />{user.name}</p>
             <div className='user-content'>
-              <span className='info-user'>{user.email}</span>
               <span className='info-user'>{userRole(user.roleId)}</span>
             </div>
           </div>

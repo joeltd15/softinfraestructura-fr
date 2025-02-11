@@ -2,13 +2,13 @@
 
 .sidebar-dark {
     --cui-body-color: rgba(255, 255, 255, 0.87);
-    --cui-body-bg: #39A900 !important;
+    --cui-body-bg: #00304D !important;
     --cui-emphasis-color: #fff;
     --cui-secondary-color: rgba(255, 255, 255, 0.6);
-    --cui-secondary-bg: #39A900;
+    --cui-secondary-bg: #00304D;
     --cui-tertiary-color: rgba(255, 255, 255, 0.38);
-    --cui-tertiary-bg: #39A900 !important;
-    --cui-border-color: #39A900 !important;
+    --cui-tertiary-bg: #012338 !important;
+    --cui-border-color: #012338 !important;
 }
 
 .sidebar-brand {
@@ -16,7 +16,7 @@
 }
 
 .simplebar-content {
-    border-top: 1px solid #007832c7 !important;
+    border-top: 1px solid #012338 !important;
 }
 
 .user-login p {
@@ -40,7 +40,7 @@
 .user-login .info-user {
     font-size: 13px;
     font-weight: 500;
-    color: #01642a ;
+    color: #ccc ;
     margin: 5px;
     font-family: "Open Sans", sans-serif !important;
 }
@@ -56,7 +56,7 @@
 }
 
 .breadcrumb a {
-    color: #39A900 !important;
+    color: #00304D !important;
 }
 
 /* Tables estyles*/
@@ -140,7 +140,7 @@
 }
 
 .Register-button {
-    background: #007832;
+    background: #39A900;
     border-radius: 5px;
     font-weight: 600;
     font-size: 17px;
@@ -159,7 +159,7 @@
 
 .table .thead tr th {
     text-align: center;
-    background: #007832;
+    background: #39A900;
     color: white;
 }
 
@@ -211,4 +211,8 @@
 
 .pattern {
     background-image: url(assets/images/fondoRegister.png);
+}
+
+.text-form{
+    color: #9b9b9bdc;
 }
