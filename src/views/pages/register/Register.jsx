@@ -34,13 +34,12 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validación de contraseña en frontend
+  
     if (formData.password !== formData.confirmPassword) {
       toast.error('Las contraseñas no coinciden');
       return;
     }
-
+  
     const dataToSend = {
       name: formData.name.trim(),
       email: formData.email.trim(),
@@ -48,16 +47,24 @@ const Register = () => {
       phone: formData.phone.trim(),
       roleId: 3
     };
-
+  
     try {
-      const response = await axios.post('http://localhost:2025/api/auth/register', dataToSend);
+      await axios.post('http://localhost:2025/api/auth/register', dataToSend);
       toast.success('Registro exitoso');
+  
+      // Limpiar formulario
       setFormData({ name: '', email: '', password: '', confirmPassword: '', phone: '' });
+  
+      // Redirigir al login después de un pequeño retraso para mostrar la alerta
+      setTimeout(() => {
+        window.location.href = 'http://localhost:3000/#/login';
+      }, 1500);
     } catch (error) {
-      console.log("Error en la solicitud:", error.response?.data); // Para depuración
+      console.log("Error en la solicitud:", error.response?.data);
       toast.error(error.response?.data?.message || 'Error en el registro');
     }
   };
+  
 
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center pattern">

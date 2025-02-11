@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
   CButton,
@@ -10,25 +12,81 @@ import {
   CFormInput,
   CInputGroup,
   CInputGroupText,
-  CRow,
 } from '@coreui/react';
 
 const SendEmail = () => {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!email) {
+      toast.error('Por favor, ingresa un correo');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // 1️⃣ Consultar la lista de usuarios
+      const usersResponse = await axios.get('http://localhost:2025/api/user');
+      const users = usersResponse.data;
+
+      // 2️⃣ Verificar si el correo existe en la base de datos
+      const userExists = users.some(user => user.email === email);
+
+      if (!userExists) {
+        toast.error('El correo ingresado no está registrado');
+        setLoading(false);
+        return;
+      }
+
+      // 3️⃣ Si existe, enviar la solicitud de recuperación de contraseña
+      const response = await axios.post(
+        'http://localhost:2025/api/auth/forgot-password',
+        { email },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+
+      toast.success(response.data.message || 'Código enviado correctamente');
+
+      // 4️⃣ Redirigir a la página de ingreso del código
+      setTimeout(() => {
+        window.location.href = 'http://localhost:3000/#/forgotPassword';
+      }, 2000); // Espera 2 segundos para mostrar el mensaje antes de redirigir
+    } catch (error) {
+      toast.error(error.response?.data?.error || 'Error al enviar el código');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center pattern">
       <CContainer className="p-4 d-flex align-items-center justify-content-center">
         <CCol md={9} lg={7} xl={6} className="p-4 d-flex align-items-center justify-content-center">
-          <CCard className="mx-4" >
-            <CCardBody >
-              <CForm>
-                <h2 className='pb-3 text-center'>Recuperar contraseña</h2>
-                <span className='text-form'>Te enviaremos el codigo de verificación al correo...</span>
+          <CCard className="mx-4">
+            <CCardBody>
+              <CForm onSubmit={handleSubmit}>
+                <h2 className="pb-3 text-center">Recuperar contraseña</h2>
+                <span className="text-form">Te enviaremos el código de verificación al correo.</span>
                 <CInputGroup className="mb-3">
                   <CInputGroupText>@</CInputGroupText>
-                  <CFormInput type="email" name="email" placeholder="Correo" autoComplete="email"  required />
+                  <CFormInput
+                    type="email"
+                    name="email"
+                    placeholder="Correo"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
                 </CInputGroup>
                 <div className="d-flex align-items-center justify-content-center">
-                  <CButton color="success" className='.buttons-form' type="submit">Enviar</CButton>
+                  <CButton color="success" className=".buttons-form" type="submit" disabled={loading}>
+                    {loading ? 'Verificando...' : 'Enviar'}
+                  </CButton>
                 </div>
               </CForm>
             </CCardBody>

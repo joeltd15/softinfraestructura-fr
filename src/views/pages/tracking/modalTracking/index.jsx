@@ -99,7 +99,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
                 <Form.Select
                   value={assignmentId}
                   onChange={(e) => setAssignmentId(e.target.value)}
-                >
+                  disabled>
                   <option value="">Seleccione una asignación</option>
                   {assignments.map((assign) => (
                     <option key={assign.id} value={assign.id}>
