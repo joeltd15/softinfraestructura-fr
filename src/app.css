@@ -45,6 +45,16 @@
     font-family: "Open Sans", sans-serif !important;
 }
 
+.btn-green{
+    background: #007832 !important;
+    border-color: #007832 !important;
+    color: #f3f3f3 !important;
+}
+
+[data-coreui-theme=dark] .dark\:bg-primary, [data-coreui-theme=dark] .dark\:bg-primary:not([class*="dark:"]), .bg-primary{
+    background: #39A900 !important;
+}
+
 .breadcrumb a {
     color: #39A900 !important;
 }
