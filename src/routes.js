@@ -17,6 +17,8 @@ const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 const Application = React.lazy(() => import('./views/pages/application/application'))
 const Tracking = React.lazy(() => import('./views/pages/tracking/tracking'))
 const Assignment = React.lazy(() => import('./views/pages/asssignment/assignment'))
+const User = React.lazy(() => import('./views/pages/user/user'))
+
 
 
 const routes = [
@@ -32,6 +34,8 @@ const routes = [
   { path: '/application', name: 'Application', element: Application },
   { path: '/Seguimiento', name: 'Tracking', element: Tracking },
   { path: '/Asignamientos', name: 'Assignment', element: Assignment },
+  { path: '/users', name: 'Usuarios', element: User },
+
 ]
 
 export default routes

@@ -118,9 +118,6 @@ const Tracking = () => {
         <div className="row">
           <div className="panel panel-primary filterable">
             <div className="panel-heading mb-3">
-              <button className="Register-button" onClick={() => setShow(true)}>
-                <FaCirclePlus /> Registrar
-              </button>
             </div>
             <table className="table">
               <thead className="thead">
