@@ -8,16 +8,20 @@ import { FaPencilAlt } from "react-icons/fa"
 import { MdAssignment } from "react-icons/md"
 import Tooltip from "@mui/material/Tooltip"
 import ModalTracking from "../tracking/modalTracking/index"
+import ModalShowApplication from "../application/ApplicationModalShow/index";
+import { FaEye } from "react-icons/fa";
 
 const Assignment = () => {
   const [responsibles, setResponsibles] = useState([]);
   const [assignmentData, setAssignmentData] = useState([])
   const [Users, setUsers] = useState([])
-  const [showModal, setShowModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [showTracking, setShowTracking] = useState(false)
   const [selectedAssignmentId, setSelectedAssignmentId] = useState(null)
-  const [selectedAssignment, setSelectedAssignment] = useState(null)
+  const [selectedAssignment, setSelectedAssignment] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedAssignmentShow, setSelectedAssignmentShow] = useState(null);
+  const [showModalShow, setShowModalShow] = useState(false)
 
   useEffect(() => {
     getAssignment()
@@ -59,6 +63,17 @@ const Assignment = () => {
     }
   };
 
+  const handleShow = async (applicationId) => {
+    try {
+      const response = await axios.get(`http://localhost:2025/api/application/${applicationId}`);
+      setSelectedAssignmentShow(response.data);
+      setShowModalShow(true);
+    } catch (error) {
+      console.error("Error al obtener los detalles de la solicitud:", error);
+      toast.error("Error al cargar los detalles de la solicitud");
+    }
+  };
+  
 
   const getUsers = async () => {
     try {
@@ -69,13 +84,6 @@ const Assignment = () => {
       toast.error("Error al cargar los usuarios")
     }
   }
-
-  const responsibleName = (responsibleId) => {
-    if (!Users.length) return "Cargando..."; // Si Users aún no tiene datos, mostrar mensaje temporal
-
-    const responsible = responsibles.find(resp => resp.id === responsibleId);
-    return responsible ? userName(responsible.userId) : "Desconocido";
-  };
 
   const handleOpenTrackingModal = (assignmentId) => {
     setSelectedAssignmentId(assignmentId)
@@ -98,6 +106,8 @@ const Assignment = () => {
       toast.error("Error al actualizar la asignación")
     }
   }
+
+  const user = JSON.parse(localStorage.getItem("user"));
 
   return (
     <>
@@ -128,13 +138,20 @@ const Assignment = () => {
                         <td>{assignment.applicationId}</td>
                         <td>{responsibleUser ? responsibleUser.name : "Desconocido"}</td>
                         <td className="content-buttons">
-                          <button
-                            className="Table-button Update-button"
-                            onClick={() => handleOpenEditModal(assignment)}
-                          >
-                            <FaPencilAlt />
-                          </button>
-                          <Tooltip title="Asignar Seguimiento">
+                          <button className="Table-button Show-button" onClick={() => handleShow(assignment.applicationId)}><FaEye /></button>
+                          {user.roleId == '1' && (
+                            <>
+                              <Tooltip title="Reasignar encargado">
+                                <button
+                                  className="Table-button Update-button"
+                                  onClick={() => handleOpenEditModal(assignment)}
+                                >
+                                  <FaPencilAlt />
+                                </button>
+                              </Tooltip>
+                            </>
+                          )}
+                          <Tooltip title="Registrar detalle de mantenimiento">
                             <button
                               className="Table-button Asign-button"
                               onClick={() => handleOpenTrackingModal(assignment.id)}
@@ -171,6 +188,7 @@ const Assignment = () => {
         handleClose={() => setShowTracking(false)}
         selectedAssignmentId={selectedAssignmentId}
       />
+      <ModalShowApplication show={showModalShow} handleClose={() => setShowModalShow(false)} application={selectedAssignmentShow} />
     </>
   )
 }

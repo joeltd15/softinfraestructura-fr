@@ -156,7 +156,7 @@ const Login = () => {
                       </CCol>
                       <CCol xs={6} className="text-right">
                         <CButton color="link" className="px-0" onClick={() => navigate('/sendEmail')}>
-                          Recuperar Contraseña?
+                          Recuperar Contraseña
                         </CButton>
                       </CCol>
                     </CRow>
@@ -166,7 +166,6 @@ const Login = () => {
               <CCard className="text-white bg-primary py-5" style={{ width: '44%' }}>
                 <CCardBody className="text-center">
                   <div>
-                    <h2>Registrame</h2>
                     <p>
                       Si eres un nuevo usuario, regístrate para acceder y gestionar tus solicitudes de mantenimiento.
                     </p>
