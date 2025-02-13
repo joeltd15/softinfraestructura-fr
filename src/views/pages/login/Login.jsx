@@ -16,6 +16,7 @@ import {
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { cilLockLocked, cilUser } from '@coreui/icons';
+import { Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -23,6 +24,7 @@ import 'react-toastify/dist/ReactToastify.css';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -126,18 +128,25 @@ const Login = () => {
                         required
                       />
                     </CInputGroup>
-                    <CInputGroup className="mb-4">
+                    <CInputGroup className="mb-4 position-relative">
                       <CInputGroupText>
                         <CIcon icon={cilLockLocked} />
                       </CInputGroupText>
                       <CFormInput
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         placeholder="Contraseña"
                         autoComplete="current-password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
                       />
+                      <CButton
+                        type="button"
+                        className="border-0 bg-transparent position-absolute end-0 me-2"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      </CButton>
                     </CInputGroup>
                     <CRow>
                       <CCol xs={6}>

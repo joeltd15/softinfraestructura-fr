@@ -10,8 +10,9 @@ import Tooltip from "@mui/material/Tooltip"
 import ModalTracking from "../tracking/modalTracking/index"
 
 const Assignment = () => {
+  const [responsibles, setResponsibles] = useState([]);
   const [assignmentData, setAssignmentData] = useState([])
-  const [users, setUsers] = useState([])
+  const [Users, setUsers] = useState([])
   const [showModal, setShowModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [showTracking, setShowTracking] = useState(false)
@@ -28,34 +29,36 @@ const Assignment = () => {
       const [assignmentsResponse, responsiblesResponse] = await Promise.all([
         axios.get("http://localhost:2025/api/assignment"),
         axios.get("http://localhost:2025/api/responsible"),
-      ])
+      ]);
 
-      const assignmentsData = assignmentsResponse.data
-      const responsiblesData = responsiblesResponse.data
-      const user = JSON.parse(localStorage.getItem("user"))
-      if (!user) return
+      const assignmentsData = assignmentsResponse.data;
+      const responsiblesData = responsiblesResponse.data;
+      setResponsibles(responsiblesData); // Aquí guardamos los responsables
 
-      let filteredAssignments = []
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (!user) return;
+
+      let filteredAssignments = [];
 
       if (user.roleId === 1) {
-
-        filteredAssignments = assignmentsData
+        filteredAssignments = assignmentsData;
       } else if (user.roleId === 2) {
         const userResponsibilities = responsiblesData
           .filter((responsible) => responsible.userId === user.id)
-          .map((responsible) => responsible.id)
+          .map((responsible) => responsible.id);
 
         filteredAssignments = assignmentsData.filter((assignment) =>
           userResponsibilities.includes(assignment.responsibleId),
-        )
+        );
       }
 
-      setAssignmentData(filteredAssignments)
+      setAssignmentData(filteredAssignments);
     } catch (error) {
-      console.error("Error al obtener las asignaciones:", error)
-      toast.error("Error al cargar las asignaciones")
+      console.error("Error al obtener las asignaciones:", error);
+      toast.error("Error al cargar las asignaciones");
     }
-  }
+  };
+
 
   const getUsers = async () => {
     try {
@@ -66,6 +69,13 @@ const Assignment = () => {
       toast.error("Error al cargar los usuarios")
     }
   }
+
+  const responsibleName = (responsibleId) => {
+    if (!Users.length) return "Cargando..."; // Si Users aún no tiene datos, mostrar mensaje temporal
+
+    const responsible = responsibles.find(resp => resp.id === responsibleId);
+    return responsible ? userName(responsible.userId) : "Desconocido";
+  };
 
   const handleOpenTrackingModal = (assignmentId) => {
     setSelectedAssignmentId(assignmentId)
@@ -108,7 +118,9 @@ const Assignment = () => {
               <tbody className="tbody">
                 {assignmentData.length > 0 ? (
                   assignmentData.map((assignment, i) => {
-                    const responsibleUser = users.find((user) => user.id === assignment.responsibleId)
+                    const responsible = responsibles.find(resp => resp.id === assignment.responsibleId);
+                    const responsibleUser = responsible ? Users.find(user => user.id === responsible.userId) : null;
+
                     return (
                       <tr key={i}>
                         <td>{assignment.id}</td>
@@ -132,7 +144,7 @@ const Assignment = () => {
                           </Tooltip>
                         </td>
                       </tr>
-                    )
+                    );
                   })
                 ) : (
                   <tr>
@@ -142,6 +154,7 @@ const Assignment = () => {
                   </tr>
                 )}
               </tbody>
+
             </table>
           </div>
         </div>
