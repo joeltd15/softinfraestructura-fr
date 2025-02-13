@@ -8,12 +8,17 @@ import Tooltip from "@mui/material/Tooltip";
 import { FaCirclePlus } from "react-icons/fa6";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
 import RegisterRoleModal from "./modalRole/index";
+import EditRoleModal from "./modalRoleEdit/index";
+
 
 const Roles = () => {
     const [roles, setRoles] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
+    const [roleToEdit, setRoleToEdit] = useState(null);
+    const [showEditModal, setShowEditModal] = useState(false);
+
 
     useEffect(() => {
         getRoles();
@@ -53,6 +58,21 @@ const Roles = () => {
         }
     };
 
+    const handleOpenEditModal = (role) => {
+        if (!role || !role.id) {
+            toast.error("Error: No se pudo cargar el rol para edición.");
+            return;
+        }
+        setRoleToEdit(role);
+        setShowEditModal(true);
+    };
+    
+    const handleCloseEditModal = () => {
+        setShowEditModal(false);
+        setRoleToEdit(null); // Limpiar datos al cerrar
+    };
+    
+
     return (
         <div className="container">
             <ToastContainer position="top-right" autoClose={3000} />
@@ -82,7 +102,7 @@ const Roles = () => {
                                                 <FaEye />
                                             </button>
                                             <Tooltip title="Editar">
-                                                <button className="Table-button Update-button">
+                                                <button className="Table-button Update-button" onClick={() => handleOpenEditModal(role)}>
                                                     <FaPencilAlt />
                                                 </button>
                                             </Tooltip>
@@ -123,6 +143,14 @@ const Roles = () => {
             </Dialog>
 
             <RegisterRoleModal show={showModal} handleClose={() => setShowModal(false)} onRoleCreated={getRoles} />
+            <EditRoleModal
+                show={showEditModal}
+                handleClose={handleCloseEditModal}
+                onRoleUpdated={getRoles}
+                role={roleToEdit}
+            />
+
+
         </div>
     );
 };
