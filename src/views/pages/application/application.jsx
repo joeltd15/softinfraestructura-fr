@@ -56,7 +56,6 @@ const Application = () => {
                 const assignedApps = assignmentsData
                     .filter(assignment => assignment.responsibleId === user.id)
                     .map(assignment => assignment.applicationId);
-
                 filteredApplications = applicationsData.filter(app => assignedApps.includes(app.id));
             } else if (user.roleId === 3) {
                 // Si es usuario normal, solo ve las aplicaciones que él creó
@@ -140,6 +139,8 @@ const Application = () => {
             .finally(() => handleCloseDeleteDialog());
     };
 
+    const user = JSON.parse(localStorage.getItem("user"));
+
     return (
         <>
             <div className="container">
@@ -180,9 +181,18 @@ const Application = () => {
                                             <td>{userName(application.userId)}</td>
                                             <td className="content-buttons">
                                                 <button className="Table-button Show-button" onClick={() => handleShow(application)}><FaEye /></button>
-                                                <button className="Table-button Update-button" onClick={() => handleEdit(application)}><FaPencilAlt /></button>
-                                                <button className="Table-button Delete-button" onClick={() => handleOpenDeleteDialog(application.id)}><MdDelete /></button>
-                                                {(application.status !== 'Asignada' && application.status !== 'Completado') && (
+                                                {application.status !== 'Completado' && (
+                                                    <>
+                                                        <button className="Table-button Update-button" onClick={() => handleEdit(application)}>
+                                                            <FaPencilAlt />
+                                                        </button>
+                                                        <button className="Table-button Delete-button" onClick={() => handleOpenDeleteDialog(application.id)}>
+                                                            <MdDelete />
+                                                        </button>
+                                                    </>
+                                                )}
+
+                                                {(application.status !== 'Asignada' && application.status !== 'Completado' && user.roleId == 1) && (
                                                     <Tooltip title="Asignar encargado">
                                                         <button className="Table-button Asign-button" onClick={() => {
                                                             console.log("Asignando ID:", application.id);

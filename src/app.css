@@ -15,6 +15,10 @@
     text-decoration: none;
 }
 
+.title-dashboard{
+    color: #00304D;
+}
+
 .simplebar-content {
     border-top: 1px solid #012338 !important;
 }
