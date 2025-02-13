@@ -18,7 +18,8 @@ const Application = React.lazy(() => import('./views/pages/application/applicati
 const Tracking = React.lazy(() => import('./views/pages/tracking/tracking'))
 const Assignment = React.lazy(() => import('./views/pages/asssignment/assignment'))
 const User = React.lazy(() => import('./views/pages/user/user'))
-
+const Responsible = React.lazy(() => import('./views/pages/responsible/responsible'))
+const Role = React.lazy(() => import('./views/pages/role/role'))
 
 
 const routes = [
@@ -35,6 +36,8 @@ const routes = [
   { path: '/Seguimiento', name: 'Tracking', element: Tracking },
   { path: '/Asignamientos', name: 'Assignment', element: Assignment },
   { path: '/users', name: 'Usuarios', element: User },
+  { path: '/managers', name: 'Responsables', element: Responsible },
+  { path: '/roles', name: 'Roles', element: Role },
 
 ]
 

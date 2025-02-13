@@ -21,16 +21,39 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
   }, [assignmentApplication]);
 
   useEffect(() => {
-    axios.get("http://localhost:2025/api/application")
-      .then(response => setApplications(response.data))
-      .catch(error => console.error("Error al obtener solicitudes:", error));
-
-    axios.get("http://localhost:2025/api/responsible")
-      .then(response => setResponsibles(response.data))
-      .catch(error => console.error("Error al obtener responsables:", error));
-
-    getUsers();
+    const fetchData = async () => {
+      try {
+        const [appRes, respRes, userRes] = await Promise.all([
+          axios.get("http://localhost:2025/api/application"),
+          axios.get("http://localhost:2025/api/responsible"),
+          axios.get(urlUsers)
+        ]);
+  
+        setApplications(appRes.data);
+        setUsers(userRes.data);
+  
+        // Agrupar solicitudes por responsable
+        const solicitudesPorResponsable = {};
+        appRes.data.forEach(app => {
+          if (app.status === "Asignada") {
+            solicitudesPorResponsable[app.userId] = (solicitudesPorResponsable[app.userId] || 0) + 1;
+          }
+        });
+  
+        // Filtrar responsables con menos de 3 solicitudes en espera
+        const filteredResponsibles = respRes.data.filter(resp => {
+          return (solicitudesPorResponsable[resp.userId] || 0) < 3;
+        });
+  
+        setResponsibles(filteredResponsibles);
+      } catch (error) {
+        console.error("Error al obtener datos:", error);
+      }
+    };
+  
+    fetchData();
   }, []);
+  
 
   const getUsers = async () => {
     const response = await axios.get(urlUsers);
