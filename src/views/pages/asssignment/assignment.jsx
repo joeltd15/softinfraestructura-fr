@@ -10,6 +10,10 @@ import Tooltip from "@mui/material/Tooltip"
 import ModalTracking from "../tracking/modalTracking/index"
 import ModalShowApplication from "../application/ApplicationModalShow/index";
 import { FaEye } from "react-icons/fa";
+import { FaFilePdf } from "react-icons/fa";
+import DocumentPdf from '../application/DocumentPdf/index'
+import { pdf } from '@react-pdf/renderer';
+import { saveAs } from 'file-saver';
 
 const Assignment = () => {
   const [responsibles, setResponsibles] = useState([]);
@@ -21,12 +25,20 @@ const Assignment = () => {
   const [selectedAssignment, setSelectedAssignment] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedAssignmentShow, setSelectedAssignmentShow] = useState(null);
-  const [showModalShow, setShowModalShow] = useState(false)
+  const [showModalShow, setShowModalShow] = useState(false);
+  const [showApplicationId, setShowApplicationId] = useState(null);
 
   useEffect(() => {
     getAssignment()
     getUsers()
   }, [])
+
+  useEffect(() => {
+    if (selectedAssignmentShow && showApplicationId) {
+      console.log("Datos listos para generar el PDF");
+    }
+  }, [selectedAssignmentShow, showApplicationId]);
+
 
   const getAssignment = async () => {
     try {
@@ -73,7 +85,17 @@ const Assignment = () => {
       toast.error("Error al cargar los detalles de la solicitud");
     }
   };
-  
+
+  const handlePdf = async (applicationId) => {
+    try {
+      const response = await axios.get(`http://localhost:2025/api/application/${applicationId}`);
+      setSelectedAssignmentShow(response.data);
+      setShowApplicationId(applicationId);
+    } catch (error) {
+      console.error("Error al obtener los detalles de la solicitud:", error);
+      toast.error("Error al cargar los detalles de la solicitud");
+    }
+  };
 
   const getUsers = async () => {
     try {
@@ -109,6 +131,23 @@ const Assignment = () => {
 
   const user = JSON.parse(localStorage.getItem("user"));
 
+  const handlePdfDownload = async (applicationId) => {
+    try {
+      const response = await axios.get(`http://localhost:2025/api/application/${applicationId}`);
+      setSelectedAssignmentShow(response.data);
+
+      const doc = <DocumentPdf Application={response.data} />;
+      const asPdf = pdf([]);
+      asPdf.updateContainer(doc);
+      const blob = await asPdf.toBlob();
+
+      saveAs(blob, `DetalleReporte${applicationId}.pdf`);
+    } catch (error) {
+      console.error("Error al obtener los detalles de la solicitud:", error);
+      toast.error("Error al generar el PDF");
+    }
+  };
+
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />
@@ -138,7 +177,15 @@ const Assignment = () => {
                         <td>{assignment.applicationId}</td>
                         <td>{responsibleUser ? responsibleUser.name : "Desconocido"}</td>
                         <td className="content-buttons">
-                          <button className="Table-button Show-button" onClick={() => handleShow(assignment.applicationId)}><FaEye /></button>
+                          <Tooltip title="Ver detalles de la solicitud">
+                            <button className="Table-button Show-button" onClick={() => handleShow(assignment.applicationId)}><FaEye /></button>
+                          </Tooltip>
+                          <Tooltip title="Descargar detalles de la solicitud">
+                            <button className="Table-button" onClick={() => handlePdfDownload(assignment.applicationId)}>
+                              <FaFilePdf />
+                            </button>
+                          </Tooltip>
+
                           {user.roleId == '1' && (
                             <>
                               <Tooltip title="Reasignar encargado">

@@ -144,7 +144,6 @@
 }
 
 .Register-button {
-    background: #39A900;
     border-radius: 5px;
     font-weight: 600;
     font-size: 17px;
@@ -201,8 +200,8 @@
     background: #dd0505 !important;
 }
 
-.Button-blue {
-    background: #055bdd !important;
+.Button-dark {
+    background: #00050c !important;
 }
 
 .card-body {

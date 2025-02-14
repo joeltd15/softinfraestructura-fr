@@ -13,7 +13,12 @@ import Tooltip from '@mui/material/Tooltip';
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { FaFilePdf } from "react-icons/fa";
+import DateRangeModal from "./DownloadReports/DateRangeModal"
+import fetchFilteredData from './DownloadReports/fetchFilteredData.jsx';
+import ApplicationPDF from "./DownloadReports/generatePDF";
+import { FaFilePdf } from "react-icons/fa"
+import { PDFDownloadLink } from "@react-pdf/renderer"
+import { pdf } from "@react-pdf/renderer"
 
 const Application = () => {
     const url = 'http://localhost:2025/api/application';
@@ -28,6 +33,9 @@ const Application = () => {
     const [selectedId, setSelectedId] = useState(null);
     const [selectId, setSelectId] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [dateRangeModalOpen, setDateRangeModalOpen] = useState(false);
+    const [filteredApplications, setFilteredApplications] = useState([]);
+    const [pdfReady, setPdfReady] = useState(false);
 
     useEffect(() => {
         getApplications();
@@ -141,15 +149,49 @@ const Application = () => {
 
     const user = JSON.parse(localStorage.getItem("user"));
 
+    const handleDownloadReport = async (startDate, endDate) => {
+        try {
+            const data = await fetchFilteredData(startDate, endDate)
+            if (data.length === 0) {
+                toast.info("No hay datos para el rango de fechas seleccionado.")
+                return
+            }
+
+            const pdfDoc = <ApplicationPDF applications={data} />
+            const asPdf = pdf([])
+            asPdf.updateContainer(pdfDoc)
+            const blob = await asPdf.toBlob()
+            const url = URL.createObjectURL(blob)
+            const link = document.createElement("a")
+            link.href = url
+            link.download = `informe_aplicaciones_${startDate}_${endDate}.pdf`
+            link.click()
+            URL.revokeObjectURL(url)
+
+            toast.success("El informe se ha descargado correctamente.")
+        } catch (error) {
+            console.error("Error al generar el informe:", error)
+            toast.error("Error al generar el informe.")
+        }
+    }
+
     return (
         <>
             <div className="container">
                 <div className="row">
                     <div className="panel panel-primary filterable">
-                        <div className="panel-heading mb-3">
-                            <button className="Register-button" onClick={() => setShow(true)}>
-                                <FaCirclePlus /> Registrar
-                            </button>
+                        <div className="panel-heading mb-3 d-flex align-items-center row">
+                            <div className="col-sm-6 d-flex align-items-center justify-content-start">
+                                <button className="Register-button Button-save" onClick={() => setShow(true)}>
+                                    <FaCirclePlus /> Registrar
+                                </button></div>
+                            <div className="col-sm-6 d-flex align-items-center justify-content-end">
+                                <div className="col-sm-6 d-flex align-items-center justify-content-end">
+                                    <button className="Register-button Button-dark" onClick={() => setDateRangeModalOpen(true)}>
+                                        <FaFilePdf /> Descargar informe
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                         <table class="table">
                             <thead className="thead">
@@ -229,6 +271,11 @@ const Application = () => {
                     <Button className="buttons-form Button-next" onClick={handleConfirmDelete}>Eliminar</Button>
                 </DialogActions>
             </Dialog>
+            <DateRangeModal
+                open={dateRangeModalOpen}
+                onClose={() => setDateRangeModalOpen(false)}
+                onConfirm={handleDownloadReport}
+            />
         </>
     )
 }
