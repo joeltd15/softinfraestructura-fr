@@ -121,16 +121,19 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
                         <Col sm="6">
                             <Form.Label className='required'>Tipo de solicitud</Form.Label>
                             <Form.Select
-                                value={editedApplication.reportType}
-                                onChange={handleChange}
-                                name="reportType">
-                                <option>Seleccione un tipo</option>
-                                <option value="Electrico">Electricidad</option>
-                                <option value="Mobiliario">Mobiliario</option>
-                                <option value="Plomeria">Plomeria</option>
-                                <option value="Redes">Redes</option>
-                                <option value="Acabados">Acabados</option>
-                            </Form.Select>
+                            value={editedApplication.reportType}
+                            onChange={handleChange} name="reportType">
+                            <option>Seleccione un tipo</option>
+                            <option value="Electricidad">Electricidad</option>
+                            <option value="Albañilería">Albañilería</option>
+                            <option value="Plomería">Plomería</option>
+                            <option value="Aires Acondicionados">Aires Acondicionados</option>
+                            <option value="Jardinería">Jardinería</option>
+                            <option value="Obra civil">Obra civil</option>
+                            <option value="Puertas y cerraduras">Puertas y cerraduras</option>
+                            <option value="Mobiliario">Mobiliario</option>
+                            <option value="Sistemas y redes">Sistemas y redes</option>
+                        </Form.Select>
                         </Col>
                     </Form.Group>
                     <Form.Group className="mb-3 p-2" as={Row} controlId="forType">

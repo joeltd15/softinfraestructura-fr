@@ -81,7 +81,6 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
       </Modal.Header>
       <Modal.Body>
         <Form>
-          {/* Primera fila: Materiales de Construcción y Asignación */}
           <Row className="mb-3">
             <Col sm={6}>
               <Form.Group>
@@ -111,7 +110,6 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
             </Col>
           </Row>
 
-          {/* Segunda fila: Observaciones y Acciones Tomadas (Ocupan toda la fila) */}
           <Row className="mb-3">
             <Col sm={12}>
               <Form.Group>
@@ -140,7 +138,21 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
             </Col>
           </Row>
 
-          {/* Última fila: Evidencia Fotográfica */}
+          <Row className="mb-3">
+            <Col sm={12}>
+              <Form.Group>
+                <Form.Label className="required">Estado</Form.Label>
+                <Form.Select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}>
+                  <option value="Completado">Completado</option>
+                  <option value="Cancelado">Cancelado</option>
+                  <option value="En espera por falta de material">En espera por falta de material</option>
+                </Form.Select>
+              </Form.Group>
+            </Col>
+          </Row>
+
           <Row className="mb-3">
             <Col sm={12}>
               <Form.Group>

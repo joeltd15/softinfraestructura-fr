@@ -7,6 +7,18 @@ import axios from "axios";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+const RESPONSABILITY_TYPES = [
+    "Electricidad", 
+    "Albañilería", 
+    "Plomería", 
+    "Aires Acondicionados", 
+    "Jardinería", 
+    "Obra civil", 
+    "Puertas y cerraduras", 
+    "Mobiliario", 
+    "Sistemas y redes"
+];
+
 const RegisterResponsibleModal = ({ show, handleClose, onResponsibleCreated }) => {
     const [users, setUsers] = useState([]);
     const [userId, setUserId] = useState("");
@@ -70,9 +82,9 @@ const RegisterResponsibleModal = ({ show, handleClose, onResponsibleCreated }) =
                             <Form.Label className="required">Tipo de Responsabilidad</Form.Label>
                             <Form.Select value={typeResponsability} onChange={(e) => setTypeResponsability(e.target.value)}>
                                 <option value="">Seleccione un tipo</option>
-                                <option value="Electrico">Eléctrico</option>
-                                <option value="Mobiliario">Mobiliario</option>
-                                <option value="Plomeria">Plomería</option>
+                                {RESPONSABILITY_TYPES.map((type, index) => (
+                                    <option key={index} value={type}>{type}</option>
+                                ))}
                             </Form.Select>
                         </Col>
                     </Form.Group>

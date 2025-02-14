@@ -29,7 +29,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
     }
 
     const handleFileChange = (e) => {
-        setPhotographicEvidence(e.target.files[0]); // Guardá el archivo seleccionado
+        setPhotographicEvidence(e.target.files[0]); 
     };
 
     const handleSubmit = async () => {
@@ -115,13 +115,16 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
                             value={TypeReport}
                             onChange={(e) => setTypeReport(e.target.value)}>
                             <option>Seleccione un tipo</option>
-                            <option value="Electrico">Electricidad</option>
+                            <option value="Electricidad">Electricidad</option>
+                            <option value="Albañilería">Albañilería</option>
+                            <option value="Plomería">Plomería</option>
+                            <option value="Aires Acondicionados">Aires Acondicionados</option>
+                            <option value="Jardinería">Jardinería</option>
+                            <option value="Obra civil">Obra civil</option>
+                            <option value="Puertas y cerraduras">Puertas y cerraduras</option>
                             <option value="Mobiliario">Mobiliario</option>
-                            <option value="Plomeria">Plomeria</option>
-                            <option value="Redes">Redes</option>
-                            <option value="Acabados">Acabados</option>
+                            <option value="Sistemas y redes">Sistemas y redes</option>
                         </Form.Select>
-
                     </Form.Group>
                     <Form.Group className="mb-3 p-2" as={Row} controlId="forType">
                         <Form.Label>Evidencia</Form.Label>
@@ -129,7 +132,6 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
                             type="file"
                             onChange={handleFileChange}
                             accept="image/*" />
-
                     </Form.Group>
                 </Form>
             </Modal.Body>
