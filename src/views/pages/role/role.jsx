@@ -100,7 +100,7 @@ const Roles = () => {
             <div className="row">
                 <div className="panel panel-primary filterable">
                     <div className="panel-heading mb-3">
-                        <button className="Register-button" onClick={() => setShowModal(true)}>
+                        <button className="Register-button Button-save" onClick={() => setShowModal(true)}>
                             <FaCirclePlus /> Registrar
                         </button>
                     </div>

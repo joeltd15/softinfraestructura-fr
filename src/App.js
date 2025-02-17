@@ -22,10 +22,11 @@ const ForgotPassword = React.lazy(() => import('./views/pages/forgotPassword/for
 const App = () => {
   return (
     <HashRouter>
+      <ToastContainer />
       <Suspense
         fallback={
           <div className="pt-3 text-center">
-            <CSpinner color="primary" variant="grow" />
+            <CSpinner color="success" variant="grow" />
           </div>
         }
       >
@@ -42,7 +43,6 @@ const App = () => {
           <Route path="*" element={<Navigate to="/404" replace />} />
         </Routes>
       </Suspense>
-      <ToastContainer/>
     </HashRouter>
   )
 }

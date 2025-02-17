@@ -102,7 +102,7 @@ const User = () => {
             <div className="row">
                 <div className="panel panel-primary filterable">
                     <div className="panel-heading mb-3">
-                        <button className="Register-button" onClick={handleOpenRegisterModal}>
+                        <button className="Register-button Button-save" onClick={handleOpenRegisterModal}>
                             <FaCirclePlus /> Registrar
                         </button>
 

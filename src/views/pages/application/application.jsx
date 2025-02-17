@@ -19,6 +19,7 @@ import ApplicationPDF from "./DownloadReports/generatePDF";
 import { FaFilePdf } from "react-icons/fa"
 import { PDFDownloadLink } from "@react-pdf/renderer"
 import { pdf } from "@react-pdf/renderer"
+import TablePagination from '../../../components/Paginator/index.jsx'
 
 const Application = () => {
     const url = 'http://localhost:2025/api/application';
@@ -34,13 +35,43 @@ const Application = () => {
     const [selectId, setSelectId] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [dateRangeModalOpen, setDateRangeModalOpen] = useState(false);
-    const [filteredApplications, setFilteredApplications] = useState([]);
-    const [pdfReady, setPdfReady] = useState(false);
+    const [search, setSearch] = useState('');
+    const [dataQt, setDataQt] = useState(4);
+    const [currentPages, setCurrentPages] = useState(1);
 
     useEffect(() => {
         getApplications();
         getUsers();
     }, [])
+
+    //Buscador y paginador
+    const searcher = (e) => {
+        setSearch(e.target.value);
+        console.log(e.target.value)
+    }
+
+    const indexEnd = currentPages * dataQt;
+    const indexStart = indexEnd - dataQt;
+
+    const nPages = Math.ceil(applications.length / dataQt);
+
+    let results = []
+    if (!search) {
+        results = applications.slice(indexStart, indexEnd);
+    } else {
+        results = applications.filter((dato) => {
+            const searchTerm = search.toLowerCase();
+            return (
+                dato.news.toLowerCase().includes(searchTerm) ||
+                dato.dependence.toLowerCase().includes(searchTerm) ||
+                dato.reportDate.toString().includes(searchTerm)||
+                dato.location.toLowerCase().includes(searchTerm)||
+                dato.reportType.toLowerCase().includes(searchTerm)||
+                dato.status.toString().includes(searchTerm)
+            );
+        });
+    }
+
 
     const getApplications = async () => {
         try {
@@ -134,19 +165,29 @@ const Application = () => {
 
     const handleConfirmDelete = () => {
         if (!selectedId) return;
-
+    
         axios.delete(`${url}/${selectedId}`)
             .then(() => {
                 toast.success("El registro ha sido eliminado.");
                 getApplications();
+                
+                // Verifica si la página actual está vacía
+                const indexEnd = currentPages * dataQt;
+                const indexStart = indexEnd - dataQt;
+                const remainingItems = applications.slice(indexStart, indexEnd).length - 1;
+    
+                // Si no quedan elementos en la página actual, retrocede una página
+                if (remainingItems === 0 && currentPages > 1) {
+                    setCurrentPages(currentPages - 1);
+                }
             })
             .catch(error => {
                 toast.error("No se pudo eliminar el registro.");
                 console.error("Error al eliminar:", error);
             })
             .finally(() => handleCloseDeleteDialog());
-    };
-
+    };    
+    
     const user = JSON.parse(localStorage.getItem("user"));
 
     const handleDownloadReport = async (startDate, endDate) => {
@@ -184,12 +225,22 @@ const Application = () => {
                             <div className="col-sm-6 d-flex align-items-center justify-content-start">
                                 <button className="Register-button Button-save" onClick={() => setShow(true)}>
                                     <FaCirclePlus /> Registrar
-                                </button></div>
+                                </button>
+                            </div>
                             <div className="col-sm-6 d-flex align-items-center justify-content-end">
                                 <div className="col-sm-6 d-flex align-items-center justify-content-end">
-                                    <button className="Register-button Button-dark" onClick={() => setDateRangeModalOpen(true)}>
-                                        <FaFilePdf /> Descargar informe
-                                    </button>
+                                    <Tooltip title="Descargar informes" arrow>
+                                        <button className="Btn-download" onClick={() => setDateRangeModalOpen(true)}>
+                                            <svg className="svgIcon-download" viewBox="0 0 384 512" height="1em" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"></path>
+                                            </svg>
+                                            <span className="icon2-download"></span>
+                                        </button>
+                                    </Tooltip>
+                                    <div class="group">
+                                        <svg class="icon-search" aria-hidden="true" viewBox="0 0 24 24"><g><path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path></g></svg>
+                                        <input placeholder="Buscar" value={search} onChange={searcher} type="search" class="input-search" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -209,8 +260,8 @@ const Application = () => {
                                 </tr>
                             </thead>
                             <tbody className="tbody">
-                                {
-                                    applications.map((application, i) => (
+                                {results.length > 0 ? (
+                                    results.map((application, i) => (
                                         <tr key={application.id}>
                                             <td>{application.id}</td>
                                             <td>{new Date(application.reportDate).toISOString().split('T')[0]}</td>
@@ -222,19 +273,25 @@ const Application = () => {
                                             <td>{application.status}</td>
                                             <td>{userName(application.userId)}</td>
                                             <td className="content-buttons">
-                                                <button className="Table-button Show-button" onClick={() => handleShow(application)}><FaEye /></button>
-                                                {application.status !== 'Completado' && (
+                                                <Tooltip title="Ver detalles de la solicitud">
+                                                    <button className="Table-button Show-button" onClick={() => handleShow(application)}><FaEye /></button>
+                                                </Tooltip>
+                                                {application.status !== 'Realizado' && (
                                                     <>
-                                                        <button className="Table-button Update-button" onClick={() => handleEdit(application)}>
-                                                            <FaPencilAlt />
-                                                        </button>
-                                                        <button className="Table-button Delete-button" onClick={() => handleOpenDeleteDialog(application.id)}>
-                                                            <MdDelete />
-                                                        </button>
+                                                        <Tooltip title="Editar solicitud">
+                                                            <button className="Table-button Update-button" onClick={() => handleEdit(application)}>
+                                                                <FaPencilAlt />
+                                                            </button>
+                                                        </Tooltip>
+                                                        <Tooltip title="Eliminar solicitud">
+                                                            <button className="Table-button Delete-button" onClick={() => handleOpenDeleteDialog(application.id)}>
+                                                                <MdDelete />
+                                                            </button>
+                                                        </Tooltip>
                                                     </>
                                                 )}
 
-                                                {(application.status !== 'Asignada' && application.status !== 'Completado' && user.roleId == 1) && (
+                                                {(application.status !== 'Asignada' && application.status !== 'Realizado' && user.roleId == 1) && (
                                                     <Tooltip title="Asignar encargado">
                                                         <button className="Table-button Asign-button" onClick={() => {
                                                             console.log("Asignando ID:", application.id);
@@ -248,9 +305,36 @@ const Application = () => {
                                             </td>
                                         </tr>
                                     ))
+                                ) :
+                                    (
+                                        <tr>
+                                            <td colSpan={10} className='text-center'>
+                                                No hay solicitudes disponibles
+                                            </td>
+                                        </tr>
+                                    )
+
                                 }
                             </tbody>
                         </table>
+                        {
+                            results.length > 0 ? (
+                                <div className="row mb-5">
+                                    <div className="col-sm-6 d-flex align-items-center justify-content-start">
+                                        <div className="d-flex table-footer">
+                                            <TablePagination
+                                                nPages={nPages}
+                                                currentPages={currentPages}
+                                                setCurrentPages={setCurrentPages}
+                                            />
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            ) : (<div className="d-flex table-footer">
+                            </div>)
+                        }
                     </div>
                 </div>
             </div>

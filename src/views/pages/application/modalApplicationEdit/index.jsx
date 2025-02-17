@@ -114,7 +114,7 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
                                 name="status">
                                 <option hidden="">...</option>
                                 <option >Asignada</option>
-                                <option >Completado</option>
+                                <option >Realizado</option>
                                 <option >En espera por falta de material</option>
                             </Form.Select>
                         </Col>

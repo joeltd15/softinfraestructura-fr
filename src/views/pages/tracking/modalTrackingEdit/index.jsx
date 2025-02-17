@@ -137,7 +137,7 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
                 <Form.Label className="required">Estado</Form.Label>
                 <Form.Select name="status" value={editedTracking.status} onChange={handleChange}>
                   <option value="">Seleccione un estado</option>
-                  <option value="Completado">Completado</option>
+                  <option value="Realizado">Realizado</option>
                   <option value="Cancelado">Cancelado</option>
                   <option value="En espera por falta de material">En espera por falta de material</option>
                 </Form.Select>

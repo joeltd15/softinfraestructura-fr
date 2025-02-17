@@ -12,7 +12,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
   const [buildingMaterials, setBuildingMaterials] = useState("");
   const [actionsTaken, setActionsTaken] = useState("");
   const [photographicEvidence, setPhotographicEvidence] = useState(null);
-  const [status, setStatus] = useState("Completado");
+  const [status, setStatus] = useState("Realizado");
   const [assignmentId, setAssignmentId] = useState("");
   const [assignments, setAssignments] = useState([]);
 
@@ -145,7 +145,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
                 <Form.Select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}>
-                  <option value="Completado">Completado</option>
+                  <option value="Realizado">Realizado</option>
                   <option value="Cancelado">Cancelado</option>
                   <option value="En espera por falta de material">En espera por falta de material</option>
                 </Form.Select>

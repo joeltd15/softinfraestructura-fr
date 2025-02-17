@@ -66,7 +66,6 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
         try {
             const response = await registerRequest;
             console.log("Solicitud registrada:", response.data);
-            toast.success("Solicitud registrada correctamente");
             onSolicitudCreated();
             handleClose();
         } catch (error) {
