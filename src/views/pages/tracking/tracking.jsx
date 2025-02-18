@@ -1,7 +1,8 @@
+"use client"
+
 import { useEffect, useState } from "react"
 import axios from "axios"
 import { MdDelete } from "react-icons/md"
-import { FaCirclePlus } from "react-icons/fa6"
 import ModalTracking from "./modalTracking"
 import ModalTrackingEdit from "./modalTrackingEdit"
 import ModalTrackingView from "./modalTrackingShow"
@@ -9,6 +10,7 @@ import { FaPencilAlt, FaEye } from "react-icons/fa"
 import { ToastContainer, toast } from "react-toastify"
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material"
 import "react-toastify/dist/ReactToastify.css"
+import TablePagination from "../../../components/Paginator/index.jsx"
 
 const Tracking = () => {
   const [trackingData, setTrackingData] = useState([])
@@ -18,8 +20,14 @@ const Tracking = () => {
   const [selectedTracking, setSelectedTracking] = useState(null)
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
   const [selectedId, setSelectedId] = useState(null)
+  const [search, setSearch] = useState("")
+  const [dataQt, setDataQt] = useState(4)
+  const [currentPages, setCurrentPages] = useState(1)
+  const [assignmentToApplicationMap, setAssignmentToApplicationMap] = useState({})
+  const [loading, setLoading] = useState(true) // Added loading state
 
   const getTracking = async () => {
+    setLoading(true) // Set loading to true before fetching data
     try {
       const [trackingResponse, assignmentsResponse, responsiblesResponse] = await Promise.all([
         axios.get("http://localhost:2025/api/tracking"),
@@ -30,8 +38,15 @@ const Tracking = () => {
       const trackingData = trackingResponse.data
       const assignmentsData = assignmentsResponse.data
       const responsiblesData = responsiblesResponse.data
-      const user = JSON.parse(localStorage.getItem("user")) // Get logged in user
+      const user = JSON.parse(localStorage.getItem("user"))
       if (!user) return
+
+      // Create a map of assignment IDs to application IDs
+      const assignmentMap = {}
+      assignmentsData.forEach((assignment) => {
+        assignmentMap[assignment.id] = assignment.applicationId
+      })
+      setAssignmentToApplicationMap(assignmentMap)
 
       let filteredTracking = []
 
@@ -48,12 +63,13 @@ const Tracking = () => {
 
         filteredTracking = trackingData.filter((tracking) => userAssignments.includes(tracking.assignmentId))
       }
- 
 
       setTrackingData(filteredTracking)
     } catch (error) {
       console.error("Error al obtener los datos:", error)
       toast.error("Error al cargar los datos de seguimiento")
+    } finally {
+      setLoading(false) // Set loading to false after fetching data, regardless of success or failure
     }
   }
 
@@ -82,6 +98,7 @@ const Tracking = () => {
       })
       .catch((error) => {
         console.error("Error al actualizar el tracking:", error.response ? error.response.data : error.message)
+        toast.error("Error al actualizar el seguimiento")
       })
   }
 
@@ -111,13 +128,52 @@ const Tracking = () => {
       .finally(() => handleCloseDeleteDialog())
   }
 
+  const searcher = (e) => {
+    setSearch(e.target.value)
+    setCurrentPages(1)
+  }
+
+  const indexEnd = currentPages * dataQt
+  const indexStart = indexEnd - dataQt
+
+  const filteredData = trackingData.filter((dato) => {
+    const searchTerm = search.toLowerCase()
+    return (
+      dato.observations.toLowerCase().includes(searchTerm) ||
+      dato.buildingMaterials.toLowerCase().includes(searchTerm) ||
+      dato.dateService.toLowerCase().includes(searchTerm) ||
+      dato.actionsTaken.toLowerCase().includes(searchTerm) ||
+      dato.status.toLowerCase().includes(searchTerm) ||
+      dato.assignmentId.toString().includes(searchTerm)
+    )
+  })
+
+  const nPages = Math.ceil(filteredData.length / dataQt)
+  const results = filteredData.slice(indexStart, indexEnd)
+
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />
       <div className="container">
         <div className="row">
           <div className="panel panel-primary filterable">
-            <div className="panel-heading mb-3">
+            <div className="panel-heading mb-3 d-flex align-items-center justify-content-end">
+              <div className="col-sm-6 d-flex align-items-center justify-content-end">
+                <div className="group">
+                  <svg className="icon-search" aria-hidden="true" viewBox="0 0 24 24">
+                    <g>
+                      <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
+                    </g>
+                  </svg>
+                  <input
+                    placeholder="Buscar"
+                    type="search"
+                    className="input-search"
+                    value={search}
+                    onChange={searcher}
+                  />
+                </div>
+              </div>
             </div>
             <table className="table">
               <thead className="thead">
@@ -129,15 +185,21 @@ const Tracking = () => {
                   <th>Acciones Tomadas</th>
                   <th>Evidencia Fotográfica</th>
                   <th>Estado</th>
-                  <th>Asignación</th>
+                  <th>Código de la solicitud</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
               <tbody className="tbody">
-                {trackingData.length > 0 ? (
-                  trackingData.map((tracking, i) => (
+                {loading ? (
+                  <tr>
+                    <td colSpan="9" className="text-center">
+                      Cargando...
+                    </td>
+                  </tr>
+                ) : results.length > 0 ? (
+                  results.map((tracking, i) => (
                     <tr key={i}>
-                      <td>{i + 1}</td>
+                      <td>{indexStart + i + 1}</td>
                       <td>{tracking.observations}</td>
                       <td>{tracking.buildingMaterials}</td>
                       <td>{tracking.dateService}</td>
@@ -155,7 +217,7 @@ const Tracking = () => {
                         />
                       </td>
                       <td>{tracking.status}</td>
-                      <td>{tracking.assignmentId}</td>
+                      <td>{assignmentToApplicationMap[tracking.assignmentId] || "N/A"}</td>
                       <td className="content-buttons">
                         <button className="Table-button Show-button" onClick={() => handleView(tracking)}>
                           <FaEye />
@@ -181,6 +243,15 @@ const Tracking = () => {
                 )}
               </tbody>
             </table>
+            {results.length > 0 && (
+              <div className="row mb-5">
+                <div className="col-sm-6 d-flex align-items-center justify-content-start">
+                  <div className="d-flex table-footer">
+                    <TablePagination nPages={nPages} currentPages={currentPages} setCurrentPages={setCurrentPages} />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
