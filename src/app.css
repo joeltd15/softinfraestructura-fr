@@ -323,3 +323,51 @@ input:hover {
         opacity: 1;
     }
 }
+
+.fc-daygrid-day-number {
+    text-decoration: none !important;
+    color: inherit !important;
+    pointer-events: none !important;
+}
+
+.fc-col-header-cell a {
+    text-decoration: none !important;
+    color: inherit !important;
+    pointer-events: none !important;
+}
+
+/* Estado Pendiente - Amarillo */
+.event-pending {
+    background-color: #00304D !important;
+    border-color: #00304D !important;
+    color: #f3f3f3 !important;
+}
+
+/* Estado Completado - Verde */
+.event-completed {
+    background-color: #007832 !important;
+    border-color: #007832 !important;
+    color: #f3f3f3 !important;
+}
+
+/* Estado Cancelado - Rojo */
+.event-canceled {
+    background-color: #990101 !important;
+    border-color: #990101 !important;
+    color: #f3f3f3 !important;
+}
+
+.css-1lt5qva-MuiCardContent-root{
+    padding: 0px !important;
+}
+
+.CardComponent button{
+    color: #000 !important;
+    font-size: 13px !important;
+    font-weight: 600;
+}
+
+.CardComponent button svg{
+    margin-right: 10px;
+    font-size: 15px !important;
+}

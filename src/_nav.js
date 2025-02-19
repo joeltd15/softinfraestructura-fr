@@ -88,7 +88,7 @@ const _nav = [
   {
     component: CNavItem,
     name: "Reservas",
-    to: "/reservations",
+    to: "/reservas",
     icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
     permission: "manage_reservations",
   },

@@ -60,10 +60,10 @@ const styles = StyleSheet.create({
 const ApplicationPDF = ({ applications }) => (
   <Document>
     <Page size="A4" style={styles.page}>
-      <Text style={styles.title}>Informe de Aplicaciones</Text>
+      <Text style={styles.title}>Informe de Mantenimiento</Text>
       {applications.map((app, index) => (
         <View key={index} style={styles.section}>
-          <Text style={styles.header}>Aplicación #{app.id}</Text>
+          <Text style={styles.header}>Solicitud #{app.id}</Text>
           <View style={styles.row}>
             <Text style={styles.cell}>
               <Text style={styles.label}>Fecha del reporte:</Text> {new Date(app.reportDate).toISOString().split('T')[0]}

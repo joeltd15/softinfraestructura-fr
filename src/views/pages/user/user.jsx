@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ViewUserModal from "./UserModalShow";
 import UserModalRegister from "./modalUser";
-
+import TablePagination from '../../../components/Paginator/index.jsx';
 
 const User = () => {
     const userUrl = "http://localhost:2025/api/user";
@@ -21,12 +21,41 @@ const User = () => {
     const [openViewModal, setOpenViewModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [openRegisterModal, setOpenRegisterModal] = useState(false);
-
+    const [search, setSearch] = useState('');
+    const [dataQt, setDataQt] = useState(4);
+    const [currentPages, setCurrentPages] = useState(1);
 
     useEffect(() => {
         getUsers();
         getRoles();
     }, []);
+
+    //Buscador y paginador
+    const searcher = (e) => {
+        setSearch(e.target.value);
+        console.log(e.target.value)
+    }
+
+    const indexEnd = currentPages * dataQt;
+    const indexStart = indexEnd - dataQt;
+
+    const nPages = Math.ceil(users.length / dataQt);
+
+    let results = []
+    if (!search) {
+        results = users.slice(indexStart, indexEnd);
+    } else {
+        results = users.filter((dato) => {
+            const searchTerm = search.toLowerCase();
+            return (
+                dato.name?.toLowerCase().includes(searchTerm) ||
+                dato.email?.toLowerCase().includes(searchTerm) ||
+                dato.reportDate?.toString().includes(searchTerm) ||
+                dato.phone?.toString().includes(searchTerm) ||
+                dato.status?.toString().includes(searchTerm)
+            );
+        });        
+    }
 
     const getUsers = async () => {
         try {
@@ -102,10 +131,19 @@ const User = () => {
             <div className="row">
                 <div className="panel panel-primary filterable">
                     <div className="panel-heading mb-3">
-                        <button className="Register-button Button-save" onClick={handleOpenRegisterModal}>
-                            <FaCirclePlus /> Registrar
-                        </button>
-
+                        <div className="row">
+                            <div className="col-sm-6 d-flex align-items-center justify-content-start">
+                                <button className="Register-button Button-save" onClick={handleOpenRegisterModal}>
+                                    <FaCirclePlus /> Registrar
+                                </button>
+                            </div>
+                            <div className="col-sm-6 d-flex align-items-center justify-content-end">
+                                <div class="group">
+                                    <svg class="icon-search" aria-hidden="true" viewBox="0 0 24 24"><g><path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path></g></svg>
+                                    <input placeholder="Buscar" value={search} onChange={searcher} type="search" class="input-search" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <table className="table">
                         <thead className="thead">
@@ -120,28 +158,59 @@ const User = () => {
                             </tr>
                         </thead>
                         <tbody className="tbody">
-                            {users.map((user) => (
-                                <tr key={user.id}>
-                                    <td>{user.id}</td>
-                                    <td>{user.name}</td>
-                                    <td>{user.email}</td>
-                                    <td>{user.phone}</td>
-                                    <td>{user.status}</td>
-                                    <td>{getRoleName(user.roleId)}</td>
-                                    <td className="content-buttons">
-                                        <button className="Table-button Show-button" onClick={() => handleOpenViewModal(user)}>
-                                            <FaEye />
-                                        </button>
-                                        <Tooltip title="Eliminar usuario">
-                                            <button className="Table-button Delete-button" onClick={() => handleOpenDeleteDialog(user.id)}>
-                                                <MdDelete />
-                                            </button>
-                                        </Tooltip>
-                                    </td>
-                                </tr>
-                            ))}
+                            {
+                                results.length > 0 ? (
+                                    results.map((user) => (
+                                        <tr key={user.id}>
+                                            <td>{user.id}</td>
+                                            <td>{user.name}</td>
+                                            <td>{user.email}</td>
+                                            <td>{user.phone}</td>
+                                            <td>{user.status}</td>
+                                            <td>{getRoleName(user.roleId)}</td>
+                                            <td className="content-buttons">
+                                                <button className="Table-button Show-button" onClick={() => handleOpenViewModal(user)}>
+                                                    <FaEye />
+                                                </button>
+                                                <Tooltip title="Eliminar usuario">
+                                                    <button className="Table-button Delete-button" onClick={() => handleOpenDeleteDialog(user.id)}>
+                                                        <MdDelete />
+                                                    </button>
+                                                </Tooltip>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    (
+                                        <tr>
+                                            <td colSpan={10} className='text-center'>
+                                                No hay usuarios disponibles
+                                            </td>
+                                        </tr>
+                                    )
+
+                                )
+                            }
                         </tbody>
                     </table>
+                    {
+                        results.length > 0 ? (
+                            <div className="row mb-5">
+                                <div className="col-sm-6 d-flex align-items-center justify-content-start">
+                                    <div className="d-flex table-footer">
+                                        <TablePagination
+                                            nPages={nPages}
+                                            currentPages={currentPages}
+                                            setCurrentPages={setCurrentPages}
+                                        />
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        ) : (<div className="d-flex table-footer">
+                        </div>)
+                    }
                 </div>
             </div>
 

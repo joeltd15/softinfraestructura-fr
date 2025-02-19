@@ -13,13 +13,12 @@ import Tooltip from '@mui/material/Tooltip';
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import DateRangeModal from "./DownloadReports/DateRangeModal"
+import DateRangeModal from "./DownloadReports/DateRangeModal";
 import fetchFilteredData from './DownloadReports/fetchFilteredData.jsx';
 import ApplicationPDF from "./DownloadReports/generatePDF";
-import { FaFilePdf } from "react-icons/fa"
-import { PDFDownloadLink } from "@react-pdf/renderer"
-import { pdf } from "@react-pdf/renderer"
-import TablePagination from '../../../components/Paginator/index.jsx'
+import { pdf } from "@react-pdf/renderer";
+import TablePagination from '../../../components/Paginator/index.jsx';
+import { FaVoteYea } from "react-icons/fa";
 
 const Application = () => {
     const url = 'http://localhost:2025/api/application';
@@ -64,9 +63,9 @@ const Application = () => {
             return (
                 dato.news.toLowerCase().includes(searchTerm) ||
                 dato.dependence.toLowerCase().includes(searchTerm) ||
-                dato.reportDate.toString().includes(searchTerm)||
-                dato.location.toLowerCase().includes(searchTerm)||
-                dato.reportType.toLowerCase().includes(searchTerm)||
+                dato.reportDate.toString().includes(searchTerm) ||
+                dato.location.toLowerCase().includes(searchTerm) ||
+                dato.reportType.toLowerCase().includes(searchTerm) ||
                 dato.status.toString().includes(searchTerm)
             );
         });
@@ -165,17 +164,17 @@ const Application = () => {
 
     const handleConfirmDelete = () => {
         if (!selectedId) return;
-    
+
         axios.delete(`${url}/${selectedId}`)
             .then(() => {
                 toast.success("El registro ha sido eliminado.");
                 getApplications();
-                
+
                 // Verifica si la página actual está vacía
                 const indexEnd = currentPages * dataQt;
                 const indexStart = indexEnd - dataQt;
                 const remainingItems = applications.slice(indexStart, indexEnd).length - 1;
-    
+
                 // Si no quedan elementos en la página actual, retrocede una página
                 if (remainingItems === 0 && currentPages > 1) {
                     setCurrentPages(currentPages - 1);
@@ -186,8 +185,8 @@ const Application = () => {
                 console.error("Error al eliminar:", error);
             })
             .finally(() => handleCloseDeleteDialog());
-    };    
-    
+    };
+
     const user = JSON.parse(localStorage.getItem("user"));
 
     const handleDownloadReport = async (startDate, endDate) => {
@@ -276,6 +275,15 @@ const Application = () => {
                                                 <Tooltip title="Ver detalles de la solicitud">
                                                     <button className="Table-button Show-button" onClick={() => handleShow(application)}><FaEye /></button>
                                                 </Tooltip>
+                                                {
+                                                    application.status == 'Realizado' && (
+                                                        <>
+                                                            <Tooltip title="Ver detalle del mantenimiento">
+                                                                <button className="Table-button" ><FaVoteYea /></button>
+                                                            </Tooltip>
+                                                        </>
+                                                    )
+                                                }
                                                 {application.status !== 'Realizado' && (
                                                     <>
                                                         <Tooltip title="Editar solicitud">
@@ -291,7 +299,7 @@ const Application = () => {
                                                     </>
                                                 )}
 
-                                                {(application.status !== 'Asignada' && application.status !== 'Realizado' && user.roleId == 1) && (
+                                                {(application.status !== 'Asignada' && application.status !== 'Realizado' && application.status != 'En espera por falta de material' && user.roleId == 1) && (
                                                     <Tooltip title="Asignar encargado">
                                                         <button className="Table-button Asign-button" onClick={() => {
                                                             console.log("Asignando ID:", application.id);
