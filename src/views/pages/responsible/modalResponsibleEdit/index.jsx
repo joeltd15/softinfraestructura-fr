@@ -8,29 +8,38 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const RESPONSABILITY_TYPES = [
-    "Electricidad", 
-    "Albañilería", 
-    "Plomería", 
-    "Aires Acondicionados", 
-    "Jardinería", 
-    "Obra civil", 
-    "Puertas y cerraduras", 
-    "Mobiliario", 
+    "Electricidad",
+    "Albañilería",
+    "Plomería",
+    "Aires Acondicionados",
+    "Jardinería",
+    "Obra civil",
+    "Puertas y cerraduras",
+    "Mobiliario",
     "Sistemas y redes"
 ];
 
 const EditResponsibleModal = ({ show, handleClose, onResponsibleUpdated, responsible }) => {
     const [users, setUsers] = useState([]);
     const [userId, setUserId] = useState("");
-    const [typeResponsability, setTypeResponsability] = useState("");
+    const [responsibilities, setResponsibilities] = useState([]);
 
     useEffect(() => {
         getUsers();
+    }, []);
+
+    useEffect(() => {
         if (responsible) {
             setUserId(responsible.userId);
-            setTypeResponsability(responsible.typeResponsability);
+            // Asegurar que se obtiene correctamente la lista de responsabilidades
+            const selectedResponsibilities = responsible.Responsibilities?.map(r => r.name) || [];
+            setResponsibilities(selectedResponsibilities);
         }
     }, [responsible]);
+    
+
+
+
 
     const getUsers = async () => {
         try {
@@ -41,21 +50,29 @@ const EditResponsibleModal = ({ show, handleClose, onResponsibleUpdated, respons
         }
     };
 
+    const handleCheckboxChange = (type) => {
+        setResponsibilities((prev) =>
+            prev.includes(type)
+                ? prev.filter((t) => t !== type)  // Remueve si ya está seleccionado
+                : [...prev, type]  // Agrega si no está seleccionado
+        );
+    };
+
     const handleSubmit = async () => {
-        if (!userId || !typeResponsability) {
+        if (!userId || responsibilities.length === 0) {
             toast.error("Todos los campos son obligatorios.");
             return;
         }
 
         const requestData = {
             userId,
-            typeResponsability,
+            responsibilities, // Ahora enviamos un array de strings directamente
         };
 
         try {
-            await axios.put(`http://localhost:2025/api/responsible/${responsible.id}`, requestData);
+            const response = await axios.put(`http://localhost:2025/api/responsible/${responsible.id}`, requestData);
             toast.success("Responsable actualizado correctamente.");
-            onResponsibleUpdated();
+            onResponsibleUpdated(response.data); // Pasamos el responsable actualizado
             handleClose();
         } catch (error) {
             console.error("Error al actualizar el responsable:", error);
@@ -83,13 +100,17 @@ const EditResponsibleModal = ({ show, handleClose, onResponsibleUpdated, respons
                     </Form.Group>
                     <Form.Group className="mb-3" as={Row}>
                         <Col sm="12">
-                            <Form.Label className="required">Tipo de Responsabilidad</Form.Label>
-                            <Form.Select value={typeResponsability} onChange={(e) => setTypeResponsability(e.target.value)}>
-                                <option value="">Seleccione un tipo</option>
-                                {RESPONSABILITY_TYPES.map((type, index) => (
-                                    <option key={index} value={type}>{type}</option>
-                                ))}
-                            </Form.Select>
+                            <Form.Label className="required">Tipos de Responsabilidad</Form.Label>
+                            {RESPONSABILITY_TYPES.map((type, index) => (
+                                <Form.Check
+                                    key={index}
+                                    type="checkbox"
+                                    label={type}
+                                    checked={responsibilities.includes(type)} // Ahora sí los compara correctamente
+                                    onChange={() => handleCheckboxChange(type)}
+                                />
+
+                            ))}
                         </Col>
                     </Form.Group>
                 </Form>
@@ -99,7 +120,7 @@ const EditResponsibleModal = ({ show, handleClose, onResponsibleUpdated, respons
                     Salir
                 </Button>
                 <Button className="buttons-form Button-save" onClick={handleSubmit}>
-                    Guardar Cambios
+                    Guardar
                 </Button>
             </Modal.Footer>
         </Modal>

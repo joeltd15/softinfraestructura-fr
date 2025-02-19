@@ -59,35 +59,35 @@ const Roles = () => {
 
     const handleOpenEditModal = async (role) => {
         if (!role || !role.id) {
-            toast.error("Error: No se pudo cargar el rol para edición.")
-            return
+            toast.error("Error: No se pudo cargar el rol para edición.");
+            return;
         }
-
+    
         try {
             const [roleResponse, permissionRoleResponse] = await Promise.all([
                 axios.get(`http://localhost:2025/api/role/${role.id}`),
                 axios.get(`http://localhost:2025/api/permissionRole?roleId=${role.id}`),
-            ])
-
-            const roleData = roleResponse.data
-            const permissionRoles = permissionRoleResponse.data
-
-            const permissionIds = permissionRoles.map((pr) => pr.permissionId)
-
+            ]);
+    
+            const roleData = roleResponse.data;
+            const permissionRoles = permissionRoleResponse.data;
+    
+            // Convertir a formato esperado
             const roleWithPermissions = {
                 ...roleData,
-                permissions: permissionIds,
-            }
-
-            console.log("Rol con permisos:", roleWithPermissions)
-
-            setRoleToEdit(roleWithPermissions)
-            setShowEditModal(true)
+                permissions: permissionRoles.map((pr) => ({ id: pr.permissionId })),
+            };
+    
+            console.log("Rol con permisos asignados:", roleWithPermissions);
+            
+            setRoleToEdit(roleWithPermissions);
+            setShowEditModal(true);
         } catch (error) {
-            console.error("Error al obtener el rol:", error)
-            toast.error("Error al obtener el rol.")
+            console.error("Error al obtener el rol:", error);
+            toast.error("Error al obtener el rol.");
         }
-    }
+    };
+    
 
     const handleCloseEditModal = () => {
         setShowEditModal(false)
@@ -119,9 +119,7 @@ const Roles = () => {
                                         <td>{role.id}</td>
                                         <td>{role.name}</td>
                                         <td className="content-buttons">
-                                            <button className="Table-button Show-button">
-                                                <FaEye />
-                                            </button>
+                                            
                                             <Tooltip title="Editar">
                                                 <button
                                                     className="Table-button Update-button"

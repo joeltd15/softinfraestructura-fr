@@ -1,90 +1,93 @@
-import { useState, useEffect, useCallback } from "react"
-import Button from "react-bootstrap/Button"
-import Form from "react-bootstrap/Form"
-import Modal from "react-bootstrap/Modal"
-import { Col, Row } from "react-bootstrap"
-import axios from "axios"
-import { toast } from "react-toastify"
-import "react-toastify/dist/ReactToastify.css"
+import { useState, useEffect, useCallback } from "react";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import Modal from "react-bootstrap/Modal";
+import { Col, Row } from "react-bootstrap";
+import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const EditRoleModal = ({ show, handleClose, onRoleUpdated, role }) => {
-  const [roleName, setRoleName] = useState("")
-  const [permissions, setPermissions] = useState([])
-  const [selectedPermissions, setSelectedPermissions] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [roleName, setRoleName] = useState("");
+  const [permissions, setPermissions] = useState([]);
+  const [selectedPermissions, setSelectedPermissions] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
+  // Obtener lista de permisos
   const fetchPermissions = useCallback(async () => {
     try {
-      const response = await axios.get("http://localhost:2025/api/permission")
-      setPermissions(response.data)
+      setIsLoading(true);
+      const response = await axios.get("http://localhost:2025/api/permission");
+      console.log("📥 Respuesta de la API de permisos:", response.data);
+      setPermissions(response.data);
     } catch (error) {
-      console.error("Error al obtener permisos:", error)
-      toast.error("Error al obtener permisos.")
+      console.error("❌ Error al obtener permisos:", error);
+      toast.error("Error al obtener permisos.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (show) {
-      setIsLoading(true)
-      fetchPermissions()
+      console.log("🔄 Modal abierto, cargando datos...");
+      fetchPermissions();
     }
-  }, [show, fetchPermissions])
+  }, [show, fetchPermissions]);
 
+  // Cargar permisos asignados al rol una vez que role y permissions estén listos
   useEffect(() => {
-    if (role && role.id) {
-      setRoleName(role.name || "")
-      if (Array.isArray(role.permissions)) {
-        setSelectedPermissions(role.permissions)
-        console.log("Permisos cargados en el estado:", role.permissions)
-      } else {
-        setSelectedPermissions([])
-      }
-    } else {
-      setRoleName("")
-      setSelectedPermissions([])
+    if (!role || !Array.isArray(role.Permissions) || permissions.length === 0) {
+      console.warn("⚠️ Esperando datos válidos...");
+      return;
     }
-  }, [role])
 
+    console.log("🆔 Role recibido en edición:", role);
+    console.log("🔹 Lista de permisos disponibles:", permissions);
+
+    // Extraer IDs de permisos correctamente
+    const rolePermissionIds = role.Permissions.map(p => p.id);
+    console.log("🆔 IDs de permisos del rol:", rolePermissionIds);
+
+    setSelectedPermissions(rolePermissionIds);
+    setRoleName(role.name || "");
+  }, [role, permissions]);
+
+  // Manejar cambios en los checkboxes
   const handlePermissionChange = (permissionId) => {
-    setSelectedPermissions((prev) => {
-      const newPermissions = prev.includes(permissionId)
+    setSelectedPermissions((prev) =>
+      prev.includes(permissionId)
         ? prev.filter((id) => id !== permissionId)
         : [...prev, permissionId]
-      console.log("Permisos actualizados:", newPermissions)
-      return newPermissions
-    })
-  }
+    );
+  };
 
+  // Manejar la actualización del rol
   const handleSubmit = async () => {
     if (!roleName.trim()) {
-      toast.error("El nombre del rol es obligatorio.")
-      return
+      toast.error("El nombre del rol es obligatorio.");
+      return;
     }
-
-    if (!role || !role.id) {
-      toast.error("Error: No se pudo identificar el rol.")
-      return
-    }
-
-    const requestData = {
-      name: roleName,
-      permissions: selectedPermissions,
+    if (!role?.id) {
+      toast.error("Error: No se pudo identificar el rol.");
+      return;
     }
 
     try {
-      await axios.put(`http://localhost:2025/api/role/${role.id}`, requestData)
-      toast.success("Rol actualizado correctamente.")
-      onRoleUpdated()
-      handleClose()
+      await axios.put(`http://localhost:2025/api/role/${role.id}`, {
+        name: roleName,
+        permissions: selectedPermissions,
+      });
+      toast.success("Rol actualizado correctamente.");
+      onRoleUpdated();
+      handleClose();
     } catch (error) {
-      console.error("Error al actualizar el rol:", error)
-      toast.error("Error al actualizar el rol.")
+      console.error("❌ Error al actualizar el rol:", error);
+      toast.error("Error al actualizar el rol.");
     }
-  }
+  };
 
-  console.log("Renderizando con selectedPermissions:", selectedPermissions)
+  console.log("🎨 Renderizando con selectedPermissions:", selectedPermissions);
 
   return (
     <Modal show={show} onHide={handleClose} backdrop="static">
@@ -133,7 +136,7 @@ const EditRoleModal = ({ show, handleClose, onRoleUpdated, role }) => {
         </Button>
       </Modal.Footer>
     </Modal>
-  )
-}
+  );
+};
 
-export default EditRoleModal
+export default EditRoleModal;

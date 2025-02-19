@@ -32,11 +32,12 @@ const Responsible = () => {
     const getResponsibles = async () => {
         try {
             const response = await axios.get("http://localhost:2025/api/responsible");
+            console.log("Datos obtenidos de responsables:", response.data);
             setResponsibles(response.data);
         } catch (error) {
             console.error("Error al obtener los responsables:", error);
         }
-    };
+    };    
 
     const getUsers = async () => {
         try {
@@ -129,7 +130,11 @@ const Responsible = () => {
                                         return (
                                             <tr key={i}>
                                                 <td>{responsible.id}</td>
-                                                <td>{responsible.typeResponsability}</td>
+                                                <td>
+                                                    {responsible.Responsibilities.length > 0
+                                                        ? responsible.Responsibilities.map(r => r.name).join(", ")
+                                                        : "Sin responsabilidades"}
+                                                </td>
                                                 <td>{user ? user.name : "Desconocido"}</td>
                                                 <td className="content-buttons">
                                                     <button
@@ -193,7 +198,7 @@ const Responsible = () => {
             />
             <EditResponsibleModal show={openEditModal} handleClose={handleCloseEditModal} onResponsibleUpdated={getResponsibles} responsible={selectedResponsible}
             />
-            <ShowResponsibleModal show={openShowModal} handleClose={handleCloseShowModal} responsible={selectedResponsibleShow} users={users} 
+            <ShowResponsibleModal show={openShowModal} handleClose={handleCloseShowModal} responsible={selectedResponsibleShow} users={users}
             />
 
         </>

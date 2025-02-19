@@ -22,7 +22,7 @@ const RESPONSABILITY_TYPES = [
 const RegisterResponsibleModal = ({ show, handleClose, onResponsibleCreated }) => {
     const [users, setUsers] = useState([]);
     const [userId, setUserId] = useState("");
-    const [typeResponsability, setTypeResponsability] = useState("");
+    const [responsibilities, setResponsibilities] = useState([]); // Ahora usa el nombre correcto
 
     useEffect(() => {
         getUsers();
@@ -37,15 +37,23 @@ const RegisterResponsibleModal = ({ show, handleClose, onResponsibleCreated }) =
         }
     };
 
+    const handleCheckboxChange = (type) => {
+        setResponsibilities((prev) =>
+            prev.includes(type)
+                ? prev.filter((t) => t !== type)  // Remueve si ya está seleccionado
+                : [...prev, type]  // Agrega si no está seleccionado
+        );
+    };
+
     const handleSubmit = async () => {
-        if (!userId || !typeResponsability) {
+        if (!userId || responsibilities.length === 0) {
             toast.error("Todos los campos son obligatorios.");
             return;
         }
 
         const requestData = {
             userId,
-            typeResponsability,
+            responsibilities, // Ahora se envía con el nombre correcto
         };
 
         try {
@@ -79,13 +87,16 @@ const RegisterResponsibleModal = ({ show, handleClose, onResponsibleCreated }) =
                     </Form.Group>
                     <Form.Group className="mb-3" as={Row}>
                         <Col sm="12">
-                            <Form.Label className="required">Tipo de Responsabilidad</Form.Label>
-                            <Form.Select value={typeResponsability} onChange={(e) => setTypeResponsability(e.target.value)}>
-                                <option value="">Seleccione un tipo</option>
-                                {RESPONSABILITY_TYPES.map((type, index) => (
-                                    <option key={index} value={type}>{type}</option>
-                                ))}
-                            </Form.Select>
+                            <Form.Label className="required">Tipos de Responsabilidad</Form.Label>
+                            {RESPONSABILITY_TYPES.map((type, index) => (
+                                <Form.Check 
+                                    key={index}
+                                    type="checkbox"
+                                    label={type}
+                                    checked={responsibilities.includes(type)}
+                                    onChange={() => handleCheckboxChange(type)}
+                                />
+                            ))}
                         </Col>
                     </Form.Group>
                 </Form>
