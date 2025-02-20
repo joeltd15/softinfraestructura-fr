@@ -8,12 +8,14 @@ import esLocale from "@fullcalendar/core/locales/es";
 import axios from "axios";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
-import EventMenu from "./EventMenu/EventMenu"; // Importamos el menú
+import EventMenu from "./EventMenu/EventMenu"; 
+import ReservationModal from "./reservationRegister/index"; // Importamos el modal
 
-const Reservation = ({ sidebarOpen }) => {
+const Reservation = () => {
   const calendarRef = useRef(null);
   const [events, setEvents] = useState([]);
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchReservations = async () => {
     try {
@@ -56,12 +58,9 @@ const Reservation = ({ sidebarOpen }) => {
     }
   }, [events]);
 
-  const handleEventClick = (clickInfo) => {
-    const rect = clickInfo.jsEvent.target.getBoundingClientRect();
-    setSelectedEvent({ 
-      x: rect.left + window.scrollX, 
-      y: rect.bottom + window.scrollY 
-    });
+  const handleDateClick = (info) => {
+    setSelectedDate(info.dateStr); // Guardamos la fecha seleccionada
+    setIsModalOpen(true); // Abrimos la modal
   };
 
   return (
@@ -83,9 +82,16 @@ const Reservation = ({ sidebarOpen }) => {
         events={events}
         height="auto"
         aspectRatio={1.35}
-        eventClick={handleEventClick}
+        dateClick={handleDateClick} // Evento para abrir la modal al seleccionar una fecha
       />
-      {selectedEvent && <EventMenu event={selectedEvent} onClose={() => setSelectedEvent(null)} />}
+
+      {/* Modal que se muestra cuando se selecciona una fecha */}
+      {isModalOpen && (
+        <ReservationModal 
+          selectedDate={selectedDate} 
+          onClose={() => setIsModalOpen(false)} 
+        />
+      )}
     </div>
   );
 };

@@ -109,7 +109,7 @@ const Responsible = () => {
                 <div className="row">
                     <div className="panel panel-primary filterable">
                         <div className="panel-heading mb-3">
-                            <button className="Register-button" onClick={handleOpenRegisterModal}>
+                            <button className="Register-button Button-save" onClick={handleOpenRegisterModal}>
                                 <FaCirclePlus /> Registrar
                             </button>
 
@@ -118,8 +118,8 @@ const Responsible = () => {
                             <thead className="thead">
                                 <tr className="filters">
                                     <th>Código</th>
-                                    <th>Tipo de Responsabilidad</th>
-                                    <th>Usuario</th>
+                                    <th>Actividad</th>
+                                    <th>Nombre T.O</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
