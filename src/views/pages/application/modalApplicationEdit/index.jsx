@@ -4,8 +4,6 @@ import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import { Col, Row } from 'react-bootstrap';
 import axios from "axios";
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
     const [editedApplication, setEditedApplication] = useState({
@@ -17,17 +15,19 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
         status: "",
         userId: "",
         photographicEvidence: "",
+        responsibleForSpace: "", // Nuevo campo agregado
     });
+
     const [Users, setUsers] = useState([]);
 
     useEffect(() => {
         getUsers();
-    }, [])
+    }, []);
 
     const getUsers = async () => {
         const response = await axios.get(urlUsers);
         setUsers(response.data);
-    }
+    };
 
     useEffect(() => {
         if (application) {
@@ -42,10 +42,10 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
                 status: application.status || "",
                 userId: application.userId || "",
                 photographicEvidence: application.photographicEvidence || "",
+                responsibleForSpace: application.responsibleForSpace || "", // Se asigna el valor recibido
             }));
         }
     }, [application]);
-
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -84,7 +84,8 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
                                 name="dependence"
                                 value={editedApplication.dependence}
                                 onChange={handleChange}
-                                placeholder="Ingrese la dependencia" />
+                                placeholder="Ingrese la dependencia"
+                            />
                         </Col>
                         <Col sm="6">
                             <Form.Label className="required">Lugar</Form.Label>
@@ -93,7 +94,8 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
                                 name="location"
                                 value={editedApplication.location}
                                 onChange={handleChange}
-                                placeholder="Ingrese el lugar" />
+                                placeholder="Ingrese el lugar"
+                            />
                         </Col>
                     </Form.Group>
                     <Form.Group className="p-2" as={Row} controlId="formDependence">
@@ -104,45 +106,62 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
                             rows={2}
                             value={editedApplication.news}
                             onChange={handleChange}
-                            placeholder="Describa los detalles del reporte" />
+                            placeholder="Describa los detalles del reporte"
+                        />
                     </Form.Group>
                     <Form.Group className="mb-3" as={Row} controlId="formLocation">
                         <Col sm="6">
                             <Form.Label className='required'>Estado</Form.Label>
-                            <Form.Select value={editedApplication.status}
+                            <Form.Select
+                                value={editedApplication.status}
                                 onChange={handleChange}
-                                name="status">
+                                name="status"
+                            >
                                 <option hidden="">...</option>
-                                <option >Asignada</option>
-                                <option >Realizado</option>
-                                <option >En espera por falta de material</option>
+                                <option>Asignada</option>
+                                <option>Realizado</option>
+                                <option>En espera por falta de material</option>
                             </Form.Select>
                         </Col>
                         <Col sm="6">
                             <Form.Label className='required'>Tipo de solicitud</Form.Label>
                             <Form.Select
-                            value={editedApplication.reportType}
-                            onChange={handleChange} name="reportType">
-                            <option>Seleccione un tipo</option>
-                            <option value="Electricidad">Electricidad</option>
-                            <option value="Albañilería">Albañilería</option>
-                            <option value="Plomería">Plomería</option>
-                            <option value="Aires Acondicionados">Aires Acondicionados</option>
-                            <option value="Jardinería">Jardinería</option>
-                            <option value="Obra civil">Obra civil</option>
-                            <option value="Puertas y cerraduras">Puertas y cerraduras</option>
-                            <option value="Mobiliario">Mobiliario</option>
-                            <option value="Sistemas y redes">Sistemas y redes</option>
-                        </Form.Select>
+                                value={editedApplication.reportType}
+                                name="reportType"
+                                disabled
+                            >
+                                <option>Seleccione un tipo</option>
+                                <option value="Electricidad">Electricidad</option>
+                                <option value="Albañilería">Albañilería</option>
+                                <option value="Plomería">Plomería</option>
+                                <option value="Aires Acondicionados">Aires Acondicionados</option>
+                                <option value="Jardinería">Jardinería</option>
+                                <option value="Obra civil">Obra civil</option>
+                                <option value="Puertas y cerraduras">Puertas y cerraduras</option>
+                                <option value="Mobiliario">Mobiliario</option>
+                                <option value="Sistemas y redes">Sistemas y redes</option>
+                            </Form.Select>
                         </Col>
                     </Form.Group>
+                    <Form.Group className="p-2" as={Row} controlId="formResponsibleForSpace">
+                        <Form.Label  className='required'>Responsable del Espacio</Form.Label>
+                        <Form.Control
+                            type="text"
+                            name="responsibleForSpace"
+                            value={editedApplication.responsibleForSpace}
+                            onChange={handleChange}
+                            placeholder="Ingrese el responsable del espacio"
+                            readOnly
+                        />
+                    </Form.Group>
+
                     <Form.Group className="mb-3 p-2" as={Row} controlId="forType">
                         <Form.Label>Evidencia</Form.Label>
                         <Form.Control
                             type="file"
                             name="photographicEvidence"
-                            onChange={handleFileChange} />
-
+                            onChange={handleFileChange}
+                        />
                     </Form.Group>
                 </Form>
             </Modal.Body>

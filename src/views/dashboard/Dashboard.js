@@ -41,7 +41,7 @@ const Dashboard = () => {
   const damageChartData = Object.keys(damageCounts).map((key) => ({ name: key, value: damageCounts[key] }));
   const statusChartData = Object.keys(statusCounts).map((key) => ({ name: key, value: statusCounts[key] }));
 
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#A28DFF"];
+  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#A28DFF", "#FF6666", "#66CC99", "#D4A017"];
 
   return (
     <div className="container mt-4">
@@ -81,7 +81,11 @@ const Dashboard = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="value" fill="#8884d8" />
+                <Bar dataKey="value">
+                  {damageChartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </Card>

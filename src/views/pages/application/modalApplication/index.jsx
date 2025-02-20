@@ -18,6 +18,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
     const [TypeReport, setTypeReport] = useState("");
     const [status, setStatus] = useState("En espera");
     const [IdUser, setIdUser] = useState("");
+    const [ResponsibleForSpace, setResponsibleForSpace] = useState("");
 
     useEffect(() => {
         getUsers();
@@ -29,7 +30,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
     }
 
     const handleFileChange = (e) => {
-        setPhotographicEvidence(e.target.files[0]); 
+        setPhotographicEvidence(e.target.files[0]);
     };
 
     const handleSubmit = async () => {
@@ -50,6 +51,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
             formData.append("photographicEvidence", photographicEvidence);
         }
         formData.append("reportType", TypeReport);
+        formData.append("responsibleForSpace", ResponsibleForSpace);
         formData.append("status", status);
         formData.append("userId", user.id);
 
@@ -108,22 +110,34 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
                             onChange={(e) => setNews(e.target.value)}
                             placeholder="Describa los detalles del reporte" />
                     </Form.Group>
-                    <Form.Group className="mb-3 p-2" as={Row} controlId="formLocation">
-                        <Form.Label className='required'>Tipo de solicitud</Form.Label>
-                        <Form.Select
-                            value={TypeReport}
-                            onChange={(e) => setTypeReport(e.target.value)}>
-                            <option>Seleccione un tipo</option>
-                            <option value="Electricidad">Electricidad</option>
-                            <option value="Albañilería">Albañilería</option>
-                            <option value="Plomería">Plomería</option>
-                            <option value="Aires Acondicionados">Aires Acondicionados</option>
-                            <option value="Jardinería">Jardinería</option>
-                            <option value="Obra civil">Obra civil</option>
-                            <option value="Puertas y cerraduras">Puertas y cerraduras</option>
-                            <option value="Mobiliario">Mobiliario</option>
-                            <option value="Sistemas y redes">Sistemas y redes</option>
-                        </Form.Select>
+                    <Form.Group className="mb-3" as={Row} controlId="formTypeAndResponsible">
+                        <Col sm="6">
+                            <Form.Label className="required">Tipo de solicitud</Form.Label>
+                            <Form.Select
+                                value={TypeReport}
+                                onChange={(e) => setTypeReport(e.target.value)}
+                            >
+                                <option>Seleccione un tipo</option>
+                                <option value="Electricidad">Electricidad</option>
+                                <option value="Albañilería">Albañilería</option>
+                                <option value="Plomería">Plomería</option>
+                                <option value="Aires Acondicionados">Aires Acondicionados</option>
+                                <option value="Jardinería">Jardinería</option>
+                                <option value="Obra civil">Obra civil</option>
+                                <option value="Puertas y cerraduras">Puertas y cerraduras</option>
+                                <option value="Mobiliario">Mobiliario</option>
+                                <option value="Sistemas y redes">Sistemas y redes</option>
+                            </Form.Select>
+                        </Col>
+                        <Col sm="6">
+                            <Form.Label className="required">Responsable del Espacio</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={ResponsibleForSpace}
+                                onChange={(e) => setResponsibleForSpace(e.target.value)}
+                                placeholder="Responsable del espacio"
+                            />
+                        </Col>
                     </Form.Group>
                     <Form.Group className="mb-3 p-2" as={Row} controlId="forType">
                         <Form.Label>Evidencia</Form.Label>
