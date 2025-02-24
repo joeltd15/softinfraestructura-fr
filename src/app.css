@@ -343,11 +343,22 @@ input:hover {
     color: #f3f3f3 !important;
 }
 
+.event-pending:hover {
+    background: #002f4df5 !important;
+    color: #888787 !important;
+}
+
 /* Estado Completado - Verde */
+
 .event-completed {
-    background-color: #007832 !important;
-    border-color: #007832 !important;
-    color: #f3f3f3 !important;
+    background: #a7a6a6 !important;
+    color: #ffffff !important;
+}
+
+.event-completed:hover {
+    background-color: #b3b2b2 !important;
+    border-color: #ccc !important;
+    color: #c7c7c7 !important;
 }
 
 /* Estado Cancelado - Rojo */
@@ -357,17 +368,81 @@ input:hover {
     color: #f3f3f3 !important;
 }
 
-.css-1lt5qva-MuiCardContent-root{
+.event-canceled:hover {
+    background-color: #990101ec !important;
+    color: #888787 !important;
+}
+
+.css-1lt5qva-MuiCardContent-root {
     padding: 0px !important;
 }
 
-.CardComponent button{
+.CardComponent button {
     color: #000 !important;
     font-size: 13px !important;
     font-weight: 600;
 }
 
-.CardComponent button svg{
+.CardComponent button svg {
     margin-right: 10px;
     font-size: 15px !important;
+}
+
+button {
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+/* <main-style> ============================ */
+.menu__icon {
+    margin-left: 5px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    border-radius: 10px;
+    width: 2rem;
+    height: 2rem;
+    padding: .25rem;
+    backdrop-filter: saturate(180%) blur(20px);
+    background-color: #00304D;
+}
+
+.menu__icon::before {
+    display: block;
+    content: "+";
+    color: rgb(245, 245, 247);
+    font-size: 1.125rem;
+    font-weight: 400;
+    transition: transform .3s ease-out;
+    transform-origin: center;
+}
+
+.menu__icon:hover::before {
+    transform: rotate(45deg) scale(1.08);
+}
+
+.fc-direction-ltr {
+    background: #fff !important;
+    padding: 30px !important;
+    margin-bottom: 20px !important;
+}
+
+[data-coreui-theme=dark] .fc-toolbar-title {
+    color: #2b3d4f !important;
+}
+
+.fc-daygrid-dot-event .fc-event-title {
+    font-weight: 400 !important;
+}
+
+[data-coreui-theme=dark] .fc .fc-col-header-cell-cushion {
+    color: #2b3d4f !important;
+}
+
+[data-coreui-theme=dark] .fc .fc-daygrid-day-number {
+    color: #2b3d4f !important;
 }

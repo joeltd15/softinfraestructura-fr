@@ -107,79 +107,59 @@ const Login = () => {
 
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center pattern">
-      <CContainer>
-        <CRow className="justify-content-center">
-          <CCol md={8}>
-            <CCardGroup>
-              <CCard className="p-4">
-                <CCardBody>
-                  <CForm onSubmit={handleLogin}>
-                    <h1>Iniciar Sesión</h1>
-                    <CInputGroup className="mb-3">
-                      <CInputGroupText>
-                        <CIcon icon={cilUser} />
-                      </CInputGroupText>
-                      <CFormInput
-                        type="email"
-                        placeholder="Correo"
-                        autoComplete="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                      />
-                    </CInputGroup>
-                    <CInputGroup className="mb-4 position-relative">
-                      <CInputGroupText>
-                        <CIcon icon={cilLockLocked} />
-                      </CInputGroupText>
-                      <CFormInput
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Contraseña"
-                        autoComplete="current-password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                      />
-                      <CButton
-                        type="button"
-                        className="border-0 bg-transparent position-absolute end-0 me-2"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                      </CButton>
-                    </CInputGroup>
-                    <CRow>
-                      <CCol xs={6}>
-                        <CButton type="submit" className="btn-green px-4">
-                          Ingresar
-                        </CButton>
-                      </CCol>
-                      <CCol xs={6} className="text-right">
-                        <CButton color="link" className="px-0" onClick={() => navigate('/sendEmail')}>
-                          Recuperar Contraseña
-                        </CButton>
-                      </CCol>
-                    </CRow>
-                  </CForm>
-                </CCardBody>
-              </CCard>
-              <CCard className="text-white bg-primary py-5" style={{ width: '44%' }}>
-                <CCardBody className="text-center">
-                  <div>
-                    <p>
-                      Si eres un nuevo usuario, regístrate para acceder y gestionar tus solicitudes de mantenimiento.
-                    </p>
-                    <Link to="/register">
-                      <CButton className="btn-green mt-3" active tabIndex={-1}>
-                        Registrarme ahora!
-                      </CButton>
-                    </Link>
-                  </div>
-                </CCardBody>
-              </CCard>
-            </CCardGroup>
-          </CCol>
-        </CRow>
+      <CContainer className='d-flex flex-row align-items-center justify-content-center'>
+        <CCard className="p-4 d-flex align-items-center">
+          <CCardBody>
+            <CForm onSubmit={handleLogin}>
+              <h1>Iniciar Sesión</h1>
+              <CInputGroup className="mb-3">
+                <CInputGroupText>
+                  <CIcon icon={cilUser} />
+                </CInputGroupText>
+                <CFormInput
+                  type="email"
+                  placeholder="Correo"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </CInputGroup>
+              <CInputGroup className="mb-4 position-relative">
+                <CInputGroupText>
+                  <CIcon icon={cilLockLocked} />
+                </CInputGroupText>
+                <CFormInput
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Contraseña"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <CButton
+                  type="button"
+                  className="border-0 bg-transparent position-absolute end-0 me-2"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </CButton>
+              </CInputGroup>
+              <CRow>
+                <CCol xs={6}>
+                  <CButton type="submit" className="btn-green px-4">
+                    Ingresar
+                  </CButton>
+                </CCol>
+                <CCol xs={6} className="text-right">
+                  <CButton color="link" className="px-0" onClick={() => navigate('/sendEmail')}>
+                    Recuperar Contraseña
+                  </CButton>
+                </CCol>
+              </CRow>
+            </CForm>
+          </CCardBody>
+        </CCard>
       </CContainer>
       <ToastContainer />
     </div>

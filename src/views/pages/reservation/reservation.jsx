@@ -8,22 +8,35 @@ import esLocale from "@fullcalendar/core/locales/es";
 import axios from "axios";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
-import EventMenu from "./EventMenu/EventMenu"; 
-import ReservationModal from "./reservationRegister/index"; // Importamos el modal
+import EventMenu from "./EventMenu/EventMenu";
+import ReservationModal from "./reservationRegister/index";
+import { toast } from "react-toastify";
 
 const Reservation = () => {
   const calendarRef = useRef(null);
   const [events, setEvents] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
+  // Función para formatear la hora a formato de 12 horas con AM/PM
+  const formatTime = (timeString) => {
+    const [hours, minutes] = timeString.split(":");
+    const date = new Date();
+    date.setHours(hours, minutes);
+    return date.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", hour12: true });
+  };
+
+  // Función para obtener reservas
   const fetchReservations = async () => {
     try {
       const response = await axios.get("http://localhost:2025/api/reservation");
       const reservations = response.data;
 
       const formattedEvents = reservations.map((reservation) => ({
-        title: reservation.scenery,
+        id: reservation.id,
+        estatus: reservation.estatus,
+        title: `${formatTime(reservation.startTime)} - ${formatTime(reservation.finishTime)}`,
         start: `${reservation.date}T${reservation.startTime}`,
         end: `${reservation.date}T${reservation.finishTime}`,
         className: getEventClass(reservation.estatus),
@@ -35,6 +48,7 @@ const Reservation = () => {
     }
   };
 
+  // Asignar clases según estado
   const getEventClass = (estatus) => {
     switch (estatus) {
       case "Pendiente":
@@ -50,6 +64,11 @@ const Reservation = () => {
 
   useEffect(() => {
     fetchReservations();
+
+    const intervalId = setInterval(() => {
+      fetchReservations();
+    }, 60000);
+    return () => clearInterval(intervalId);
   }, []);
 
   useEffect(() => {
@@ -59,8 +78,28 @@ const Reservation = () => {
   }, [events]);
 
   const handleDateClick = (info) => {
-    setSelectedDate(info.dateStr); // Guardamos la fecha seleccionada
-    setIsModalOpen(true); // Abrimos la modal
+    const selectedDate = new Date(info.dateStr);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDate < today) {
+      toast.warning("No se pueden registrar reservas en fechas pasadas.");
+      return;
+    }
+
+    setSelectedDate(info.dateStr);
+    setIsModalOpen(true);
+  };
+
+
+  const handleEventClick = (clickInfo) => {
+    const rect = clickInfo.jsEvent.target.getBoundingClientRect();
+    setSelectedEvent({
+      id: clickInfo.event.id,
+      estatus: clickInfo.event.extendedProps.estatus,
+      x: rect.left + window.scrollX,
+      y: rect.bottom + window.scrollY
+    });
   };
 
   return (
@@ -69,7 +108,6 @@ const Reservation = () => {
         <Alert severity="info">Seleccione el día para registrar la reserva.</Alert>
       </Stack>
       <FullCalendar
-        viewClassNames={"mb-5"}
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
         initialView="dayGridMonth"
@@ -82,14 +120,25 @@ const Reservation = () => {
         events={events}
         height="auto"
         aspectRatio={1.35}
-        dateClick={handleDateClick} // Evento para abrir la modal al seleccionar una fecha
+        dateClick={handleDateClick}
+        eventClick={handleEventClick}
+        displayEventTime={false}
       />
 
-      {/* Modal que se muestra cuando se selecciona una fecha */}
+      {selectedEvent && (
+        <EventMenu
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+          getReservations={() => fetchReservations()}
+        />
+      )}
+
       {isModalOpen && (
-        <ReservationModal 
-          selectedDate={selectedDate} 
-          onClose={() => setIsModalOpen(false)} 
+        <ReservationModal
+          show={isModalOpen}
+          selectedDate={selectedDate}
+          onClose={() => setIsModalOpen(false)}
+          getReservations={() => fetchReservations()}
         />
       )}
     </div>
