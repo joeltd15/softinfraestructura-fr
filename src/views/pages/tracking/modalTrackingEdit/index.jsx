@@ -14,6 +14,7 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
   });
 
   const [assignments, setAssignments] = useState([]);
+  const [errors, setErrors] = useState({}); // Estado para errores de validación
 
   useEffect(() => {
     axios
@@ -41,9 +42,34 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
     }
   }, [tracking]);
 
+  const validate = () => {
+    let newErrors = {};
+    if (!editedTracking.buildingMaterials.trim()) {
+      newErrors.buildingMaterials = "Los materiales de construcción son obligatorios.";
+    }
+    if (!editedTracking.assignmentId) {
+      newErrors.assignmentId = "Debe seleccionar una asignación.";
+    }
+    if (!editedTracking.observations.trim()) {
+      newErrors.observations = "Las observaciones son obligatorias.";
+    }
+    if (!editedTracking.actionsTaken.trim()) {
+      newErrors.actionsTaken = "Debe especificar las acciones tomadas.";
+    }
+    if (!editedTracking.status) {
+      newErrors.status = "Debe seleccionar un estado.";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setEditedTracking((prev) => ({ ...prev, [name]: value }));
+
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" })); // Limpiar error si el usuario corrige
+    }
   };
 
   const handleFileChange = (e) => {
@@ -52,6 +78,8 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!validate()) return; // Detiene el envío si hay errores
+
     const formData = new FormData();
     for (const key in editedTracking) {
       if (key === "photographicEvidence" && editedTracking[key] instanceof File) {
@@ -79,13 +107,20 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
                   name="buildingMaterials"
                   value={editedTracking.buildingMaterials}
                   onChange={handleChange}
+                  isInvalid={!!errors.buildingMaterials}
                 />
+                <Form.Control.Feedback type="invalid">{errors.buildingMaterials}</Form.Control.Feedback>
               </Form.Group>
             </Col>
             <Col sm={6}>
               <Form.Group>
                 <Form.Label className="required">Asignación</Form.Label>
-                <Form.Select name="assignmentId" value={editedTracking.assignmentId} disabled>
+                <Form.Select
+                  name="assignmentId"
+                  value={editedTracking.assignmentId}
+                  disabled
+                  isInvalid={!!errors.assignmentId}
+                >
                   <option value="">Seleccione una asignación</option>
                   {assignments.map((assignment) => (
                     <option key={assignment.id} value={assignment.id}>
@@ -93,7 +128,7 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
                     </option>
                   ))}
                 </Form.Select>
-
+                <Form.Control.Feedback type="invalid">{errors.assignmentId}</Form.Control.Feedback>
               </Form.Group>
             </Col>
           </Row>
@@ -108,7 +143,9 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
                   name="observations"
                   value={editedTracking.observations}
                   onChange={handleChange}
+                  isInvalid={!!errors.observations}
                 />
+                <Form.Control.Feedback type="invalid">{errors.observations}</Form.Control.Feedback>
               </Form.Group>
             </Col>
             <Col sm={12}>
@@ -120,7 +157,9 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
                   name="actionsTaken"
                   value={editedTracking.actionsTaken}
                   onChange={handleChange}
+                  isInvalid={!!errors.actionsTaken}
                 />
+                <Form.Control.Feedback type="invalid">{errors.actionsTaken}</Form.Control.Feedback>
               </Form.Group>
             </Col>
           </Row>
@@ -135,12 +174,18 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
             <Col sm={6}>
               <Form.Group>
                 <Form.Label className="required">Estado</Form.Label>
-                <Form.Select name="status" value={editedTracking.status} onChange={handleChange}>
+                <Form.Select
+                  name="status"
+                  value={editedTracking.status}
+                  onChange={handleChange}
+                  isInvalid={!!errors.status}
+                >
                   <option value="">Seleccione un estado</option>
                   <option value="Realizado">Realizado</option>
                   <option value="Cancelado">Cancelado</option>
                   <option value="En espera por falta de material">En espera por falta de material</option>
                 </Form.Select>
+                <Form.Control.Feedback type="invalid">{errors.status}</Form.Control.Feedback>
               </Form.Group>
             </Col>
           </Row>

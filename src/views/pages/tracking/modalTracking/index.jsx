@@ -15,16 +15,13 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
   const [status, setStatus] = useState("Realizado");
   const [assignmentId, setAssignmentId] = useState("");
   const [assignments, setAssignments] = useState([]);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (selectedAssignmentId) {
       setAssignmentId(selectedAssignmentId);
     }
   }, [selectedAssignmentId]);
-
-  const handleFileChange = (e) => {
-    setPhotographicEvidence(e.target.files[0]);
-  };
 
   useEffect(() => {
     const fetchAssignments = async () => {
@@ -39,10 +36,25 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
       fetchAssignments();
     }
   }, [show]);
-  
+
+  const validateFields = () => {
+    const newErrors = {};
+    if (!buildingMaterials.trim()) newErrors.buildingMaterials = "Este campo es obligatorio";
+    if (!observations.trim()) newErrors.observations = "Este campo es obligatorio";
+    if (!actionsTaken.trim()) newErrors.actionsTaken = "Este campo es obligatorio";
+    if (!assignmentId) newErrors.assignmentId = "Debe seleccionar una asignación";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async () => {
+    if (!validateFields()) {
+      toast.error("Por favor, completa todos los campos obligatorios.");
+      return;
+    }
+
     const today = new Date().toISOString().split("T")[0];
-  
+
     const formData = new FormData();
     formData.append("observations", observations);
     formData.append("buildingMaterials", buildingMaterials);
@@ -53,20 +65,19 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
     formData.append("status", status);
     formData.append("assignmentId", assignmentId);
     formData.append("dateService", today);
-  
+
     const registerRequest = axios.post("http://localhost:2025/api/tracking", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
-  
+
     toast.promise(registerRequest, {
       pending: "Registrando seguimiento...",
       success: "Seguimiento registrado correctamente",
       error: "Error al registrar el seguimiento",
     });
-  
+
     try {
-      const response = await registerRequest;
-      console.log("Seguimiento registrado:", response.data);
+      await registerRequest;
       onSolicitudCreated();
       setTimeout(() => handleClose(), 500);
     } catch (error) {
@@ -88,8 +99,15 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
                 <Form.Control
                   type="text"
                   value={buildingMaterials}
-                  onChange={(e) => setBuildingMaterials(e.target.value)}
+                  onChange={(e) => {
+                    setBuildingMaterials(e.target.value);
+                    setErrors((prev) => ({ ...prev, buildingMaterials: "" }));
+                  }}
+                  isInvalid={!!errors.buildingMaterials}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {errors.buildingMaterials}
+                </Form.Control.Feedback>
               </Form.Group>
             </Col>
             <Col sm={6}>
@@ -97,8 +115,13 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
                 <Form.Label className="required">Asignación</Form.Label>
                 <Form.Select
                   value={assignmentId}
-                  onChange={(e) => setAssignmentId(e.target.value)}
-                  disabled>
+                  onChange={(e) => {
+                    setAssignmentId(e.target.value);
+                    setErrors((prev) => ({ ...prev, assignmentId: "" }));
+                  }}
+                  isInvalid={!!errors.assignmentId}
+                  disabled
+                >
                   <option value="">Seleccione una asignación</option>
                   {assignments.map((assign) => (
                     <option key={assign.id} value={assign.id}>
@@ -106,6 +129,9 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
                     </option>
                   ))}
                 </Form.Select>
+                <Form.Control.Feedback type="invalid">
+                  {errors.assignmentId}
+                </Form.Control.Feedback>
               </Form.Group>
             </Col>
           </Row>
@@ -118,8 +144,15 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
                   as="textarea"
                   rows={3}
                   value={observations}
-                  onChange={(e) => setObservations(e.target.value)}
+                  onChange={(e) => {
+                    setObservations(e.target.value);
+                    setErrors((prev) => ({ ...prev, observations: "" }));
+                  }}
+                  isInvalid={!!errors.observations}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {errors.observations}
+                </Form.Control.Feedback>
               </Form.Group>
             </Col>
           </Row>
@@ -132,8 +165,15 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
                   as="textarea"
                   rows={3}
                   value={actionsTaken}
-                  onChange={(e) => setActionsTaken(e.target.value)}
+                  onChange={(e) => {
+                    setActionsTaken(e.target.value);
+                    setErrors((prev) => ({ ...prev, actionsTaken: "" }));
+                  }}
+                  isInvalid={!!errors.actionsTaken}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {errors.actionsTaken}
+                </Form.Control.Feedback>
               </Form.Group>
             </Col>
           </Row>
@@ -144,7 +184,8 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
                 <Form.Label className="required">Estado</Form.Label>
                 <Form.Select
                   value={status}
-                  onChange={(e) => setStatus(e.target.value)}>
+                  onChange={(e) => setStatus(e.target.value)}
+                >
                   <option value="Realizado">Realizado</option>
                   <option value="Cancelado">Cancelado</option>
                   <option value="En espera por falta de material">En espera por falta de material</option>
@@ -159,7 +200,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
                 <Form.Label>Evidencia Fotográfica</Form.Label>
                 <Form.Control
                   type="file"
-                  onChange={handleFileChange}
+                  onChange={(e) => setPhotographicEvidence(e.target.files[0])}
                   accept="image/*"
                 />
               </Form.Group>

@@ -11,14 +11,13 @@ const EditRoleModal = ({ show, handleClose, onRoleUpdated, role }) => {
   const [roleName, setRoleName] = useState("");
   const [permissions, setPermissions] = useState([]);
   const [selectedPermissions, setSelectedPermissions] = useState([]);
+  const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
-  // Obtener lista de permisos
   const fetchPermissions = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await axios.get("http://localhost:2025/api/permission");
-      console.log("📥 Respuesta de la API de permisos:", response.data);
       setPermissions(response.data);
     } catch (error) {
       console.error("❌ Error al obtener permisos:", error);
@@ -30,48 +29,44 @@ const EditRoleModal = ({ show, handleClose, onRoleUpdated, role }) => {
 
   useEffect(() => {
     if (show) {
-      console.log("🔄 Modal abierto, cargando datos...");
       fetchPermissions();
+      setErrors({}); // Reiniciar errores al abrir modal
+      setRoleName(role?.name || ""); // Cargar datos del rol
+      setSelectedPermissions(role?.Permissions?.map(p => p.id) || []);
     }
-  }, [show, fetchPermissions]);
+  }, [show, fetchPermissions, role]);
 
-  // Cargar permisos asignados al rol una vez que role y permissions estén listos
-  useEffect(() => {
-    if (!role || !Array.isArray(role.Permissions) || permissions.length === 0) {
-      console.warn("⚠️ Esperando datos válidos...");
-      return;
-    }
-
-    console.log("🆔 Role recibido en edición:", role);
-    console.log("🔹 Lista de permisos disponibles:", permissions);
-
-    // Extraer IDs de permisos correctamente
-    const rolePermissionIds = role.Permissions.map(p => p.id);
-    console.log("🆔 IDs de permisos del rol:", rolePermissionIds);
-
-    setSelectedPermissions(rolePermissionIds);
-    setRoleName(role.name || "");
-  }, [role, permissions]);
-
-  // Manejar cambios en los checkboxes
   const handlePermissionChange = (permissionId) => {
     setSelectedPermissions((prev) =>
       prev.includes(permissionId)
         ? prev.filter((id) => id !== permissionId)
         : [...prev, permissionId]
     );
+    
+    if (selectedPermissions.length > 0) {
+      setErrors(prev => ({ ...prev, selectedPermissions: "" }));
+    }
   };
 
-  // Manejar la actualización del rol
-  const handleSubmit = async () => {
+  const validateForm = () => {
+    let newErrors = {};
+
     if (!roleName.trim()) {
-      toast.error("El nombre del rol es obligatorio.");
-      return;
+      newErrors.roleName = "El nombre del rol es obligatorio.";
+    } else if (/\d/.test(roleName)) {
+      newErrors.roleName = "El nombre del rol no puede contener números.";
     }
-    if (!role?.id) {
-      toast.error("Error: No se pudo identificar el rol.");
-      return;
+
+    if (selectedPermissions.length === 0) {
+      newErrors.selectedPermissions = "Debe seleccionar al menos un permiso.";
     }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) return;
 
     try {
       await axios.put(`http://localhost:2025/api/role/${role.id}`, {
@@ -86,8 +81,6 @@ const EditRoleModal = ({ show, handleClose, onRoleUpdated, role }) => {
       toast.error("Error al actualizar el rol.");
     }
   };
-
-  console.log("🎨 Renderizando con selectedPermissions:", selectedPermissions);
 
   return (
     <Modal show={show} onHide={handleClose} backdrop="static">
@@ -104,13 +97,22 @@ const EditRoleModal = ({ show, handleClose, onRoleUpdated, role }) => {
               <Form.Control
                 type="text"
                 value={roleName}
-                onChange={(e) => setRoleName(e.target.value)}
+                onChange={(e) => {
+                  setRoleName(e.target.value);
+                  if (e.target.value.trim() && !/\d/.test(e.target.value)) {
+                    setErrors(prev => ({ ...prev, roleName: "" }));
+                  }
+                }}
                 placeholder="Ingrese el nombre del rol"
+                isInvalid={!!errors.roleName}
               />
+              <Form.Control.Feedback type="invalid">
+                {errors.roleName}
+              </Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Permisos</Form.Label>
-              <Row>
+              <Form.Label className="required">Permisos</Form.Label>
+              <Row className={errors.selectedPermissions ? "border border-danger rounded p-2" : ""}>
                 {permissions.map((permission) => (
                   <Col key={permission.id} sm={6}>
                     <Form.Check
@@ -123,6 +125,9 @@ const EditRoleModal = ({ show, handleClose, onRoleUpdated, role }) => {
                   </Col>
                 ))}
               </Row>
+              {errors.selectedPermissions && (
+                <div className="text-danger mt-1">{errors.selectedPermissions}</div>
+              )}
             </Form.Group>
           </Form>
         )}

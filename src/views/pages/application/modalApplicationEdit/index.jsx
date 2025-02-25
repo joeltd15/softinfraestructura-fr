@@ -15,9 +15,10 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
         status: "",
         userId: "",
         photographicEvidence: "",
-        responsibleForSpace: "", // Nuevo campo agregado
+        responsibleForSpace: "",
     });
 
+    const [errors, setErrors] = useState({});
     const [Users, setUsers] = useState([]);
 
     useEffect(() => {
@@ -42,7 +43,7 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
                 status: application.status || "",
                 userId: application.userId || "",
                 photographicEvidence: application.photographicEvidence || "",
-                responsibleForSpace: application.responsibleForSpace || "", // Se asigna el valor recibido
+                responsibleForSpace: application.responsibleForSpace || "",
             }));
         }
     }, [application]);
@@ -50,14 +51,44 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setEditedApplication((prev) => ({ ...prev, [name]: value }));
+        setErrors((prev) => ({ ...prev, [name]: "" })); // Eliminar error al corregir
     };
 
     const handleFileChange = (e) => {
         setEditedApplication((prev) => ({ ...prev, photographicEvidence: e.target.files[0] }));
     };
 
+    const validateForm = () => {
+        let newErrors = {};
+
+        if (!editedApplication.dependence.trim()) {
+            newErrors.dependence = "La dependencia es obligatoria";
+        }
+        if (!editedApplication.location.trim()) {
+            newErrors.location = "El lugar es obligatorio";
+        }
+        if (!editedApplication.news.trim()) {
+            newErrors.news = "Los detalles son obligatorios";
+        }
+        if (!editedApplication.status.trim()) {
+            newErrors.status = "El estado es obligatorio";
+        }
+        if (!editedApplication.reportType.trim()) {
+            newErrors.reportType = "El tipo de solicitud es obligatorio";
+        }
+        if (!editedApplication.responsibleForSpace.trim()) {
+            newErrors.responsibleForSpace = "El responsable del espacio es obligatorio";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        if (!validateForm()) return; // Si hay errores, no envía el formulario
+
         const formData = new FormData();
         for (const key in editedApplication) {
             if (key === "photographicEvidence" && editedApplication[key] instanceof File) {
@@ -85,7 +116,11 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
                                 value={editedApplication.dependence}
                                 onChange={handleChange}
                                 placeholder="Ingrese la dependencia"
+                                isInvalid={!!errors.dependence}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.dependence}
+                            </Form.Control.Feedback>
                         </Col>
                         <Col sm="6">
                             <Form.Label className="required">Lugar</Form.Label>
@@ -95,9 +130,14 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
                                 value={editedApplication.location}
                                 onChange={handleChange}
                                 placeholder="Ingrese el lugar"
+                                isInvalid={!!errors.location}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.location}
+                            </Form.Control.Feedback>
                         </Col>
                     </Form.Group>
+
                     <Form.Group className="p-2" as={Row} controlId="formDependence">
                         <Form.Label className="required">Detalles</Form.Label>
                         <Form.Control
@@ -107,8 +147,13 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
                             value={editedApplication.news}
                             onChange={handleChange}
                             placeholder="Describa los detalles del reporte"
+                            isInvalid={!!errors.news}
                         />
+                        <Form.Control.Feedback type="invalid">
+                            {errors.news}
+                        </Form.Control.Feedback>
                     </Form.Group>
+
                     <Form.Group className="mb-3" as={Row} controlId="formLocation">
                         <Col sm="6">
                             <Form.Label className='required'>Estado</Form.Label>
@@ -116,12 +161,16 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
                                 value={editedApplication.status}
                                 onChange={handleChange}
                                 name="status"
+                                isInvalid={!!errors.status}
                             >
                                 <option hidden="">...</option>
                                 <option>Asignada</option>
                                 <option>Realizado</option>
                                 <option>En espera por falta de material</option>
                             </Form.Select>
+                            <Form.Control.Feedback type="invalid">
+                                {errors.status}
+                            </Form.Control.Feedback>
                         </Col>
                         <Col sm="6">
                             <Form.Label className='required'>Tipo de solicitud</Form.Label>
@@ -129,6 +178,7 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
                                 value={editedApplication.reportType}
                                 name="reportType"
                                 disabled
+                                isInvalid={!!errors.reportType}
                             >
                                 <option>Seleccione un tipo</option>
                                 <option value="Electricidad">Electricidad</option>
@@ -141,10 +191,14 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
                                 <option value="Mobiliario">Mobiliario</option>
                                 <option value="Sistemas y redes">Sistemas y redes</option>
                             </Form.Select>
+                            <Form.Control.Feedback type="invalid">
+                                {errors.reportType}
+                            </Form.Control.Feedback>
                         </Col>
                     </Form.Group>
+
                     <Form.Group className="p-2" as={Row} controlId="formResponsibleForSpace">
-                        <Form.Label  className='required'>Responsable del Espacio</Form.Label>
+                        <Form.Label className='required'>Responsable del Espacio</Form.Label>
                         <Form.Control
                             type="text"
                             name="responsibleForSpace"
@@ -152,7 +206,11 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
                             onChange={handleChange}
                             placeholder="Ingrese el responsable del espacio"
                             readOnly
+                            isInvalid={!!errors.responsibleForSpace}
                         />
+                        <Form.Control.Feedback type="invalid">
+                            {errors.responsibleForSpace}
+                        </Form.Control.Feedback>
                     </Form.Group>
 
                     <Form.Group className="mb-3 p-2" as={Row} controlId="forType">

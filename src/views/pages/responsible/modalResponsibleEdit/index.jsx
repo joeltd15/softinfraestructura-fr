@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
-import { Col, Row } from 'react-bootstrap';
+import { Col, Row } from "react-bootstrap";
 import axios from "axios";
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const RESPONSABILITY_TYPES = [
     "Electricidad",
@@ -23,6 +23,7 @@ const EditResponsibleModal = ({ show, handleClose, onResponsibleUpdated, respons
     const [users, setUsers] = useState([]);
     const [userId, setUserId] = useState("");
     const [responsibilities, setResponsibilities] = useState([]);
+    const [errors, setErrors] = useState({ userId: false, responsibilities: false });
 
     useEffect(() => {
         getUsers();
@@ -31,15 +32,9 @@ const EditResponsibleModal = ({ show, handleClose, onResponsibleUpdated, respons
     useEffect(() => {
         if (responsible) {
             setUserId(responsible.userId);
-            // Asegurar que se obtiene correctamente la lista de responsabilidades
-            const selectedResponsibilities = responsible.Responsibilities?.map(r => r.name) || [];
-            setResponsibilities(selectedResponsibilities);
+            setResponsibilities(responsible.Responsibilities?.map(r => r.name) || []);
         }
     }, [responsible]);
-    
-
-
-
 
     const getUsers = async () => {
         try {
@@ -50,29 +45,42 @@ const EditResponsibleModal = ({ show, handleClose, onResponsibleUpdated, respons
         }
     };
 
+    const handleUserChange = (e) => {
+        const value = e.target.value;
+        setUserId(value);
+        setErrors((prev) => ({ ...prev, userId: !value }));
+    };
+
     const handleCheckboxChange = (type) => {
-        setResponsibilities((prev) =>
-            prev.includes(type)
-                ? prev.filter((t) => t !== type)  // Remueve si ya está seleccionado
-                : [...prev, type]  // Agrega si no está seleccionado
-        );
+        const updatedResponsibilities = responsibilities.includes(type)
+            ? responsibilities.filter((t) => t !== type)
+            : [...responsibilities, type];
+
+        setResponsibilities(updatedResponsibilities);
+        setErrors((prev) => ({ ...prev, responsibilities: updatedResponsibilities.length === 0 }));
+    };
+
+    const validateForm = () => {
+        const newErrors = {
+            userId: !userId,
+            responsibilities: responsibilities.length === 0,
+        };
+        setErrors(newErrors);
+        return !newErrors.userId && !newErrors.responsibilities;
     };
 
     const handleSubmit = async () => {
-        if (!userId || responsibilities.length === 0) {
+        if (!validateForm()) {
             toast.error("Todos los campos son obligatorios.");
             return;
         }
 
-        const requestData = {
-            userId,
-            responsibilities, // Ahora enviamos un array de strings directamente
-        };
+        const requestData = { userId, responsibilities };
 
         try {
             const response = await axios.put(`http://localhost:2025/api/responsible/${responsible.id}`, requestData);
             toast.success("Responsable actualizado correctamente.");
-            onResponsibleUpdated(response.data); // Pasamos el responsable actualizado
+            onResponsibleUpdated(response.data);
             handleClose();
         } catch (error) {
             console.error("Error al actualizar el responsable:", error);
@@ -87,17 +95,26 @@ const EditResponsibleModal = ({ show, handleClose, onResponsibleUpdated, respons
             </Modal.Header>
             <Modal.Body>
                 <Form>
+                    {/* Campo Usuario */}
                     <Form.Group className="mb-3" as={Row}>
                         <Col sm="12">
                             <Form.Label className="required">Usuario</Form.Label>
-                            <Form.Select value={userId} onChange={(e) => setUserId(e.target.value)}>
+                            <Form.Select
+                                value={userId}
+                                onChange={handleUserChange}
+                                onBlur={() => setErrors((prev) => ({ ...prev, userId: !userId }))}
+                                isInvalid={errors.userId}
+                            >
                                 <option value="">Seleccione un usuario</option>
                                 {users.map(user => (
                                     <option key={user.id} value={user.id}>{user.name}</option>
                                 ))}
                             </Form.Select>
+                            {errors.userId && <Form.Control.Feedback type="invalid">Debe seleccionar un usuario.</Form.Control.Feedback>}
                         </Col>
                     </Form.Group>
+
+                    {/* Tipos de Responsabilidad */}
                     <Form.Group className="mb-3" as={Row}>
                         <Col sm="12">
                             <Form.Label className="required">Tipos de Responsabilidad</Form.Label>
@@ -106,11 +123,13 @@ const EditResponsibleModal = ({ show, handleClose, onResponsibleUpdated, respons
                                     key={index}
                                     type="checkbox"
                                     label={type}
-                                    checked={responsibilities.includes(type)} // Ahora sí los compara correctamente
+                                    checked={responsibilities.includes(type)}
                                     onChange={() => handleCheckboxChange(type)}
                                 />
-
                             ))}
+                            {errors.responsibilities && (
+                                <div className="text-danger">Debe seleccionar al menos un tipo de responsabilidad.</div>
+                            )}
                         </Col>
                     </Form.Group>
                 </Form>

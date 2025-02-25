@@ -9,6 +9,7 @@ const Dashboard = () => {
   const [totalSolicitudes, setTotalSolicitudes] = useState(0);
   const [totalReservas, setTotalReservas] = useState(0);
   const [reportData, setReportData] = useState([]);
+  const [sceneryData, setSceneryData] = useState([]); // Estado para escenarios
 
   useEffect(() => {
     axios.get("http://localhost:2025/api/user").then((res) => {
@@ -21,6 +22,20 @@ const Dashboard = () => {
 
     axios.get("http://localhost:2025/api/reservation").then((res) => {
       setTotalReservas(res.data.length);
+      
+      // Procesar datos de escenarios
+      const sceneryCounts = res.data.reduce((acc, resv) => {
+        acc[resv.scenery] = (acc[resv.scenery] || 0) + 1;
+        return acc;
+      }, {});
+
+      // Convertir a formato de gráfico
+      const sceneryChartData = Object.keys(sceneryCounts).map((key) => ({
+        name: key,
+        value: sceneryCounts[key],
+      }));
+
+      setSceneryData(sceneryChartData);
     });
 
     axios.get("http://localhost:2025/api/application").then((res) => {
@@ -104,6 +119,28 @@ const Dashboard = () => {
                 <Tooltip />
                 <Legend />
               </PieChart>
+            </ResponsiveContainer>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Nueva Sección: Escenarios con más registros */}
+      <Row className="mt-4">
+        <Col md={12}>
+          <Card className="shadow p-3">
+            <h6 className="text-center">Escenarios con más Reservas</h6>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={sceneryData} layout="vertical">
+                <XAxis type="number" />
+                <YAxis dataKey="name" type="category" />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="value" fill="#8884d8">
+                  {sceneryData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Bar>
+              </BarChart>
             </ResponsiveContainer>
           </Card>
         </Col>

@@ -4,11 +4,13 @@ import { MdDelete } from "react-icons/md";
 import { FaEye } from "react-icons/fa";
 import Tooltip from "@mui/material/Tooltip";
 import { FaCirclePlus } from "react-icons/fa6";
+import { FaPencilAlt } from "react-icons/fa"
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ViewUserModal from "./UserModalShow";
 import UserModalRegister from "./modalUser";
+import UserEditModal from "./modalUserEdit";
 import TablePagination from '../../../components/Paginator/index.jsx';
 
 const User = () => {
@@ -24,6 +26,8 @@ const User = () => {
     const [search, setSearch] = useState('');
     const [dataQt, setDataQt] = useState(4);
     const [currentPages, setCurrentPages] = useState(1);
+    const [openEditModal, setOpenEditModal] = useState(false);
+    const [selectedEditUser, setSelectedEditUser] = useState(null);
 
     useEffect(() => {
         getUsers();
@@ -54,7 +58,7 @@ const User = () => {
                 dato.phone?.toString().includes(searchTerm) ||
                 dato.status?.toString().includes(searchTerm)
             );
-        });        
+        });
     }
 
     const getUsers = async () => {
@@ -125,6 +129,15 @@ const User = () => {
         setOpenRegisterModal(false);
     };
 
+    const handleEdit = (user) => {
+        setSelectedEditUser(user);
+        setOpenEditModal(true);
+    };
+
+    const handleCloseEditModal = () => {
+        setOpenEditModal(false);
+        setSelectedEditUser(null);
+    };
 
     return (
         <div className="container">
@@ -148,7 +161,7 @@ const User = () => {
                     <table className="table">
                         <thead className="thead">
                             <tr>
-                                <th>Código</th>
+                                <th>#</th>
                                 <th>Nombre</th>
                                 <th>Email</th>
                                 <th>Teléfono</th>
@@ -172,6 +185,10 @@ const User = () => {
                                                 <button className="Table-button Show-button" onClick={() => handleOpenViewModal(user)}>
                                                     <FaEye />
                                                 </button>
+                                                <button className="Table-button Update-button" onClick={() => handleEdit(user)}>
+                                                    <FaPencilAlt />
+                                                </button>
+
                                                 <Tooltip title="Eliminar usuario">
                                                     <button className="Table-button Delete-button" onClick={() => handleOpenDeleteDialog(user.id)}>
                                                         <MdDelete />
@@ -233,6 +250,13 @@ const User = () => {
                 getUsers={getUsers}
             />
             <ViewUserModal show={openViewModal} handleClose={handleCloseViewModal} user={selectedUser} roles={roles} />
+            <UserEditModal
+                show={openEditModal}
+                handleClose={handleCloseEditModal}
+                getUsers={getUsers}
+                user={selectedEditUser}  // Pasamos los datos del usuario a editar
+            />
+
 
         </div>
     );

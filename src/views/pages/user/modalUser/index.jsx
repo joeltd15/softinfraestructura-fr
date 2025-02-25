@@ -5,7 +5,6 @@ import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { Eye, EyeOff } from "lucide-react"
 
-
 const ModalRegistro = ({ show, handleClose }) => {
     const [roles, setRoles] = useState([])
     const [formData, setFormData] = useState({
@@ -16,6 +15,8 @@ const ModalRegistro = ({ show, handleClose }) => {
         phone: "",
         roleId: "",
     })
+
+    const [errors, setErrors] = useState({})
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
@@ -26,31 +27,54 @@ const ModalRegistro = ({ show, handleClose }) => {
             .catch((error) => console.error("Error al obtener roles:", error))
     }, [])
 
+    const validateField = (name, value) => {
+        let error = ""
+
+        switch (name) {
+            case "name":
+                if (!value.trim()) error = "El nombre es obligatorio"
+                else if (/\d/.test(value)) error = "El nombre no debe contener números"
+                break
+            case "email":
+                if (!value.trim()) error = "El email es obligatorio"
+                else if (!/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/.test(value))
+                    error = "Formato de email inválido"
+                break
+            case "password":
+                if (!value.trim()) error = "La contraseña es obligatoria"
+                break
+            case "confirmPassword":
+                if (!value.trim()) error = "Debe confirmar la contraseña"
+                else if (value !== formData.password) error = "Las contraseñas no coinciden"
+                break
+            case "phone":
+                if (!value.trim()) error = "El teléfono es obligatorio"
+                else if (!/^\d{10}$/.test(value)) error = "El teléfono debe tener 10 dígitos numéricos"
+                break
+            case "roleId":
+                if (!value) error = "Debe seleccionar un rol"
+                break
+            default:
+                break
+        }
+
+        setErrors((prevErrors) => ({ ...prevErrors, [name]: error }))
+    }
+
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value })
+        const { name, value } = e.target
+        setFormData({ ...formData, [name]: value })
+        validateField(name, value)
     }
 
     const handleSubmit = async () => {
-        if (formData.password !== formData.confirmPassword) {
-            toast.error("Las contraseñas no coinciden")
-            return
-        }
+        const newErrors = {}
+        Object.keys(formData).forEach((key) => validateField(key, formData[key]))
 
-        if (!formData.name || !formData.email || !formData.password || !formData.roleId || !formData.phone) {
-            toast.error("Todos los campos son obligatorios")
-            return
-        }
-
-        const dataToSend = {
-            name: formData.name.trim(),
-            email: formData.email.trim(),
-            password: formData.password.trim(),
-            phone: formData.phone.trim(),
-            roleId: formData.roleId,
-        }
+        if (Object.values(errors).some((error) => error)) return
 
         try {
-            await axios.post("http://localhost:2025/api/auth/register", dataToSend)
+            await axios.post("http://localhost:2025/api/auth/register", formData)
             toast.success("Usuario registrado correctamente")
 
             setFormData({
@@ -61,20 +85,12 @@ const ModalRegistro = ({ show, handleClose }) => {
                 phone: "",
                 roleId: "",
             })
-
+            setErrors({})
             handleClose()
         } catch (error) {
             console.error("Error al registrar usuario:", error)
             toast.error(error.response?.data?.message || "Error al registrar usuario")
         }
-    }
-
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword)
-    }
-
-    const toggleConfirmPasswordVisibility = () => {
-        setShowConfirmPassword(!showConfirmPassword)
     }
 
     return (
@@ -84,30 +100,38 @@ const ModalRegistro = ({ show, handleClose }) => {
             </Modal.Header>
             <Modal.Body>
                 <Form>
-                    <Form.Group className="mb-3" as={Row} controlId="formName">
+                    <Row className="mb-3">
                         <Col sm="6">
-                            <Form.Label className="required">Nombre</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleChange}
-                                placeholder="Ingrese el nombre"
-                            />
+                            <Form.Group controlId="formName">
+                                <Form.Label className="required">Nombre</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    placeholder="Ingrese el nombre"
+                                    className={errors.name ? "is-invalid" : ""}
+                                />
+                                <div className="invalid-feedback">{errors.name}</div>
+                            </Form.Group>
                         </Col>
                         <Col sm="6">
-                            <Form.Label className="required">Teléfono</Form.Label>
-                            <Form.Control
-                                type="tel"
-                                name="phone"
-                                value={formData.phone}
-                                onChange={handleChange}
-                                placeholder="Ingrese el teléfono"
-                            />
+                            <Form.Group controlId="formPhone">
+                                <Form.Label className="required">Teléfono</Form.Label>
+                                <Form.Control
+                                    type="tel"
+                                    name="phone"
+                                    value={formData.phone}
+                                    onChange={handleChange}
+                                    placeholder="Ingrese el teléfono"
+                                    className={errors.phone ? "is-invalid" : ""}
+                                />
+                                <div className="invalid-feedback">{errors.phone}</div>
+                            </Form.Group>
                         </Col>
-                    </Form.Group>
+                    </Row>
 
-                    <Form.Group className="mb-3 p-3" as={Row} controlId="formEmail">
+                    <Form.Group className="mb-3" controlId="formEmail">
                         <Form.Label className="required">Email</Form.Label>
                         <Form.Control
                             type="email"
@@ -115,56 +139,67 @@ const ModalRegistro = ({ show, handleClose }) => {
                             value={formData.email}
                             onChange={handleChange}
                             placeholder="Ingrese el email"
+                            className={errors.email ? "is-invalid" : ""}
                         />
+                        <div className="invalid-feedback">{errors.email}</div>
                     </Form.Group>
 
-                    <Form.Group className="mb-3" as={Row} controlId="formPassword">
+                    <Row className="mb-3">
                         <Col sm="6">
-                            <Form.Label className="required">Contraseña</Form.Label>
-                            <div className="position-relative">
-                                <Form.Control
-                                    type={showPassword ? "text" : "password"}
-                                    name="password"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    placeholder="Ingrese la contraseña"
-                                />
-                                <Button
-                                    variant="link"
-                                    onClick={togglePasswordVisibility}
-                                    className="position-absolute end-0 top-50 translate-middle-y"
-                                >
-                                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                                </Button>
-                            </div>
+                            <Form.Group controlId="formPassword">
+                                <Form.Label className="required">Contraseña</Form.Label>
+                                <div className="position-relative">
+                                    <Form.Control
+                                        type={showPassword ? "text" : "password"}
+                                        name="password"
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                        placeholder="Ingrese la contraseña"
+                                        className={errors.password ? "is-invalid" : ""}
+                                    />
+                                    <Button
+                                        variant="link"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="position-absolute end-0 top-50 translate-middle-y"
+                                    >
+                                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                    </Button>
+                                    <div className="invalid-feedback">{errors.password}</div>
+                                </div>
+                            </Form.Group>
                         </Col>
                         <Col sm="6">
-                            <Form.Label className="required">Confirmar Contraseña</Form.Label>
-                            <div className="position-relative">
-                                <Form.Control
-                                    type={showConfirmPassword ? "text" : "password"}
-                                    name="confirmPassword"
-                                    value={formData.confirmPassword}
-                                    onChange={handleChange}
-                                    placeholder="Confirme la contraseña"
-                                />
-                                <Button
-                                    variant="link"
-                                    onClick={toggleConfirmPasswordVisibility}
-                                    className="position-absolute end-0 top-50 translate-middle-y"
-                                >
-                                    {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                                </Button>
-                            </div>
+                            <Form.Group controlId="formConfirmPassword">
+                                <Form.Label className="required">Confirmar Contraseña</Form.Label>
+                                <div className="position-relative">
+                                    <Form.Control
+                                        type={showConfirmPassword ? "text" : "password"}
+                                        name="confirmPassword"
+                                        value={formData.confirmPassword}
+                                        onChange={handleChange}
+                                        placeholder="Confirme la contraseña"
+                                        className={errors.confirmPassword ? "is-invalid" : ""}
+                                    />
+                                    <Button
+                                        variant="link"
+                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                        className="position-absolute end-0 top-50 translate-middle-y"
+                                    >
+                                        {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                    </Button>
+                                    <div className="invalid-feedback">{errors.confirmPassword}</div>
+                                </div>
+                            </Form.Group>
                         </Col>
-                    </Form.Group>
+                    </Row>
 
-                    <Form.Group className="mb-3" as={Row} controlId="formRole">
+                    <Form.Group className="mb-3" controlId="formRole">
                         <Form.Label className="required">Rol</Form.Label>
                         <Form.Select
                             name="roleId"
                             value={formData.roleId}
                             onChange={handleChange}
+                            className={errors.roleId ? "is-invalid" : ""}
                         >
                             <option value="">Seleccione un rol</option>
                             {roles.map((role) => (
@@ -173,20 +208,16 @@ const ModalRegistro = ({ show, handleClose }) => {
                                 </option>
                             ))}
                         </Form.Select>
+                        <div className="invalid-feedback">{errors.roleId}</div>
                     </Form.Group>
-
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <Button className="buttons-form Button-next" onClick={handleClose}>
-                    Cancelar
-                </Button>
-                <Button className="buttons-form Button-save" onClick={handleSubmit}>
-                    Registrar
-                </Button>
+                <Button className="buttons-form Button-next" onClick={handleClose}>Cancelar</Button>
+                <Button className="buttons-form Button-save" onClick={handleSubmit}>Registrar</Button>
             </Modal.Footer>
         </Modal>
     )
 }
 
-export default ModalRegistro;
+export default ModalRegistro

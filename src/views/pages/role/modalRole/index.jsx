@@ -11,6 +11,7 @@ const RegisterRoleModal = ({ show, handleClose, onRoleCreated }) => {
     const [roleName, setRoleName] = useState("");
     const [permissions, setPermissions] = useState([]);
     const [selectedPermissions, setSelectedPermissions] = useState([]);
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         const fetchPermissions = async () => {
@@ -25,22 +26,60 @@ const RegisterRoleModal = ({ show, handleClose, onRoleCreated }) => {
 
         if (show) {
             fetchPermissions();
+            setErrors({}); 
+            setRoleName(""); 
+            setSelectedPermissions([]);
         }
     }, [show]);
 
+    const handleRoleChange = (e) => {
+        const value = e.target.value;
+        setRoleName(value);
+
+        // Validación en tiempo real
+        if (!value.trim()) {
+            setErrors(prev => ({ ...prev, roleName: "El nombre del rol es obligatorio." }));
+        } else if (/\d/.test(value)) {
+            setErrors(prev => ({ ...prev, roleName: "El nombre del rol no puede contener números." }));
+        } else {
+            setErrors(prev => ({ ...prev, roleName: null }));
+        }
+    };
+
     const handlePermissionChange = (permissionId) => {
-        setSelectedPermissions(prev =>
-            prev.includes(permissionId)
+        setSelectedPermissions(prev => {
+            const newPermissions = prev.includes(permissionId)
                 ? prev.filter(id => id !== permissionId)
-                : [...prev, permissionId]
-        );
+                : [...prev, permissionId];
+
+            // Validación en tiempo real
+            if (newPermissions.length > 0) {
+                setErrors(prev => ({ ...prev, selectedPermissions: null }));
+            }
+
+            return newPermissions;
+        });
+    };
+
+    const validateForm = () => {
+        let newErrors = {};
+
+        if (!roleName.trim()) {
+            newErrors.roleName = "El nombre del rol es obligatorio.";
+        } else if (/\d/.test(roleName)) {
+            newErrors.roleName = "El nombre del rol no puede contener números.";
+        }
+
+        if (selectedPermissions.length === 0) {
+            newErrors.selectedPermissions = "Debe seleccionar al menos un permiso.";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = async () => {
-        if (!roleName.trim()) {
-            toast.error("El nombre del rol es obligatorio.");
-            return;
-        }
+        if (!validateForm()) return;
 
         const requestData = {
             name: roleName,
@@ -48,7 +87,7 @@ const RegisterRoleModal = ({ show, handleClose, onRoleCreated }) => {
         };
 
         try {
-            await axios.post("http://localhost:2025/api/role", requestData);  // Ruta corregida
+            await axios.post("http://localhost:2025/api/role", requestData);
             toast.success("Rol registrado correctamente.");
             onRoleCreated();
             handleClose();
@@ -65,18 +104,25 @@ const RegisterRoleModal = ({ show, handleClose, onRoleCreated }) => {
             </Modal.Header>
             <Modal.Body>
                 <Form>
+                    {/* Campo Nombre del Rol */}
                     <Form.Group className="mb-3">
                         <Form.Label className="required">Nombre del Rol</Form.Label>
                         <Form.Control
                             type="text"
                             value={roleName}
-                            onChange={(e) => setRoleName(e.target.value)}
+                            onChange={handleRoleChange}
                             placeholder="Ingrese el nombre del rol"
+                            isInvalid={!!errors.roleName}
                         />
+                        <Form.Control.Feedback type="invalid">
+                            {errors.roleName}
+                        </Form.Control.Feedback>
                     </Form.Group>
+
+                    {/* Campo Permisos */}
                     <Form.Group className="mb-3">
-                        <Form.Label>Permisos</Form.Label>
-                        <Row>
+                        <Form.Label className="required">Permisos</Form.Label>
+                        <Row className={errors.selectedPermissions ? "border border-danger rounded p-2" : ""}>
                             {permissions.map(permission => (
                                 <Col key={permission.id} sm={6}>
                                     <Form.Check
@@ -89,6 +135,9 @@ const RegisterRoleModal = ({ show, handleClose, onRoleCreated }) => {
                                 </Col>
                             ))}
                         </Row>
+                        {errors.selectedPermissions && (
+                            <div className="text-danger mt-1">{errors.selectedPermissions}</div>
+                        )}
                     </Form.Group>
                 </Form>
             </Modal.Body>
