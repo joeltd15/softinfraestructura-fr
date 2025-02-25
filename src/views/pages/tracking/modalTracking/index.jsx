@@ -4,8 +4,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import { Col, Row } from "react-bootstrap";
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useAlert } from '../../../../assets/functions/index';
 
 const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignmentId }) => {
   const [observations, setObservations] = useState("");
@@ -16,6 +15,8 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
   const [assignmentId, setAssignmentId] = useState("");
   const [assignments, setAssignments] = useState([]);
   const [errors, setErrors] = useState({});
+  const { showAlert } = useAlert();
+
 
   useEffect(() => {
     if (selectedAssignmentId) {
@@ -49,7 +50,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
 
   const handleSubmit = async () => {
     if (!validateFields()) {
-      toast.error("Por favor, completa todos los campos obligatorios.");
+      alert.error("Por favor, completa todos los campos obligatorios.");
       return;
     }
 
@@ -66,22 +67,16 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
     formData.append("assignmentId", assignmentId);
     formData.append("dateService", today);
 
-    const registerRequest = axios.post("http://localhost:2025/api/tracking", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-
-    toast.promise(registerRequest, {
-      pending: "Registrando seguimiento...",
-      success: "Seguimiento registrado correctamente",
-      error: "Error al registrar el seguimiento",
-    });
-
     try {
-      await registerRequest;
+      await axios.post("http://localhost:2025/api/tracking", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      alert.success("Seguimiento registrado correctamente");
       onSolicitudCreated();
       setTimeout(() => handleClose(), 500);
     } catch (error) {
       console.error("Error al registrar seguimiento:", error);
+      alert.error("Error al registrar el seguimiento");
     }
   };
 
@@ -135,7 +130,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
               </Form.Group>
             </Col>
           </Row>
-
+          
           <Row className="mb-3">
             <Col sm={12}>
               <Form.Group>
@@ -153,56 +148,6 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
                 <Form.Control.Feedback type="invalid">
                   {errors.observations}
                 </Form.Control.Feedback>
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <Row className="mb-3">
-            <Col sm={12}>
-              <Form.Group>
-                <Form.Label className="required">Acciones Tomadas</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  value={actionsTaken}
-                  onChange={(e) => {
-                    setActionsTaken(e.target.value);
-                    setErrors((prev) => ({ ...prev, actionsTaken: "" }));
-                  }}
-                  isInvalid={!!errors.actionsTaken}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.actionsTaken}
-                </Form.Control.Feedback>
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <Row className="mb-3">
-            <Col sm={12}>
-              <Form.Group>
-                <Form.Label className="required">Estado</Form.Label>
-                <Form.Select
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                >
-                  <option value="Realizado">Realizado</option>
-                  <option value="Cancelado">Cancelado</option>
-                  <option value="En espera por falta de material">En espera por falta de material</option>
-                </Form.Select>
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <Row className="mb-3">
-            <Col sm={12}>
-              <Form.Group>
-                <Form.Label>Evidencia Fotográfica</Form.Label>
-                <Form.Control
-                  type="file"
-                  onChange={(e) => setPhotographicEvidence(e.target.files[0])}
-                  accept="image/*"
-                />
               </Form.Group>
             </Col>
           </Row>

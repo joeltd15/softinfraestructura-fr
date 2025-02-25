@@ -4,14 +4,14 @@ import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import { Col, Row } from 'react-bootstrap';
 import axios from "axios";
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useAlert } from '../../../../assets/functions/index';
 
 const RegisterRoleModal = ({ show, handleClose, onRoleCreated }) => {
     const [roleName, setRoleName] = useState("");
     const [permissions, setPermissions] = useState([]);
     const [selectedPermissions, setSelectedPermissions] = useState([]);
     const [errors, setErrors] = useState({});
+    const { showAlert } = useAlert();
 
     useEffect(() => {
         const fetchPermissions = async () => {
@@ -20,14 +20,14 @@ const RegisterRoleModal = ({ show, handleClose, onRoleCreated }) => {
                 setPermissions(response.data);
             } catch (error) {
                 console.error("Error al obtener permisos:", error);
-                toast.error("Error al obtener permisos.");
+                showAlert("Error al obtener permisos.", "error");
             }
         };
 
         if (show) {
             fetchPermissions();
-            setErrors({}); 
-            setRoleName(""); 
+            setErrors({});
+            setRoleName("");
             setSelectedPermissions([]);
         }
     }, [show]);
@@ -52,7 +52,6 @@ const RegisterRoleModal = ({ show, handleClose, onRoleCreated }) => {
                 ? prev.filter(id => id !== permissionId)
                 : [...prev, permissionId];
 
-            // Validación en tiempo real
             if (newPermissions.length > 0) {
                 setErrors(prev => ({ ...prev, selectedPermissions: null }));
             }
@@ -88,12 +87,12 @@ const RegisterRoleModal = ({ show, handleClose, onRoleCreated }) => {
 
         try {
             await axios.post("http://localhost:2025/api/role", requestData);
-            toast.success("Rol registrado correctamente.");
+            showAlert("Rol registrado correctamente.", "success");
             onRoleCreated();
             handleClose();
         } catch (error) {
             console.error("Error al registrar el rol:", error);
-            toast.error("Error al registrar el rol.");
+            showAlert("Error al registrar el rol.", "error");
         }
     };
 

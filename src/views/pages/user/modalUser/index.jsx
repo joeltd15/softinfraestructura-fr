@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
 import { Modal, Button, Form, Row, Col } from "react-bootstrap"
 import axios from "axios"
-import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { Eye, EyeOff } from "lucide-react"
+import { useAlert } from '../../../../assets/functions/index';
 
 const ModalRegistro = ({ show, handleClose }) => {
     const [roles, setRoles] = useState([])
@@ -19,6 +19,8 @@ const ModalRegistro = ({ show, handleClose }) => {
     const [errors, setErrors] = useState({})
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+    const { showAlert } = useAlert();
+
 
     useEffect(() => {
         axios
@@ -75,7 +77,8 @@ const ModalRegistro = ({ show, handleClose }) => {
 
         try {
             await axios.post("http://localhost:2025/api/auth/register", formData)
-            toast.success("Usuario registrado correctamente")
+            showAlert("Usuario registrado correctamente", 'success');
+
 
             setFormData({
                 name: "",
@@ -89,7 +92,7 @@ const ModalRegistro = ({ show, handleClose }) => {
             handleClose()
         } catch (error) {
             console.error("Error al registrar usuario:", error)
-            toast.error(error.response?.data?.message || "Error al registrar usuario")
+            showAlert(error.response?.data?.message || "Error al registrar usuario", 'error');
         }
     }
 

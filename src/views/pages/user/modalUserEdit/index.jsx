@@ -1,11 +1,10 @@
-"use client"
-
 import { useEffect, useState } from "react"
 import { Modal, Button, Form, Row, Col, InputGroup } from "react-bootstrap"
 import { FaExclamationCircle } from "react-icons/fa"
 import axios from "axios"
-import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
+import { useAlert } from '../../../../assets/functions/index';
+
 
 const UserEditModal = ({ show, handleClose, getUsers, user }) => {
   const [roles, setRoles] = useState([])
@@ -17,6 +16,8 @@ const UserEditModal = ({ show, handleClose, getUsers, user }) => {
     roleId: "",
   })
   const [errors, setErrors] = useState({})
+  const { showAlert } = useAlert();
+
 
   useEffect(() => {
     axios
@@ -24,6 +25,12 @@ const UserEditModal = ({ show, handleClose, getUsers, user }) => {
       .then((response) => setRoles(response.data))
       .catch((error) => console.error("Error al obtener roles:", error))
   }, [])
+
+  useEffect(() => {
+    return () => {
+        toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
+    };
+}, []);
 
   useEffect(() => {
     if (user) {
@@ -83,18 +90,18 @@ const UserEditModal = ({ show, handleClose, getUsers, user }) => {
     setErrors(newErrors)
   
     if (Object.keys(newErrors).length > 0) {
-      toast.error("Por favor, corrija los errores antes de guardar")
+      showAlert("Por favor, corrija los errores antes de guardar", 'error');
       return
     }
   
     try {
       await axios.put(`http://localhost:2025/api/user/${user.id}`, formData)
-      toast.success("Usuario actualizado correctamente")
+      showAlert("Usuario actualizado correctamente", 'success');
       handleClose()
       getUsers()
     } catch (error) {
       console.error("Error al actualizar usuario:", error)
-      toast.error(error.response?.data?.message || "Error al actualizar usuario")
+      showAlert(error.response?.data?.message || "Error al actualizar usuario", 'error');
     }
   }
   

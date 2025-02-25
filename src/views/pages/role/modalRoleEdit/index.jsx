@@ -4,8 +4,7 @@ import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import { Col, Row } from "react-bootstrap";
 import axios from "axios";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useAlert } from '../../../../assets/functions/index';
 
 const EditRoleModal = ({ show, handleClose, onRoleUpdated, role }) => {
   const [roleName, setRoleName] = useState("");
@@ -13,6 +12,8 @@ const EditRoleModal = ({ show, handleClose, onRoleUpdated, role }) => {
   const [selectedPermissions, setSelectedPermissions] = useState([]);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const { showAlert } = useAlert();
+
 
   const fetchPermissions = useCallback(async () => {
     try {
@@ -21,7 +22,7 @@ const EditRoleModal = ({ show, handleClose, onRoleUpdated, role }) => {
       setPermissions(response.data);
     } catch (error) {
       console.error("❌ Error al obtener permisos:", error);
-      toast.error("Error al obtener permisos.");
+      showAlert("Error al obtener permisos.", "error");
     } finally {
       setIsLoading(false);
     }
@@ -73,12 +74,12 @@ const EditRoleModal = ({ show, handleClose, onRoleUpdated, role }) => {
         name: roleName,
         permissions: selectedPermissions,
       });
-      toast.success("Rol actualizado correctamente.");
+      showAlert("Rol actualizado correctamente.", "success");
       onRoleUpdated();
       handleClose();
     } catch (error) {
       console.error("❌ Error al actualizar el rol:", error);
-      toast.error("Error al actualizar el rol.");
+      showAlert("Error al actualizar el rol.", "error");
     }
   };
 

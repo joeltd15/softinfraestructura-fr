@@ -6,12 +6,13 @@ import Tooltip from "@mui/material/Tooltip";
 import { FaCirclePlus } from "react-icons/fa6";
 import { FaPencilAlt } from "react-icons/fa"
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ViewUserModal from "./UserModalShow";
 import UserModalRegister from "./modalUser";
 import UserEditModal from "./modalUserEdit";
 import TablePagination from '../../../components/Paginator/index.jsx';
+import { useAlert } from '../../../../assets/functions/index';
+
 
 const User = () => {
     const userUrl = "http://localhost:2025/api/user";
@@ -28,6 +29,8 @@ const User = () => {
     const [currentPages, setCurrentPages] = useState(1);
     const [openEditModal, setOpenEditModal] = useState(false);
     const [selectedEditUser, setSelectedEditUser] = useState(null);
+    const { showAlert } = useAlert();
+
 
     useEffect(() => {
         getUsers();
@@ -67,7 +70,7 @@ const User = () => {
             setUsers(response.data);
         } catch (error) {
             console.error("Error obteniendo usuarios:", error);
-            toast.error("No se pudieron cargar los usuarios.");
+            showAlert("No se pudieron cargar los usuarios.", 'error');
         }
     };
 
@@ -77,7 +80,8 @@ const User = () => {
             setRoles(response.data);
         } catch (error) {
             console.error("Error obteniendo roles:", error);
-            toast.error("No se pudieron cargar los roles.");
+            showAlert("No se pudieron cargar los roles.", 'error');
+            
         }
     };
 
@@ -101,10 +105,10 @@ const User = () => {
 
         try {
             await axios.delete(`${userUrl}/${selectedId}`);
-            toast.success("El usuario ha sido eliminado.");
+            showAlert("El usuario ha sido eliminado.", 'success');
             getUsers();
         } catch (error) {
-            toast.error("No se pudo eliminar el usuario.");
+            showAlert("No se pudo eliminar el usuario.", 'error');
             console.error("Error al eliminar:", error);
         } finally {
             handleCloseDeleteDialog();
@@ -158,59 +162,59 @@ const User = () => {
                             </div>
                         </div>
                     </div>
-          <div className="table-responsive">
-                    <table className="table">
-                        <thead className="thead">
-                            <tr>
-                                <th>#</th>
-                                <th>Nombre</th>
-                                <th>Email</th>
-                                <th>Teléfono</th>
-                                <th>Estado</th>
-                                <th>Rol</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody className="tbody">
-                            {
-                                results.length > 0 ? (
-                                    results.map((user) => (
-                                        <tr key={user.id}>
-                                            <td>{user.id}</td>
-                                            <td>{user.name}</td>
-                                            <td>{user.email}</td>
-                                            <td>{user.phone}</td>
-                                            <td>{user.status}</td>
-                                            <td>{getRoleName(user.roleId)}</td>
-                                            <td className="content-buttons">
-                                                <button className="Table-button Show-button" onClick={() => handleOpenViewModal(user)}>
-                                                    <FaEye />
-                                                </button>
-                                                <button className="Table-button Update-button" onClick={() => handleEdit(user)}>
-                                                    <FaPencilAlt />
-                                                </button>
-
-                                                <Tooltip title="Eliminar usuario">
-                                                    <button className="Table-button Delete-button" onClick={() => handleOpenDeleteDialog(user.id)}>
-                                                        <MdDelete />
+                    <div className="table-responsive">
+                        <table className="table">
+                            <thead className="thead">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Nombre</th>
+                                    <th>Email</th>
+                                    <th>Teléfono</th>
+                                    <th>Estado</th>
+                                    <th>Rol</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody className="tbody">
+                                {
+                                    results.length > 0 ? (
+                                        results.map((user) => (
+                                            <tr key={user.id}>
+                                                <td>{user.id}</td>
+                                                <td>{user.name}</td>
+                                                <td>{user.email}</td>
+                                                <td>{user.phone}</td>
+                                                <td>{user.status}</td>
+                                                <td>{getRoleName(user.roleId)}</td>
+                                                <td className="content-buttons">
+                                                    <button className="Table-button Show-button" onClick={() => handleOpenViewModal(user)}>
+                                                        <FaEye />
                                                     </button>
-                                                </Tooltip>
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    (
-                                        <tr>
-                                            <td colSpan={10} className='text-center'>
-                                                No hay usuarios disponibles
-                                            </td>
-                                        </tr>
-                                    )
+                                                    <button className="Table-button Update-button" onClick={() => handleEdit(user)}>
+                                                        <FaPencilAlt />
+                                                    </button>
 
-                                )
-                            }
-                        </tbody>
-                    </table>
+                                                    <Tooltip title="Eliminar usuario">
+                                                        <button className="Table-button Delete-button" onClick={() => handleOpenDeleteDialog(user.id)}>
+                                                            <MdDelete />
+                                                        </button>
+                                                    </Tooltip>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        (
+                                            <tr>
+                                                <td colSpan={10} className='text-center'>
+                                                    No hay usuarios disponibles
+                                                </td>
+                                            </tr>
+                                        )
+
+                                    )
+                                }
+                            </tbody>
+                        </table>
                     </div>
                     {
                         results.length > 0 ? (
