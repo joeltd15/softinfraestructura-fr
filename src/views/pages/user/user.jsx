@@ -158,6 +158,7 @@ const User = () => {
                             </div>
                         </div>
                     </div>
+          <div className="table-responsive">
                     <table className="table">
                         <thead className="thead">
                             <tr>
@@ -210,6 +211,7 @@ const User = () => {
                             }
                         </tbody>
                     </table>
+                    </div>
                     {
                         results.length > 0 ? (
                             <div className="row mb-5">

@@ -158,6 +158,7 @@ const Responsible = () => {
                 </div>
               </div>
             </div>
+          <div className="table-responsive">
             <table className="table">
               <thead className="thead">
                 <tr className="filters">
@@ -215,6 +216,7 @@ const Responsible = () => {
                 )}
               </tbody>
             </table>
+            </div>
             {results.length > 0 && (
               <div className="row mb-5">
                 <div className="col-sm-6 d-flex align-items-center justify-content-start">
