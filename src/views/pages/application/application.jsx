@@ -243,88 +243,90 @@ const Application = () => {
                                 </div>
                             </div>
                         </div>
-                        <table class="table">
-                            <thead className="thead">
-                                <tr>
-                                    <th>Código</th>
-                                    <th>Fecha del reporte</th>
-                                    <th>Centro/dependencia</th>
-                                    <th>Lugar</th>
-                                    <th>Detalles</th>
-                                    <th>Evidencia</th>
-                                    <th>Tipo de reporte</th>
-                                    <th>Estado</th>
-                                    <th>Usuario</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody className="tbody">
-                                {results.length > 0 ? (
-                                    results.map((application, i) => (
-                                        <tr key={application.id}>
-                                            <td>{application.id}</td>
-                                            <td>{new Date(application.reportDate).toISOString().split('T')[0]}</td>
-                                            <td>{application.dependence}</td>
-                                            <td>{application.location}</td>
-                                            <td>{application.news}</td>
-                                            <td><img src={application.photographicEvidence && application.photographicEvidence.trim() !== "" ? `http://localhost:2025/uploads/${application.photographicEvidence}` : "/noImage.png"} alt="" /></td>
-                                            <td>{application.reportType}</td>
-                                            <td>{application.status}</td>
-                                            <td>{userName(application.userId)}</td>
-                                            <td className="content-buttons">
-                                                <Tooltip title="Ver detalles de la solicitud">
-                                                    <button className="Table-button Show-button" onClick={() => handleShow(application)}><FaEye /></button>
-                                                </Tooltip>
-                                                {
-                                                    application.status == 'Realizado' && (
+                        <div className="table-responsive">
+                            <table class="table">
+                                <thead className="thead">
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Fecha del reporte</th>
+                                        <th>Centro/dependencia</th>
+                                        <th>Lugar</th>
+                                        <th>Detalles</th>
+                                        <th>Evidencia</th>
+                                        <th>Tipo de reporte</th>
+                                        <th>Estado</th>
+                                        <th>Usuario</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="tbody">
+                                    {results.length > 0 ? (
+                                        results.map((application, i) => (
+                                            <tr key={application.id}>
+                                                <td>{application.id}</td>
+                                                <td>{new Date(application.reportDate).toISOString().split('T')[0]}</td>
+                                                <td>{application.dependence}</td>
+                                                <td>{application.location}</td>
+                                                <td>{application.news}</td>
+                                                <td><img src={application.photographicEvidence && application.photographicEvidence.trim() !== "" ? `http://localhost:2025/uploads/${application.photographicEvidence}` : "/noImage.png"} alt="" /></td>
+                                                <td>{application.reportType}</td>
+                                                <td>{application.status}</td>
+                                                <td>{userName(application.userId)}</td>
+                                                <td className="content-buttons">
+                                                    <Tooltip title="Ver detalles de la solicitud">
+                                                        <button className="Table-button Show-button" onClick={() => handleShow(application)}><FaEye /></button>
+                                                    </Tooltip>
+                                                    {
+                                                        application.status == 'Realizado' && (
+                                                            <>
+                                                                <Tooltip title="Ver detalle del mantenimiento">
+                                                                    <button className="Table-button" ><FaVoteYea /></button>
+                                                                </Tooltip>
+                                                            </>
+                                                        )
+                                                    }
+                                                    {application.status !== 'Realizado' && (
                                                         <>
-                                                            <Tooltip title="Ver detalle del mantenimiento">
-                                                                <button className="Table-button" ><FaVoteYea /></button>
+                                                            <Tooltip title="Editar solicitud">
+                                                                <button className="Table-button Update-button" onClick={() => handleEdit(application)}>
+                                                                    <FaPencilAlt />
+                                                                </button>
+                                                            </Tooltip>
+                                                            <Tooltip title="Eliminar solicitud">
+                                                                <button className="Table-button Delete-button" onClick={() => handleOpenDeleteDialog(application.id)}>
+                                                                    <MdDelete />
+                                                                </button>
                                                             </Tooltip>
                                                         </>
-                                                    )
-                                                }
-                                                {application.status !== 'Realizado' && (
-                                                    <>
-                                                        <Tooltip title="Editar solicitud">
-                                                            <button className="Table-button Update-button" onClick={() => handleEdit(application)}>
-                                                                <FaPencilAlt />
+                                                    )}
+
+                                                    {(application.status !== 'Asignada' && application.status !== 'Realizado' && application.status != 'En espera por falta de material' && user.roleId == 1) && (
+                                                        <Tooltip title="Asignar encargado">
+                                                            <button className="Table-button Asign-button" onClick={() => {
+                                                                console.log("Asignando ID:", application.id);
+                                                                setShowAssign(true);
+                                                                setSelectId(application.id);
+                                                            }}>
+                                                                <FaUserPlus />
                                                             </button>
                                                         </Tooltip>
-                                                        <Tooltip title="Eliminar solicitud">
-                                                            <button className="Table-button Delete-button" onClick={() => handleOpenDeleteDialog(application.id)}>
-                                                                <MdDelete />
-                                                            </button>
-                                                        </Tooltip>
-                                                    </>
-                                                )}
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) :
+                                        (
+                                            <tr>
+                                                <td colSpan={10} className='text-center'>
+                                                    No hay solicitudes disponibles
+                                                </td>
+                                            </tr>
+                                        )
 
-                                                {(application.status !== 'Asignada' && application.status !== 'Realizado' && application.status != 'En espera por falta de material' && user.roleId == 1) && (
-                                                    <Tooltip title="Asignar encargado">
-                                                        <button className="Table-button Asign-button" onClick={() => {
-                                                            console.log("Asignando ID:", application.id);
-                                                            setShowAssign(true);
-                                                            setSelectId(application.id);
-                                                        }}>
-                                                            <FaUserPlus />
-                                                        </button>
-                                                    </Tooltip>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) :
-                                    (
-                                        <tr>
-                                            <td colSpan={10} className='text-center'>
-                                                No hay solicitudes disponibles
-                                            </td>
-                                        </tr>
-                                    )
-
-                                }
-                            </tbody>
-                        </table>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                         {
                             results.length > 0 ? (
                                 <div className="row mb-5">

@@ -1,6 +1,7 @@
-// src/App.js
-
 import React, { Suspense } from 'react'
+import 'primereact/resources/themes/lara-light-blue/theme.css';  // Tema (puedes cambiarlo)
+import 'primereact/resources/primereact.min.css'; // Estilos base de PrimeReact
+import 'primeicons/primeicons.css'; // Iconos de PrimeReact
 import { HashRouter, Route, Routes, Navigate } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify';
 import { CSpinner } from '@coreui/react'

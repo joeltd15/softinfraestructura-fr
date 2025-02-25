@@ -32,8 +32,16 @@ const Reservation = () => {
     try {
       const response = await axios.get("http://localhost:2025/api/reservation");
       const reservations = response.data;
-
-      const formattedEvents = reservations.map((reservation) => ({
+  
+      // Obtener usuario logueado
+      const user = JSON.parse(localStorage.getItem("user"));
+  
+      const filteredReservations = reservations.filter((reservation) => {
+        // Si el usuario no es admin (roleId !== 1), excluir eventos cancelados
+        return user.roleId === 1 || reservation.estatus !== "Cancelado";
+      });
+  
+      const formattedEvents = filteredReservations.map((reservation) => ({
         id: reservation.id,
         estatus: reservation.estatus,
         title: `${formatTime(reservation.startTime)} - ${formatTime(reservation.finishTime)}`,
@@ -41,12 +49,13 @@ const Reservation = () => {
         end: `${reservation.date}T${reservation.finishTime}`,
         className: getEventClass(reservation.estatus),
       }));
-
+  
       setEvents(formattedEvents);
     } catch (error) {
       console.error("Error al obtener reservas:", error);
     }
   };
+  
 
   // Asignar clases según estado
   const getEventClass = (estatus) => {
@@ -102,11 +111,33 @@ const Reservation = () => {
     });
   };
 
+  const user = JSON.parse(localStorage.getItem("user"));
+
+
   return (
     <div style={{ width: "100%", overflow: "hidden" }}>
-      <Stack sx={{ width: "100%" }} spacing={2} className="mb-3">
-        <Alert severity="info">Seleccione el día para registrar la reserva.</Alert>
-      </Stack>
+      <div className="row">
+        <div className="col-sm-6">
+          <Stack sx={{ width: "100%" }} spacing={2} className="mb-3">
+            <Alert severity="info">Seleccione el día para registrar la reserva.</Alert>
+          </Stack>
+        </div>
+        <div className="col-sm-6">
+          <Stack sx={{ width: "100%" }} spacing={2} className="mb-3">
+            <Alert>
+              <div className="d-flex align-items-center">
+                <div className="pending d-flex align-items-center"><div className="pending-Circle"></div><span>Pendiente</span></div>
+                <div className="completed d-flex align-items-center"><div className="completed-Circle"></div><span>Completado</span></div>
+                {
+                  user.roleId == 1 && (
+                    <div className="cancelado d-flex align-items-center"><div className="cancelado-Circle"></div><span>Cancelado</span></div>
+                  )
+                }
+              </div>
+            </Alert>
+          </Stack>
+        </div>
+      </div>
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}

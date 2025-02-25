@@ -446,3 +446,35 @@ button {
 [data-coreui-theme=dark] .fc .fc-daygrid-day-number {
     color: #2b3d4f !important;
 }
+
+.pending{
+    margin-right: 18px;
+}
+
+.pending .pending-Circle{
+    background: #00304D !important;
+    width: 10px !important;
+    height: 10px !important;
+    margin-right: 5px !important;
+    border-radius: 5px;
+}
+
+.completed{
+    margin-right: 18px;
+}
+
+.completed .completed-Circle{
+    background: #b3b2b2 !important;
+    width: 10px !important;
+    height: 10px !important;
+    margin-right: 5px !important;
+    border-radius: 5px;
+}
+
+.cancelado .cancelado-Circle{
+    background: #990101 !important;
+    width: 10px !important;
+    height: 10px !important;
+    margin-right: 5px !important;
+    border-radius: 5px;
+}
