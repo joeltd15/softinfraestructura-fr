@@ -7,6 +7,7 @@ import { Col, Row } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Select from 'react-select';
+import { useAlert } from '../../../../assets/functions/index';
 
 const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApplication = null }) => {
   const urlUsers = 'http://localhost:2025/api/user';
@@ -15,10 +16,17 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
   const [applications, setApplications] = useState([]);
   const [responsibles, setResponsibles] = useState([]);
   const [Users, setUsers] = useState([]);
+  const { showAlert } = useAlert();
 
   useEffect(() => {
     setApplicationId(assignmentApplication || "");
   }, [assignmentApplication]);
+
+  useEffect(() => {
+    return () => {
+      toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
+    };
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,10 +36,10 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
           axios.get("http://localhost:2025/api/responsible"),
           axios.get(urlUsers)
         ]);
-  
+
         setApplications(appRes.data);
         setUsers(userRes.data);
-  
+
         // Agrupar solicitudes por responsable
         const solicitudesPorResponsable = {};
         appRes.data.forEach(app => {
@@ -39,21 +47,21 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
             solicitudesPorResponsable[app.userId] = (solicitudesPorResponsable[app.userId] || 0) + 1;
           }
         });
-  
+
         // Filtrar responsables con menos de 3 solicitudes en espera
         const filteredResponsibles = respRes.data.filter(resp => {
           return (solicitudesPorResponsable[resp.userId] || 0) < 3;
         });
-  
+
         setResponsibles(filteredResponsibles);
       } catch (error) {
         console.error("Error al obtener datos:", error);
       }
     };
-  
+
     fetchData();
   }, []);
-  
+
 
   const getUsers = async () => {
     const response = await axios.get(urlUsers);
@@ -67,14 +75,14 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
 
   const responsibleName = (responsibleId) => {
     if (!Users.length) return "Cargando..."; // Si Users aún no tiene datos, mostrar mensaje temporal
-  
+
     const responsible = responsibles.find(resp => resp.id === responsibleId);
     return responsible ? userName(responsible.userId) : "Desconocido";
   };
 
   const handleSubmit = async () => {
     if (!applicationId || !responsibleId) {
-      toast.warning("Todos los campos son obligatorios.");
+      showAlert('Todos los campos son obligatorios.', 'warning');
       return;
     }
 
@@ -83,12 +91,12 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
 
     try {
       await axios.post("http://localhost:2025/api/assignment", assignmentData);
-      toast.success("Asignación registrada correctamente");
+      showAlert('Asignación registrada correctamente.', 'success');
       await onAssignmentCreated();
       handleClose();
     } catch (error) {
       console.error("Error al registrar la asignación:", error);
-      toast.error("Error al registrar la asignación");
+      showAlert('Error al registrar la asignación.', 'error');
     }
   };
 

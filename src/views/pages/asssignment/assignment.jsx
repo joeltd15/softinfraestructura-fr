@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import ModalAssignment from "./modalAssignment/index"
 import ModalAssignmentEdit from "./modalAssignmentEdit/index"
-import { ToastContainer, toast } from "react-toastify"
+import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { FaPencilAlt } from "react-icons/fa"
 import { MdAssignment } from "react-icons/md"
@@ -17,6 +17,8 @@ import DocumentPdf from "../application/DocumentPdf/index"
 import { pdf } from "@react-pdf/renderer"
 import { saveAs } from "file-saver"
 import TablePagination from "../../../components/Paginator/index.jsx"
+import { useAlert } from '../../../assets/functions/index.jsx';
+
 
 const Assignment = () => {
   const [responsibles, setResponsibles] = useState([])
@@ -34,11 +36,18 @@ const Assignment = () => {
   const [dataQt, setDataQt] = useState(4)
   const [currentPages, setCurrentPages] = useState(1)
   const [applicationStatuses, setApplicationStatuses] = useState({})
+  const { showAlert } = useAlert();
 
   useEffect(() => {
     getAssignment()
     getUsers()
   }, [])
+
+  useEffect(() => {
+    return () => {
+        toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
+    };
+}, []);
 
   useEffect(() => {
     if (selectedAssignmentShow && showApplicationId) {
@@ -86,7 +95,7 @@ const Assignment = () => {
       setAssignmentData(filteredAssignments)
     } catch (error) {
       console.error("Error al obtener las asignaciones:", error)
-      toast.error("Error al cargar las asignaciones")
+      showAlert('Error al cargar las asignaciones.', 'error');
     }
   }
 
@@ -97,7 +106,7 @@ const Assignment = () => {
       setShowModalShow(true)
     } catch (error) {
       console.error("Error al obtener los detalles de la solicitud:", error)
-      toast.error("Error al cargar los detalles de la solicitud")
+      showAlert('Error al cargar los detalles de la solicitud.', 'error');
     }
   }
 
@@ -108,7 +117,7 @@ const Assignment = () => {
       setShowApplicationId(applicationId)
     } catch (error) {
       console.error("Error al obtener los detalles de la solicitud:", error)
-      toast.error("Error al cargar los detalles de la solicitud")
+      showAlert('Error al cargar los detalles de la solicitud.', 'error');
     }
   }
 
@@ -118,7 +127,7 @@ const Assignment = () => {
       setUsers(response.data)
     } catch (error) {
       console.error("Error al obtener los usuarios:", error)
-      toast.error("Error al cargar los usuarios")
+      showAlert('Error al cargar los usuarios.', 'error');
     }
   }
 
@@ -135,12 +144,12 @@ const Assignment = () => {
   const handleUpdateAssignment = async (updatedAssignment) => {
     try {
       await axios.put(`http://localhost:2025/api/assignment/${updatedAssignment.id}`, updatedAssignment)
-      toast.success("Asignación actualizada con éxito")
+      showAlert('Asignación actualizada con éxito.', 'success');
       getAssignment()
       setShowEditModal(false)
     } catch (error) {
       console.error("Error al actualizar la asignación:", error)
-      toast.error("Error al actualizar la asignación")
+      showAlert('Error al actualizar la asignación.', 'error');
     }
   }
 
@@ -159,7 +168,7 @@ const Assignment = () => {
       saveAs(blob, `DetalleReporte${applicationId}.pdf`)
     } catch (error) {
       console.error("Error al obtener los detalles de la solicitud:", error)
-      toast.error("Error al generar el PDF")
+      showAlert('Error al generar el PDF.', 'error');
     }
   }
 
@@ -190,7 +199,6 @@ const Assignment = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} />
       <div className="container">
         <div className="row">
           <div className="panel panel-primary filterable">
@@ -212,84 +220,84 @@ const Assignment = () => {
                 </div>
               </div>
             </div>
-          <div className="table-responsive">
-            <table className="table">
-              <thead className="thead">
-                <tr className="filters">
-                  <th>#</th>
-                  <th>Fecha de asignamiento</th>
-                  <th>Solicitud</th>
-                  <th>Responsable</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody className="tbody">
-                {results.length > 0 ? (
-                  results.map((assignment, i) => {
-                    const responsible = responsibles.find((resp) => resp.id === assignment.responsibleId)
-                    const responsibleUser = responsible ? Users.find((user) => user.id === responsible.userId) : null
+            <div className="table-responsive">
+              <table className="table">
+                <thead className="thead">
+                  <tr className="filters">
+                    <th>#</th>
+                    <th>Fecha de asignamiento</th>
+                    <th>Solicitud</th>
+                    <th>Responsable</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody className="tbody">
+                  {results.length > 0 ? (
+                    results.map((assignment, i) => {
+                      const responsible = responsibles.find((resp) => resp.id === assignment.responsibleId)
+                      const responsibleUser = responsible ? Users.find((user) => user.id === responsible.userId) : null
 
-                    return (
-                      <tr key={i}>
-                        <td>{indexStart + i+ 1}</td>
-                        <td>{new Date(assignment.assignmentDate).toISOString().split("T")[0]}</td>
-                        <td>{assignment.applicationId}</td>
-                        <td>{responsibleUser ? responsibleUser.name : "Desconocido"}</td>
-                        <td className="content-buttons">
-                          <Tooltip title="Ver detalles de la solicitud">
-                            <button
-                              className="Table-button Show-button"
-                              onClick={() => handleShow(assignment.applicationId)}
-                            >
-                              <FaEye />
-                            </button>
-                          </Tooltip>
-                          <Tooltip title="Descargar detalles de la solicitud">
-                            <button
-                              className="Table-button"
-                              onClick={() => handlePdfDownload(assignment.applicationId)}
-                            >
-                              <FaFilePdf />
-                            </button>
-                          </Tooltip>
-
-                          {user.roleId == "1" && (
-                            <>
-                            {applicationStatuses[assignment.applicationId] !== "Realizado" && (
-                              <Tooltip title="Reasignar encargado">
-                                <button
-                                  className="Table-button Update-button"
-                                  onClick={() => handleOpenEditModal(assignment)}
-                                >
-                                  <FaPencilAlt />
-                                </button>
-                              </Tooltip>
-                                )}
-                            </> 
-                          )}
-                          {applicationStatuses[assignment.applicationId] !== "Realizado" && (
-                            <Tooltip title="Registrar detalle de mantenimiento">
+                      return (
+                        <tr key={i}>
+                          <td>{indexStart + i + 1}</td>
+                          <td>{new Date(assignment.assignmentDate).toISOString().split("T")[0]}</td>
+                          <td>{assignment.applicationId}</td>
+                          <td>{responsibleUser ? responsibleUser.name : "Desconocido"}</td>
+                          <td className="content-buttons">
+                            <Tooltip title="Ver detalles de la solicitud">
                               <button
-                                className="Table-button Asign-button"
-                                onClick={() => handleOpenTrackingModal(assignment.id)}
+                                className="Table-button Show-button"
+                                onClick={() => handleShow(assignment.applicationId)}
                               >
-                                <MdAssignment />
+                                <FaEye />
                               </button>
                             </Tooltip>
-                          )}
-                        </td>
-                      </tr>
-                    )
-                  })
-                ) : (
-                  <tr>
-                    <td colSpan="5" className="text-center">
-                      No hay datos disponibles
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                            <Tooltip title="Descargar detalles de la solicitud">
+                              <button
+                                className="Table-button"
+                                onClick={() => handlePdfDownload(assignment.applicationId)}
+                              >
+                                <FaFilePdf />
+                              </button>
+                            </Tooltip>
+
+                            {user.roleId == "1" && (
+                              <>
+                                {applicationStatuses[assignment.applicationId] !== "Realizado" && (
+                                  <Tooltip title="Reasignar encargado">
+                                    <button
+                                      className="Table-button Update-button"
+                                      onClick={() => handleOpenEditModal(assignment)}
+                                    >
+                                      <FaPencilAlt />
+                                    </button>
+                                  </Tooltip>
+                                )}
+                              </>
+                            )}
+                            {applicationStatuses[assignment.applicationId] !== "Realizado" && (
+                              <Tooltip title="Registrar detalle de mantenimiento">
+                                <button
+                                  className="Table-button Asign-button"
+                                  onClick={() => handleOpenTrackingModal(assignment.id)}
+                                >
+                                  <MdAssignment />
+                                </button>
+                              </Tooltip>
+                            )}
+                          </td>
+                        </tr>
+                      )
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan="5" className="text-center">
+                        No hay datos disponibles
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
             {results.length > 0 && (
               <div className="row mb-5">

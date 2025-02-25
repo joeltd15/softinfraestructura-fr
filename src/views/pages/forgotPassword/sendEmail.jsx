@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useAlert } from '../../../assets/functions/index';
 import {
   CButton,
   CCard,
@@ -17,12 +18,19 @@ import {
 const SendEmail = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const { showAlert } = useAlert();
+
+  useEffect(() => {
+    return () => {
+      toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email) {
-      toast.error('Por favor, ingresa un correo');
+      showAlert('Por favor, ingresa un correo.', 'error');
       return;
     }
 
@@ -37,7 +45,7 @@ const SendEmail = () => {
       const userExists = users.some(user => user.email === email);
 
       if (!userExists) {
-        toast.error('El correo ingresado no está registrado');
+        showAlert('El correo ingresado no está registrado.', 'error');
         setLoading(false);
         return;
       }
@@ -49,14 +57,14 @@ const SendEmail = () => {
         { headers: { 'Content-Type': 'application/json' } }
       );
 
-      toast.success(response.data.message || 'Código enviado correctamente');
+      showAlert(response.data.message || 'Código enviado correctamente', 'success');
 
       // 4️⃣ Redirigir a la página de ingreso del código
       setTimeout(() => {
         window.location.href = 'http://localhost:3000/#/forgotPassword';
       }, 2000); // Espera 2 segundos para mostrar el mensaje antes de redirigir
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Error al enviar el código');
+      showAlert(error.response?.data?.error || 'Error al enviar el código', 'error');
     } finally {
       setLoading(false);
     }

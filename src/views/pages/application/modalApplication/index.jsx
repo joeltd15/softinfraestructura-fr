@@ -6,6 +6,7 @@ import { Col, Row } from 'react-bootstrap';
 import axios from "axios";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useAlert } from '../../../../assets/functions/index';
 
 const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
     const urlUsers = 'http://localhost:2025/api/user';
@@ -19,11 +20,17 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
     const [status, setStatus] = useState("En espera");
     const [IdUser, setIdUser] = useState("");
     const [ResponsibleForSpace, setResponsibleForSpace] = useState("");
-
+    const { showAlert } = useAlert();
     const [errors, setErrors] = useState({}); // Estado para errores
 
     useEffect(() => {
         getUsers();
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
+        };
     }, []);
 
     const getUsers = async () => {
@@ -53,7 +60,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
         const today = new Date().toISOString().split("T")[0];
         const user = JSON.parse(localStorage.getItem("user"));
         if (!user || !user.id) {
-            toast.error("No se pudo obtener la información del usuario.");
+            showAlert('No se pudo obtener la información del usuario.', 'error');
             return;
         }
 
@@ -66,7 +73,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
             const newStatus = assignedCount >= 3 ? "En espera" : "Asignada";
 
             if (newStatus === "En espera") {
-                toast.warning(`Ya hay 3 solicitudes asignadas para ${TypeReport}. Se guardará como "En espera".`);
+                showAlert(`Ya hay 3 solicitudes asignadas para ${TypeReport}. Se guardará como "En espera".`, 'warning');
             }
 
             const formData = new FormData();
@@ -97,7 +104,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
             handleClose();
         } catch (error) {
             console.error("Error al registrar solicitud:", error);
-            toast.error("Error al registrar la solicitud");
+            showAlert("Error al registrar la solicitud", 'error');
         }
     };
 

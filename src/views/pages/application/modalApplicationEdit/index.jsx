@@ -4,6 +4,8 @@ import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import { Col, Row } from 'react-bootstrap';
 import axios from "axios";
+import { useAlert } from '../../../../assets/functions/index';
+
 
 const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
     const [editedApplication, setEditedApplication] = useState({
@@ -17,12 +19,18 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
         photographicEvidence: "",
         responsibleForSpace: "",
     });
-
+    const { showAlert } = useAlert();
     const [errors, setErrors] = useState({});
     const [Users, setUsers] = useState([]);
 
     useEffect(() => {
         getUsers();
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
+        };
     }, []);
 
     const getUsers = async () => {
@@ -87,7 +95,7 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (!validateForm()) return; // Si hay errores, no envía el formulario
+        if (!validateForm()) return;
 
         const formData = new FormData();
         for (const key in editedApplication) {
@@ -98,6 +106,7 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
             }
         }
         handleUpdate(formData);
+        showAlert("Solicitud modificada correctamente", 'success');
     };
 
     return (

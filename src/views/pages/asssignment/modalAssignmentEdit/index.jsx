@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import Select from 'react-select';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 const ModalAssignmentEdit = ({ show, handleClose, assignment, handleUpdate }) => {
   const [editedAssignment, setEditedAssignment] = useState({

@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import 'react-toastify/dist/ReactToastify.css';
+import { useAlert } from '../../../assets/functions/index';
+
 import {
   CButton,
   CCard,
@@ -20,13 +21,21 @@ const ResetPassword = () => {
   const [resetCode, setResetCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // Redirección con React Router
+  const navigate = useNavigate();
+  const { showAlert } = useAlert();
+
+  useEffect(() => {
+    return () => {
+      toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
+    };
+  }, []);
 
   const handleResetPassword = async (e) => {
+
     e.preventDefault();
-    
+
     if (!email || !resetCode || !newPassword) {
-      toast.error('Por favor, completa todos los campos');
+      showAlert('Por favor, completa todos los campos.', 'error');
       return;
     }
 
@@ -39,7 +48,7 @@ const ResetPassword = () => {
       );
 
       if (data.success) {
-        toast.success(data.message || 'Contraseña restablecida con éxito');
+        showAlert(data.message || 'Contraseña restablecida con éxito', 'success');
         setEmail('');
         setResetCode('');
         setNewPassword('');
@@ -49,10 +58,10 @@ const ResetPassword = () => {
           navigate('/login');
         }, 2000);
       } else {
-        toast.error(data.error || 'Código incorrecto, verifica e intenta nuevamente');
+        showAlert(data.error || 'Código incorrecto, verifica e intenta nuevamente', 'error');
       }
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Error al restablecer la contraseña');
+      showAlert(error.response?.data?.error || 'Error al restablecer la contraseña', 'error');
     } finally {
       setLoading(false);
     }
