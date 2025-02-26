@@ -12,7 +12,6 @@ import UserModalRegister from "./modalUser";
 import UserEditModal from "./modalUserEdit";
 import TablePagination from '../../../components/Paginator/index.jsx';
 import { useAlert } from '../../../assets/functions/index.jsx';
-import { useAlert } from '../../../assets/functions/index';
 
 
 const User = () => {
