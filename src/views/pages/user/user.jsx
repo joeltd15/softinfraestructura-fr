@@ -11,7 +11,11 @@ import ViewUserModal from "./UserModalShow";
 import UserModalRegister from "./modalUser";
 import UserEditModal from "./modalUserEdit";
 import TablePagination from '../../../components/Paginator/index.jsx';
+<<<<<<< HEAD
 import { useAlert } from '../../../assets/functions/index.jsx';
+=======
+import { useAlert } from '../../../assets/functions/index';
+>>>>>>> bfa769878b757b84f320afc7a6b3c947d3aa2783
 
 
 const User = () => {
@@ -187,13 +191,16 @@ const User = () => {
                                                 <td>{user.status}</td>
                                                 <td>{getRoleName(user.roleId)}</td>
                                                 <td className="content-buttons">
+                                                <Tooltip title="Ver detalle usuario">
                                                     <button className="Table-button Show-button" onClick={() => handleOpenViewModal(user)}>
                                                         <FaEye />
                                                     </button>
+                                                    </Tooltip>
+                                                    <Tooltip title="Actualizar usuario">
                                                     <button className="Table-button Update-button" onClick={() => handleEdit(user)}>
                                                         <FaPencilAlt />
                                                     </button>
-
+                                                    </Tooltip>
                                                     <Tooltip title="Eliminar usuario">
                                                         <button className="Table-button Delete-button" onClick={() => handleOpenDeleteDialog(user.id)}>
                                                             <MdDelete />

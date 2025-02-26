@@ -17,7 +17,7 @@ function ShowUserModal({ show, handleClose, user = null, roles = [] }) {
           <div className="container">
             <div className="row">
               <div className="col-sm-6">
-                <p><strong>Código:</strong> {user.id}</p>
+                <p><strong>Id:</strong> {user.id}</p>
               </div>
               <div className="col-sm-6">
                 <p><strong>Nombre:</strong> {user.name}</p>

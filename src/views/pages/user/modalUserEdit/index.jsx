@@ -26,11 +26,6 @@ const UserEditModal = ({ show, handleClose, getUsers, user }) => {
       .catch((error) => console.error("Error al obtener roles:", error))
   }, [])
 
-  useEffect(() => {
-    return () => {
-        toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
-    };
-}, []);
 
   useEffect(() => {
     if (user) {

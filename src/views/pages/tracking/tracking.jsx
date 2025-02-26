@@ -6,6 +6,7 @@ import ModalTrackingEdit from "./modalTrackingEdit"
 import ModalTrackingView from "./modalTrackingShow"
 import { FaPencilAlt, FaEye } from "react-icons/fa"
 import { ToastContainer } from "react-toastify"
+import Tooltip from "@mui/material/Tooltip"
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material"
 import "react-toastify/dist/ReactToastify.css"
 import TablePagination from "../../../components/Paginator/index.jsx"
@@ -101,7 +102,7 @@ const Tracking = () => {
       })
       .catch((error) => {
         console.error("Error al actualizar el tracking:", error.response ? error.response.data : error.message)
-      showAlert("Error al actualizar el seguimiento.", 'error');
+        showAlert("Error al actualizar el seguimiento.", 'error');
 
       })
   }
@@ -122,12 +123,12 @@ const Tracking = () => {
     axios
       .delete(`http://localhost:2025/api/tracking/${selectedId}`)
       .then(() => {
-      showAlert("El registro ha sido eliminado.", 'success');
-        
+        showAlert("El registro ha sido eliminado.", 'success');
+
         getTracking()
       })
       .catch((error) => {
-      showAlert("No se pudo eliminar el registro.", 'error');
+        showAlert("No se pudo eliminar el registro.", 'error');
 
         console.error("Error al eliminar:", error)
       })
@@ -181,75 +182,82 @@ const Tracking = () => {
                 </div>
               </div>
             </div>
-          <div className="table-responsive">
-            <table className="table">
-              <thead className="thead">
-                <tr className="filters">
-                  <th>#</th>
-                  <th>Observaciones</th>
-                  <th>Materiales</th>
-                  <th>Fecha del Servicio</th>
-                  <th>Acciones Tomadas</th>
-                  <th>Evidencia Fotográfica</th>
-                  <th>Estado</th>
-                  <th>Código de la solicitud</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody className="tbody">
-                {loading ? (
-                  <tr>
-                    <td colSpan="9" className="text-center">
-                      Cargando...
-                    </td>
+            <div className="table-responsive">
+              <table className="table">
+                <thead className="thead">
+                  <tr className="filters">
+                    <th>#</th>
+                    <th>Observaciones</th>
+                    <th>Materiales</th>
+                    <th>Fecha del Servicio</th>
+                    <th>Acciones Tomadas</th>
+                    <th>Evidencia Fotográfica</th>
+                    <th>Estado</th>
+                    <th>Código de la solicitud</th>
+                    <th>Acciones</th>
                   </tr>
-                ) : results.length > 0 ? (
-                  results.map((tracking, i) => (
-                    <tr key={i}>
-                      <td>{indexStart + i + 1}</td>
-                      <td>{tracking.observations}</td>
-                      <td>{tracking.buildingMaterials}</td>
-                      <td>{tracking.dateService}</td>
-                      <td>{tracking.actionsTaken}</td>
-                      <td>
-                        <img
-                          src={
-                            tracking.photographicEvidence && tracking.photographicEvidence.trim() !== ""
-                              ? `http://localhost:2025/uploads/${tracking.photographicEvidence}`
-                              : "/noImage.png"
-                          }
-                          width="80"
-                          className="hover-zoom"
-                          alt="Evidencia fotográfica"
-                        />
-                      </td>
-                      <td>{tracking.status}</td>
-                      <td>{assignmentToApplicationMap[tracking.assignmentId] || "N/A"}</td>
-                      <td className="content-buttons">
-                        <button className="Table-button Show-button" onClick={() => handleView(tracking)}>
-                          <FaEye />
-                        </button>
-                        <button className="Table-button Update-button" onClick={() => handleEdit(tracking)}>
-                          <FaPencilAlt />
-                        </button>
-                        <button
-                          className="Table-button Delete-button"
-                          onClick={() => handleOpenDeleteDialog(tracking.id)}
-                        >
-                          <MdDelete />
-                        </button>
+                </thead>
+                <tbody className="tbody">
+                  {loading ? (
+                    <tr>
+                      <td colSpan="9" className="text-center">
+                        Cargando...
                       </td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="9" className="text-center">
-                      No hay datos disponibles
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                  ) : results.length > 0 ? (
+                    results.map((tracking, i) => (
+                      <tr key={i}>
+                        <td>{indexStart + i + 1}</td>
+                        <td>{tracking.observations}</td>
+                        <td>{tracking.buildingMaterials}</td>
+                        <td>{tracking.dateService}</td>
+                        <td>{tracking.actionsTaken}</td>
+                        <td>
+                          <img
+                            src={
+                              tracking.photographicEvidence && tracking.photographicEvidence.trim() !== ""
+                                ? `http://localhost:2025/uploads/${tracking.photographicEvidence}`
+                                : "/noImage.png"
+                            }
+                            width="80"
+                            className="hover-zoom"
+                            alt="Evidencia fotográfica"
+                          />
+                        </td>
+                        <td>{tracking.status}</td>
+                        <td>{assignmentToApplicationMap[tracking.assignmentId] || "N/A"}</td>
+                        <td className="content-buttons">
+                          <Tooltip title="Ver detalles del seguimiento">
+                            <button className="Table-button Show-button" onClick={() => handleView(tracking)}>
+                              <FaEye />
+                            </button>
+                          </Tooltip>
+                          <Tooltip title="Actualizar el seguimiento">
+                            <button className="Table-button Update-button" onClick={() => handleEdit(tracking)}>
+                              <FaPencilAlt />
+                            </button>
+                          </Tooltip>
+                          <Tooltip title="Eliminar el seguimiento">
+                            <button
+                              className="Table-button Delete-button"
+                              onClick={() => handleOpenDeleteDialog(tracking.id)}
+                            >
+                              <MdDelete />
+                            </button>
+                          </Tooltip>
+
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="9" className="text-center">
+                        No hay datos disponibles
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
             {results.length > 0 && (
               <div className="row mb-5">
