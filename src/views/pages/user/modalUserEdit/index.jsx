@@ -2,9 +2,8 @@ import { useEffect, useState } from "react"
 import { Modal, Button, Form, Row, Col, InputGroup } from "react-bootstrap"
 import { FaExclamationCircle } from "react-icons/fa"
 import axios from "axios"
-import "react-toastify/dist/ReactToastify.css"
 import { useAlert } from '../../../../assets/functions/index';
-
+import { toast } from "react-toastify";
 
 const UserEditModal = ({ show, handleClose, getUsers, user }) => {
   const [roles, setRoles] = useState([])
@@ -26,6 +25,11 @@ const UserEditModal = ({ show, handleClose, getUsers, user }) => {
       .catch((error) => console.error("Error al obtener roles:", error))
   }, [])
 
+  useEffect(() => {
+    return () => {
+      toast.dismiss();
+    };
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -38,11 +42,11 @@ const UserEditModal = ({ show, handleClose, getUsers, user }) => {
       })
     }
   }, [user])
-  
+
 
   const validateField = (name, value) => {
     let error = "";
-  
+
     if (!value.trim()) {
       error = "Este campo es obligatorio";
     } else {
@@ -56,24 +60,24 @@ const UserEditModal = ({ show, handleClose, getUsers, user }) => {
         error = "Ingrese un número de 10 dígitos";
       }
     }
-  
+
     return error;
   };
-  
-  
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
-  
+
     // Validación en tiempo real
     setErrors((prevErrors) => ({
       ...prevErrors,
       [name]: validateField(name, value),
     }))
   }
-  
-  
+
+
 
   const handleSubmit = async () => {
     const newErrors = {}
@@ -81,14 +85,14 @@ const UserEditModal = ({ show, handleClose, getUsers, user }) => {
       const error = validateField(key, formData[key])
       if (error) newErrors[key] = error
     })
-  
+
     setErrors(newErrors)
-  
+
     if (Object.keys(newErrors).length > 0) {
       showAlert("Por favor, corrija los errores antes de guardar", 'error');
       return
     }
-  
+
     try {
       await axios.put(`http://localhost:2025/api/user/${user.id}`, formData)
       showAlert("Usuario actualizado correctamente", 'success');
@@ -99,7 +103,7 @@ const UserEditModal = ({ show, handleClose, getUsers, user }) => {
       showAlert(error.response?.data?.message || "Error al actualizar usuario", 'error');
     }
   }
-  
+
 
   return (
     <Modal show={show} onHide={handleClose} backdrop="static">

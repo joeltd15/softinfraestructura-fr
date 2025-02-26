@@ -4,15 +4,11 @@ import { MdDelete } from "react-icons/md"
 import ModalTracking from "./modalTracking"
 import ModalTrackingEdit from "./modalTrackingEdit"
 import ModalTrackingView from "./modalTrackingShow"
-import { FaPencilAlt, FaEye } from "react-icons/fa"
-import { ToastContainer } from "react-toastify"
 import Tooltip from "@mui/material/Tooltip"
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material"
-import "react-toastify/dist/ReactToastify.css"
+import { toast } from "react-toastify";
 import TablePagination from "../../../components/Paginator/index.jsx"
 import { useAlert } from '../../../assets/functions/index';
-
-
 
 const Tracking = () => {
   const [trackingData, setTrackingData] = useState([])
@@ -28,7 +24,6 @@ const Tracking = () => {
   const [assignmentToApplicationMap, setAssignmentToApplicationMap] = useState({})
   const [loading, setLoading] = useState(true) // Added loading state
   const { showAlert } = useAlert();
-
 
   const getTracking = async () => {
     setLoading(true) // Set loading to true before fetching data
@@ -80,6 +75,12 @@ const Tracking = () => {
   useEffect(() => {
     getTracking()
   }, [])
+
+  useEffect(() => {
+    return () => {
+      toast.dismiss();
+    };
+  }, []);
 
   const handleEdit = (tracking) => {
     setSelectedTracking(tracking)
@@ -160,7 +161,6 @@ const Tracking = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} />
       <div className="container">
         <div className="row">
           <div className="panel panel-primary filterable">

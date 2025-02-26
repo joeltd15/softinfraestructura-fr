@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
-import {ToastContainer} from "react-toastify"
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"
 import { FaPencilAlt } from "react-icons/fa"
 import { MdDelete } from "react-icons/md"
@@ -28,6 +28,12 @@ const Roles = () => {
   useEffect(() => {
     getRoles()
   }, [])
+
+  useEffect(() => {
+    return () => {
+      toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
+    };
+  }, []);
 
   const getRoles = async () => {
     try {
@@ -123,7 +129,6 @@ const Roles = () => {
 
   return (
     <div className="container">
-      <ToastContainer position="top-right" autoClose={3000} />
       <div className="row">
         <div className="panel panel-primary filterable">
           <div className="panel-heading mb-3 d-flex align-items-center justify-content-between">

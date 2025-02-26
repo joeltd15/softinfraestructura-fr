@@ -7,6 +7,8 @@ import { Col, Row } from "react-bootstrap";
 import CustomTimeSelector from "../TimeSelector/index";
 import { toast } from "react-toastify";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
+import { useAlert } from '../../../../assets/functions/index';
+
 
 const EditReservationModal = ({ show, reservationId, onClose }) => {
   const [scenery, setScenery] = useState("");
@@ -15,6 +17,13 @@ const EditReservationModal = ({ show, reservationId, onClose }) => {
   const [activity, setActivity] = useState("");
   const [estatus, setStatus] = useState("");
   const [errors, setErrors] = useState({});
+  const { showAlert } = useAlert();
+
+  useEffect(() => {
+    return () => {
+      toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
+    };
+  }, []);
 
   useEffect(() => {
     if (reservationId) {
@@ -31,7 +40,7 @@ const EditReservationModal = ({ show, reservationId, onClose }) => {
         })
         .catch((error) => {
           console.error("Error al obtener la reserva:", error);
-          toast.error("Error al cargar los datos de la reserva.");
+          showAlert("Error al cargar los datos de la reserva.", 'error');
         });
     }
   }, [reservationId]);
@@ -88,11 +97,11 @@ const EditReservationModal = ({ show, reservationId, onClose }) => {
         `http://localhost:2025/api/reservation/${reservationId}`,
         requestData
       );
-      toast.success("Reserva actualizada correctamente.");
+      showAlert("Reserva actualizada correctamente.", 'success');
       onClose();
     } catch (error) {
       console.error("Error al actualizar la reserva:", error);
-      toast.error("Error al actualizar la reserva.");
+      showAlert("Error al actualizar la reserva.", 'error');
     }
   };
 

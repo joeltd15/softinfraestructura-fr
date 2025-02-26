@@ -5,7 +5,7 @@ import Modal from "react-bootstrap/Modal";
 import { Col, Row } from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useAlert } from '../../../../assets/functions/index';
 
 const RESPONSABILITY_TYPES = [
   "Electricidad",
@@ -23,7 +23,14 @@ const RegisterResponsibleModal = ({ show, handleClose, onResponsibleCreated }) =
   const [users, setUsers] = useState([]);
   const [userId, setUserId] = useState("");
   const [responsibilities, setResponsibilities] = useState([]);
-  const [errors, setErrors] = useState({}); // Estado para los errores
+  const [errors, setErrors] = useState({});
+  const { showAlert } = useAlert();
+
+  useEffect(() => {
+    return () => {
+      toast.dismiss();
+    };
+  }, []);
 
   useEffect(() => {
     getUsers();
@@ -54,7 +61,7 @@ const RegisterResponsibleModal = ({ show, handleClose, onResponsibleCreated }) =
 
   const handleSubmit = async () => {
     if (!validateForm()) {
-      toast.error("Todos los campos son obligatorios.");
+      showAlert("Todos los campos son obligatorios.", 'error');
       return;
     }
 
@@ -62,12 +69,12 @@ const RegisterResponsibleModal = ({ show, handleClose, onResponsibleCreated }) =
 
     try {
       await axios.post("http://localhost:2025/api/responsible", requestData);
-      toast.success("Responsable registrado correctamente.");
+      showAlert("Responsable registrado correctamente.", 'success');
       onResponsibleCreated();
       handleClose();
     } catch (error) {
       console.error("Error al registrar el responsable:", error);
-      toast.error("Error al registrar el responsable.");
+      showAlert("Error al registrar el responsable.", 'error');
     }
   };
 

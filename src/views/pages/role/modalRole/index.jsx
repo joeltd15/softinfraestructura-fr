@@ -5,6 +5,7 @@ import Modal from "react-bootstrap/Modal";
 import { Col, Row } from 'react-bootstrap';
 import axios from "axios";
 import { useAlert } from '../../../../assets/functions/index';
+import { toast } from "react-toastify";
 
 const RegisterRoleModal = ({ show, handleClose, onRoleCreated }) => {
     const [roleName, setRoleName] = useState("");
@@ -12,6 +13,12 @@ const RegisterRoleModal = ({ show, handleClose, onRoleCreated }) => {
     const [selectedPermissions, setSelectedPermissions] = useState([]);
     const [errors, setErrors] = useState({});
     const { showAlert } = useAlert();
+
+    useEffect(() => {
+        return () => {
+            toast.dismiss();
+        };
+    }, []);
 
     useEffect(() => {
         const fetchPermissions = async () => {

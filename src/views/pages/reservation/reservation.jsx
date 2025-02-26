@@ -11,6 +11,7 @@ import Stack from "@mui/material/Stack";
 import EventMenu from "./EventMenu/EventMenu";
 import ReservationModal from "./reservationRegister/index";
 import { toast } from "react-toastify";
+import { useAlert } from '../../../assets/functions/index.jsx';
 
 const Reservation = () => {
   const calendarRef = useRef(null);
@@ -18,6 +19,13 @@ const Reservation = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const { showAlert } = useAlert();
+
+  useEffect(() => {
+    return () => {
+      toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
+    };
+  }, []);
 
   // Función para formatear la hora a formato de 12 horas con AM/PM
   const formatTime = (timeString) => {
@@ -32,15 +40,15 @@ const Reservation = () => {
     try {
       const response = await axios.get("http://localhost:2025/api/reservation");
       const reservations = response.data;
-  
+
       // Obtener usuario logueado
       const user = JSON.parse(localStorage.getItem("user"));
-  
+
       const filteredReservations = reservations.filter((reservation) => {
         // Si el usuario no es admin (roleId !== 1), excluir eventos cancelados
         return user.roleId === 1 || reservation.estatus !== "Cancelado";
       });
-  
+
       const formattedEvents = filteredReservations.map((reservation) => ({
         id: reservation.id,
         estatus: reservation.estatus,
@@ -49,13 +57,13 @@ const Reservation = () => {
         end: `${reservation.date}T${reservation.finishTime}`,
         className: getEventClass(reservation.estatus),
       }));
-  
+
       setEvents(formattedEvents);
     } catch (error) {
       console.error("Error al obtener reservas:", error);
     }
   };
-  
+
 
   // Asignar clases según estado
   const getEventClass = (estatus) => {
@@ -92,7 +100,7 @@ const Reservation = () => {
     today.setHours(0, 0, 0, 0);
 
     if (selectedDate < today) {
-      toast.warning("No se pueden registrar reservas en fechas pasadas.");
+      showAlert("No se pueden registrar reservas en fechas pasadas.", 'warning');
       return;
     }
 

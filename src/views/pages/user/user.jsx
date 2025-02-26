@@ -6,13 +6,12 @@ import Tooltip from "@mui/material/Tooltip";
 import { FaCirclePlus } from "react-icons/fa6";
 import { FaPencilAlt } from "react-icons/fa"
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
-import "react-toastify/dist/ReactToastify.css";
 import ViewUserModal from "./UserModalShow";
 import UserModalRegister from "./modalUser";
 import UserEditModal from "./modalUserEdit";
 import TablePagination from '../../../components/Paginator/index.jsx';
 import { useAlert } from '../../../assets/functions/index.jsx';
-
+import { toast } from "react-toastify";
 
 const User = () => {
     const userUrl = "http://localhost:2025/api/user";
@@ -35,6 +34,12 @@ const User = () => {
     useEffect(() => {
         getUsers();
         getRoles();
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            toast.dismiss();
+        };
     }, []);
 
     //Buscador y paginador
@@ -81,7 +86,7 @@ const User = () => {
         } catch (error) {
             console.error("Error obteniendo roles:", error);
             showAlert("No se pudieron cargar los roles.", 'error');
-            
+
         }
     };
 
@@ -187,15 +192,15 @@ const User = () => {
                                                 <td>{user.status}</td>
                                                 <td>{getRoleName(user.roleId)}</td>
                                                 <td className="content-buttons">
-                                                <Tooltip title="Ver detalle usuario">
-                                                    <button className="Table-button Show-button" onClick={() => handleOpenViewModal(user)}>
-                                                        <FaEye />
-                                                    </button>
+                                                    <Tooltip title="Ver detalle usuario">
+                                                        <button className="Table-button Show-button" onClick={() => handleOpenViewModal(user)}>
+                                                            <FaEye />
+                                                        </button>
                                                     </Tooltip>
                                                     <Tooltip title="Actualizar usuario">
-                                                    <button className="Table-button Update-button" onClick={() => handleEdit(user)}>
-                                                        <FaPencilAlt />
-                                                    </button>
+                                                        <button className="Table-button Update-button" onClick={() => handleEdit(user)}>
+                                                            <FaPencilAlt />
+                                                        </button>
                                                     </Tooltip>
                                                     <Tooltip title="Eliminar usuario">
                                                         <button className="Table-button Delete-button" onClick={() => handleOpenDeleteDialog(user.id)}>

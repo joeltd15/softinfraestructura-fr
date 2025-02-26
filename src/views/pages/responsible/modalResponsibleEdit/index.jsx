@@ -5,7 +5,8 @@ import Modal from "react-bootstrap/Modal";
 import { Col, Row } from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useAlert } from '../../../../assets/functions/index';
+
 
 const RESPONSABILITY_TYPES = [
     "Electricidad",
@@ -24,6 +25,14 @@ const EditResponsibleModal = ({ show, handleClose, onResponsibleUpdated, respons
     const [userId, setUserId] = useState("");
     const [responsibilities, setResponsibilities] = useState([]);
     const [errors, setErrors] = useState({ userId: false, responsibilities: false });
+    const { showAlert } = useAlert();
+
+    useEffect(() => {
+        return () => {
+            toast.dismiss();
+        };
+    }, []);
+
 
     useEffect(() => {
         getUsers();
@@ -71,7 +80,7 @@ const EditResponsibleModal = ({ show, handleClose, onResponsibleUpdated, respons
 
     const handleSubmit = async () => {
         if (!validateForm()) {
-            toast.error("Todos los campos son obligatorios.");
+            showAlert("Todos los campos son obligatorios.", 'error');
             return;
         }
 
@@ -79,12 +88,12 @@ const EditResponsibleModal = ({ show, handleClose, onResponsibleUpdated, respons
 
         try {
             const response = await axios.put(`http://localhost:2025/api/responsible/${responsible.id}`, requestData);
-            toast.success("Responsable actualizado correctamente.");
+            showAlert("Responsable actualizado correctamente.", 'success');
             onResponsibleUpdated(response.data);
             handleClose();
         } catch (error) {
             console.error("Error al actualizar el responsable:", error);
-            toast.error("Error al actualizar el responsable.");
+            showAlert("Error al actualizar el responsable.", 'error');
         }
     };
 

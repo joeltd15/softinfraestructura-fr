@@ -5,6 +5,7 @@ import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import { Col, Row } from "react-bootstrap";
 import { useAlert } from '../../../../assets/functions/index';
+import { toast } from "react-toastify";
 
 const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignmentId }) => {
   const [observations, setObservations] = useState("");
@@ -17,6 +18,11 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
   const [errors, setErrors] = useState({});
   const { showAlert } = useAlert();
 
+  useEffect(() => {
+    return () => {
+      toast.dismiss();
+    };
+  }, []);
 
   useEffect(() => {
     if (selectedAssignmentId) {
@@ -50,7 +56,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
 
   const handleSubmit = async () => {
     if (!validateFields()) {
-      alert.error("Por favor, completa todos los campos obligatorios.");
+      showAlert("Por favor, completa todos los campos obligatorios.", 'error');
       return;
     }
 
@@ -71,12 +77,12 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
       await axios.post("http://localhost:2025/api/tracking", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      alert.success("Seguimiento registrado correctamente");
+      showAlert("Seguimiento registrado correctamente.", 'success');
       onSolicitudCreated();
       setTimeout(() => handleClose(), 500);
     } catch (error) {
       console.error("Error al registrar seguimiento:", error);
-      alert.error("Error al registrar el seguimiento");
+      showAlert("Error al registrar el seguimiento.", 'error');
     }
   };
 
@@ -130,7 +136,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
               </Form.Group>
             </Col>
           </Row>
-          
+
           <Row className="mb-3">
             <Col sm={12}>
               <Form.Group>

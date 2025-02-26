@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import { useAlert } from '../../../../assets/functions/index';
+import { toast } from "react-toastify";
+
 
 const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
     const { showAlert } = useAlert();
@@ -29,6 +31,12 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
                 showAlert("Error cargando asignaciones", "error");
             });
     }, []);
+
+      useEffect(() => {
+        return () => {
+          toast.dismiss();
+        };
+      }, []);
 
     useEffect(() => {
         if (tracking) {

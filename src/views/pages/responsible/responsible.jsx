@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
-import { ToastContainer, toast } from "react-toastify"
-import "react-toastify/dist/ReactToastify.css"
+import {  toast } from "react-toastify"
+import { useAlert } from '../../../assets/functions/index.jsx';
 import { FaPencilAlt, FaEye } from "react-icons/fa"
 import { MdDelete } from "react-icons/md"
 import Tooltip from "@mui/material/Tooltip"
@@ -25,6 +25,13 @@ const Responsible = () => {
   const [search, setSearch] = useState("")
   const [dataQt, setDataQt] = useState(4)
   const [currentPages, setCurrentPages] = useState(1)
+  const { showAlert } = useAlert();
+
+  useEffect(() => {
+    return () => {
+      toast.dismiss();
+    };
+  }, []);
 
   useEffect(() => {
     getResponsibles()
@@ -65,10 +72,10 @@ const Responsible = () => {
 
     try {
       await axios.delete(`http://localhost:2025/api/responsible/${selectedId}`)
-      toast.success("Responsable eliminado correctamente.")
+      showAlert("Responsable eliminado correctamente.", 'success');
       getResponsibles()
     } catch (error) {
-      toast.error("Error al eliminar el responsable.")
+      showAlert("Error al eliminar el responsable.", 'error');
       console.error("Error al eliminar:", error)
     } finally {
       handleCloseDeleteDialog()
@@ -131,7 +138,6 @@ const Responsible = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} />
       <div className="container">
         <div className="row">
           <div className="panel panel-primary filterable">

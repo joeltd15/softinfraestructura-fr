@@ -3,7 +3,8 @@ import axios from 'axios';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { Col, Row } from 'react-bootstrap';
-import { toast } from 'react-toastify';
+import { toast } from 'react-toastify'
+import { useAlert } from '../../../../assets/functions/index';
 
 function ShowModal({ show, onClose, reservationId }) {
   const [scenery, setScenery] = useState("");
@@ -11,6 +12,13 @@ function ShowModal({ show, onClose, reservationId }) {
   const [endTime, setEndTime] = useState("");
   const [activity, setActivity] = useState("");
   const [estatus, setStatus] = useState("");
+  const { showAlert } = useAlert();
+
+  useEffect(() => {
+    return () => {
+      toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
+    };
+  }, []);
 
   useEffect(() => {
     if (reservationId) {
@@ -25,7 +33,7 @@ function ShowModal({ show, onClose, reservationId }) {
         })
         .catch(error => {
           console.error("Error al obtener la reserva:", error);
-          toast.error("Error al cargar los datos de la reserva.");
+          showAlert("Error al cargar los datos de la reserva.", 'error');
         });
     }
   }, [reservationId]);

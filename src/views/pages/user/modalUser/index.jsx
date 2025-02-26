@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react"
 import { Modal, Button, Form, Row, Col } from "react-bootstrap"
 import axios from "axios"
-import "react-toastify/dist/ReactToastify.css"
 import { Eye, EyeOff } from "lucide-react"
 import { useAlert } from '../../../../assets/functions/index';
+import { toast } from "react-toastify";
+
 
 const ModalRegistro = ({ show, handleClose }) => {
     const [roles, setRoles] = useState([])
@@ -21,6 +22,11 @@ const ModalRegistro = ({ show, handleClose }) => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
     const { showAlert } = useAlert();
 
+    useEffect(() => {
+        return () => {
+            toast.dismiss();
+        };
+    }, []);
 
     useEffect(() => {
         axios

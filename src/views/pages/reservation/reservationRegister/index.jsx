@@ -6,6 +6,8 @@ import Modal from "react-bootstrap/Modal";
 import { Col, Row } from "react-bootstrap";
 import CustomTimeSelector from "../TimeSelector/index";
 import { toast } from "react-toastify";
+import { useAlert } from '../../../../assets/functions/index';
+
 
 const ReservationModal = ({ show, selectedDate, onClose, getReservations }) => {
   const [scenery, setScenery] = useState("");
@@ -13,6 +15,13 @@ const ReservationModal = ({ show, selectedDate, onClose, getReservations }) => {
   const [endTime, setEndTime] = useState("");
   const [activity, setActivity] = useState("");
   const [errors, setErrors] = useState({});
+  const { showAlert } = useAlert();
+
+  useEffect(() => {
+    return () => {
+      toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
+    };
+  }, []);
 
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -46,12 +55,12 @@ const ReservationModal = ({ show, selectedDate, onClose, getReservations }) => {
         endTime: !endTime ? "Este campo es obligatorio." : "",
         activity: !activity ? "Este campo es obligatorio." : "",
       });
-      toast.error("Todos los campos son obligatorios.");
+      showAlert("Todos los campos son obligatorios.", 'error');
       return;
     }
 
     if (!validateTimeOrder()) {
-      toast.error("La hora final debe ser mayor que la hora de inicio.");
+      showAlert("La hora final debe ser mayor que la hora de inicio.", 'error');
       return;
     }
 
@@ -67,12 +76,12 @@ const ReservationModal = ({ show, selectedDate, onClose, getReservations }) => {
 
     try {
       await axios.post("http://localhost:2025/api/reservation", requestData);
-      toast.success("Reserva registrada correctamente.");
+      showAlert("Reserva registrada correctamente.", 'success');
       getReservations();
       onClose();
     } catch (error) {
       console.error("Error al registrar la reserva:", error);
-      toast.error("Error al registrar la reserva.");
+      showAlert("Error al registrar la reserva.", 'error');
     }
   };
 
