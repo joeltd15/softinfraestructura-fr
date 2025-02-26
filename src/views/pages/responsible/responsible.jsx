@@ -180,9 +180,12 @@ const Responsible = () => {
                         </td>
                         <td>{user ? user.name : "Desconocido"}</td>
                         <td className="content-buttons">
+                        <Tooltip title="Ver detalle">
+
                           <button className="Table-button Show-button" onClick={() => handleOpenShowModal(responsible)}>
                             <FaEye />
                           </button>
+                          </Tooltip>
 
                           <Tooltip title="Editar">
                             <button
