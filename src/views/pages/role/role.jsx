@@ -1,8 +1,6 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import axios from "axios"
-import { ToastContainer, toast } from "react-toastify"
+import {ToastContainer} from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { FaPencilAlt } from "react-icons/fa"
 import { MdDelete } from "react-icons/md"
@@ -12,6 +10,8 @@ import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/
 import RegisterRoleModal from "./modalRole/index"
 import EditRoleModal from "./modalRoleEdit/index"
 import TablePagination from "../../../components/Paginator/index.jsx"
+import { useAlert } from '../../../assets/functions/index';
+
 
 const Roles = () => {
   const [roles, setRoles] = useState([])
@@ -23,6 +23,7 @@ const Roles = () => {
   const [search, setSearch] = useState("")
   const [dataQt, setDataQt] = useState(4)
   const [currentPages, setCurrentPages] = useState(1)
+  const { showAlert } = useAlert();
 
   useEffect(() => {
     getRoles()
@@ -34,7 +35,7 @@ const Roles = () => {
       setRoles(response.data)
     } catch (error) {
       console.error("Error al obtener los roles:", error)
-      toast.error("Error al obtener los roles.")
+      showAlert("Error al obtener los roles.", "error");
     }
   }
 
@@ -53,10 +54,11 @@ const Roles = () => {
 
     try {
       await axios.delete(`http://localhost:2025/api/role/${selectedId}`)
-      toast.success("Rol eliminado correctamente.")
+      showAlert("Rol eliminado correctamente.", "success");
       getRoles()
     } catch (error) {
-      toast.error("Error al eliminar el rol.")
+      showAlert("Error al eliminar el rol.", "error");
+
       console.error("Error al eliminar:", error)
     } finally {
       handleCloseDeleteDialog()
@@ -65,7 +67,7 @@ const Roles = () => {
 
   const handleOpenEditModal = async (role) => {
     if (!role || !role.id) {
-      toast.error("Error: No se pudo cargar el rol para edición.")
+      showAlert("Error: No se pudo cargar el rol para edición.", "error");
       return
     }
 
@@ -89,7 +91,8 @@ const Roles = () => {
       setShowEditModal(true)
     } catch (error) {
       console.error("Error al obtener el rol:", error)
-      toast.error("Error al obtener el rol.")
+      showAlert("Error al obtener el rol.", "error");
+
     }
   }
 
@@ -139,43 +142,43 @@ const Roles = () => {
             </div>
           </div>
           <div className="table-responsive">
-          <table className="table">
-            <thead className="thead">
-              <tr className="filters">
-                <th>#</th>
-                <th>Nombre del rol</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody className="tbody">
-              {results.length > 0 ? (
-                results.map((role, i) => (
-                  <tr key={i}>
-                    <td>{indexStart + i + 1}</td>
-                    <td>{role.name}</td>
-                    <td className="content-buttons">
-                      <Tooltip title="Editar">
-                        <button className="Table-button Update-button" onClick={() => handleOpenEditModal(role)}>
-                          <FaPencilAlt />
-                        </button>
-                      </Tooltip>
-                      <Tooltip title="Eliminar">
-                        <button className="Table-button Delete-button" onClick={() => handleOpenDeleteDialog(role.id)}>
-                          <MdDelete />
-                        </button>
-                      </Tooltip>
+            <table className="table">
+              <thead className="thead">
+                <tr className="filters">
+                  <th>#</th>
+                  <th>Nombre del rol</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="tbody">
+                {results.length > 0 ? (
+                  results.map((role, i) => (
+                    <tr key={i}>
+                      <td>{indexStart + i + 1}</td>
+                      <td>{role.name}</td>
+                      <td className="content-buttons">
+                        <Tooltip title="Editar">
+                          <button className="Table-button Update-button" onClick={() => handleOpenEditModal(role)}>
+                            <FaPencilAlt />
+                          </button>
+                        </Tooltip>
+                        <Tooltip title="Eliminar">
+                          <button className="Table-button Delete-button" onClick={() => handleOpenDeleteDialog(role.id)}>
+                            <MdDelete />
+                          </button>
+                        </Tooltip>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="3" className="text-center">
+                      No hay roles disponibles
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="3" className="text-center">
-                    No hay roles disponibles
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                )}
+              </tbody>
+            </table>
           </div>
           {results.length > 0 && (
             <div className="row mb-5">

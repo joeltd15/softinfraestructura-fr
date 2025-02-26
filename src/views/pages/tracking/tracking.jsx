@@ -5,10 +5,13 @@ import ModalTracking from "./modalTracking"
 import ModalTrackingEdit from "./modalTrackingEdit"
 import ModalTrackingView from "./modalTrackingShow"
 import { FaPencilAlt, FaEye } from "react-icons/fa"
-import { ToastContainer, toast } from "react-toastify"
+import { ToastContainer } from "react-toastify"
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material"
 import "react-toastify/dist/ReactToastify.css"
 import TablePagination from "../../../components/Paginator/index.jsx"
+import { useAlert } from '../../../assets/functions/index';
+
+
 
 const Tracking = () => {
   const [trackingData, setTrackingData] = useState([])
@@ -23,6 +26,8 @@ const Tracking = () => {
   const [currentPages, setCurrentPages] = useState(1)
   const [assignmentToApplicationMap, setAssignmentToApplicationMap] = useState({})
   const [loading, setLoading] = useState(true) // Added loading state
+  const { showAlert } = useAlert();
+
 
   const getTracking = async () => {
     setLoading(true) // Set loading to true before fetching data
@@ -65,7 +70,7 @@ const Tracking = () => {
       setTrackingData(filteredTracking)
     } catch (error) {
       console.error("Error al obtener los datos:", error)
-      toast.error("Error al cargar los datos de seguimiento")
+      showAlert("Error al cargar los datos de seguimiento.", 'error');
     } finally {
       setLoading(false) // Set loading to false after fetching data, regardless of success or failure
     }
@@ -96,7 +101,8 @@ const Tracking = () => {
       })
       .catch((error) => {
         console.error("Error al actualizar el tracking:", error.response ? error.response.data : error.message)
-        toast.error("Error al actualizar el seguimiento")
+      showAlert("Error al actualizar el seguimiento.", 'error');
+
       })
   }
 
@@ -116,11 +122,13 @@ const Tracking = () => {
     axios
       .delete(`http://localhost:2025/api/tracking/${selectedId}`)
       .then(() => {
-        toast.success("El registro ha sido eliminado.")
+      showAlert("El registro ha sido eliminado.", 'success');
+        
         getTracking()
       })
       .catch((error) => {
-        toast.error("No se pudo eliminar el registro.")
+      showAlert("No se pudo eliminar el registro.", 'error');
+
         console.error("Error al eliminar:", error)
       })
       .finally(() => handleCloseDeleteDialog())
