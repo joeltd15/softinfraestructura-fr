@@ -4,7 +4,8 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import { Col, Row } from "react-bootstrap";
-import { useAlert } from '../../../../assets/functions/index';
+import { useAlert } from "../../../../assets/functions/index";
+import { toast } from "react-toastify"; // Se agregó la importación de toast
 
 const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignmentId }) => {
   const [observations, setObservations] = useState("");
@@ -17,6 +18,11 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
   const [errors, setErrors] = useState({});
   const { showAlert } = useAlert();
 
+  useEffect(() => {
+    return () => {
+      toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
+    };
+  }, []);
 
   useEffect(() => {
     if (selectedAssignmentId) {
@@ -50,7 +56,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
 
   const handleSubmit = async () => {
     if (!validateFields()) {
-      alert.error("Por favor, completa todos los campos obligatorios.");
+      showAlert("Todos los campos son obligatorios.", "error");
       return;
     }
 
@@ -66,27 +72,25 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
     formData.append("status", status);
     formData.append("assignmentId", assignmentId);
     formData.append("dateService", today);
-    const registerRequest = axios.post("http://localhost:2025/api/tracking", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-
-    toast.promise(registerRequest, {
-      pending: "Registrando seguimiento...",
-      success: "Seguimiento registrado correctamente",
-      error: "Error al registrar el seguimiento",
-    });
 
     try {
-      await registerRequest;
-      await axios.post("http://localhost:2025/api/tracking", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      alert.success("Seguimiento registrado correctamente");
+      await toast.promise(
+        axios.post("http://localhost:2025/api/tracking", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        }),
+        {
+          pending: "Registrando seguimiento...",
+          success: "Seguimiento registrado correctamente",
+          error: "Error al registrar el seguimiento",
+        }
+      );
+
+      showAlert("Seguimiento registrado correctamente.", "success");
       onSolicitudCreated();
       setTimeout(() => handleClose(), 500);
     } catch (error) {
       console.error("Error al registrar seguimiento:", error);
-      alert.error("Error al registrar el seguimiento");
+      showAlert("Error al registrar la reserva.", "error");
     }
   };
 
@@ -124,8 +128,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
                     setAssignmentId(e.target.value);
                     setErrors((prev) => ({ ...prev, assignmentId: "" }));
                   }}
-                  isInvalid={!!errors.assignmentId}
-                  disabled
+                  isInvalid={!!errors.assignmentId} disabled
                 >
                   <option value="">Seleccione una asignación</option>
                   {assignments.map((assign) => (
@@ -141,7 +144,6 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
             </Col>
           </Row>
 
-          
           <Row className="mb-3">
             <Col sm={12}>
               <Form.Group>
@@ -188,10 +190,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
             <Col sm={12}>
               <Form.Group>
                 <Form.Label className="required">Estado</Form.Label>
-                <Form.Select
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                >
+                <Form.Select value={status} onChange={(e) => setStatus(e.target.value)}>
                   <option value="Realizado">Realizado</option>
                   <option value="Cancelado">Cancelado</option>
                   <option value="En espera por falta de material">En espera por falta de material</option>
@@ -204,11 +203,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
             <Col sm={12}>
               <Form.Group>
                 <Form.Label>Evidencia Fotográfica</Form.Label>
-                <Form.Control
-                  type="file"
-                  onChange={(e) => setPhotographicEvidence(e.target.files[0])}
-                  accept="image/*"
-                />
+                <Form.Control type="file" onChange={(e) => setPhotographicEvidence(e.target.files[0])} accept="image/*" />
               </Form.Group>
             </Col>
           </Row>
