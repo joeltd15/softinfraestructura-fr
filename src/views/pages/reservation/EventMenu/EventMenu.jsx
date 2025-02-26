@@ -18,12 +18,6 @@ const EventMenu = ({ event, onClose, getReservations }) => {
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const { showAlert } = useAlert();
 
-    useEffect(() => {
-        return () => {
-            toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
-        };
-    }, []);
-
     if (!event) return null;
 
     const handleEdit = () => {
@@ -49,8 +43,8 @@ const EventMenu = ({ event, onClose, getReservations }) => {
     const handleConfirmDelete = async () => {
         try {
             await fetch(`http://localhost:2025/api/reservation/${event.id}`, { method: 'DELETE' });
+            showAlert("Eliminado correctamente", 'success');
             getReservations();
-            showAlert('Reserva Eliminada correctamente.', 'success');
             setOpenDeleteDialog(false);
             onClose();
         } catch (error) {

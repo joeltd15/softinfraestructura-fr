@@ -17,12 +17,6 @@ const ReservationModal = ({ show, selectedDate, onClose, getReservations }) => {
   const [errors, setErrors] = useState({});
   const { showAlert } = useAlert();
 
-  useEffect(() => {
-    return () => {
-      toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
-    };
-  }, []);
-
   const user = JSON.parse(localStorage.getItem("user"));
 
   const validateField = (field, value) => {
@@ -76,12 +70,18 @@ const ReservationModal = ({ show, selectedDate, onClose, getReservations }) => {
 
     try {
       await axios.post("http://localhost:2025/api/reservation", requestData);
-      showAlert("Reserva registrada correctamente.", 'success');
+      toast.success('Registrado correctamente!', {
+        position: "top-right",
+        autoClose: 4000,
+      })
       getReservations();
       onClose();
     } catch (error) {
       console.error("Error al registrar la reserva:", error);
-      showAlert("Error al registrar la reserva.", 'error');
+      toast.error('Error al registrar', {
+        position: "top-right",
+        autoClose: 5000,
+      });
     }
   };
 

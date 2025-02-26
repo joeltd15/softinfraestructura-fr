@@ -5,7 +5,7 @@ import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import { Col, Row } from "react-bootstrap";
 import { useAlert } from "../../../../assets/functions/index";
-import { toast } from "react-toastify"; // Se agregó la importación de toast
+import { toast } from "react-toastify";
 
 const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignmentId }) => {
   const [observations, setObservations] = useState("");
@@ -20,7 +20,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
 
   useEffect(() => {
     return () => {
-      toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
+      toast.dismiss();
     };
   }, []);
 
@@ -84,10 +84,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
           error: "Error al registrar el seguimiento",
         }
       );
-
-      showAlert("Seguimiento registrado correctamente.", "success");
-      onSolicitudCreated();
-      setTimeout(() => handleClose(), 500);
+      handleClose();
     } catch (error) {
       console.error("Error al registrar seguimiento:", error);
       showAlert("Error al registrar la reserva.", "error");
