@@ -38,12 +38,26 @@ const RegisterResponsibleModal = ({ show, handleClose, onResponsibleCreated }) =
 
   const getUsers = async () => {
     try {
+      // Obtener todos los usuarios
       const response = await axios.get("http://localhost:2025/api/user");
-      setUsers(response.data);
+      const allUsers = response.data;
+  
+      // Filtrar solo los usuarios con rolId 2 (Encargados)
+      const encargados = allUsers.filter(user => user.roleId === 2);
+  
+      // Obtener los usuarios ya registrados como responsables
+      const responsibleResponse = await axios.get("http://localhost:2025/api/responsible");
+      const registeredResponsibles = responsibleResponse.data.map(responsible => responsible.userId);
+  
+      // Filtrar los usuarios que no estén ya registrados como responsables
+      const availableUsers = encargados.filter(user => !registeredResponsibles.includes(user.id));
+  
+      setUsers(availableUsers);
     } catch (error) {
       console.error("Error al obtener los usuarios:", error);
     }
   };
+  
 
   const validateForm = () => {
     let newErrors = {};
@@ -61,20 +75,28 @@ const RegisterResponsibleModal = ({ show, handleClose, onResponsibleCreated }) =
 
   const handleSubmit = async () => {
     if (!validateForm()) {
-      showAlert("Todos los campos son obligatorios.", 'error');
+      showAlert("Todos los campos son obligatorios.", "error");
       return;
     }
-
-    const requestData = { userId, responsibilities };
-
+  
     try {
+      // Verificar si el usuario ya está registrado en responsables
+      const responsibleResponse = await axios.get("http://localhost:2025/api/responsible");
+      const registeredResponsibles = responsibleResponse.data.map(responsible => responsible.userId);
+  
+      if (registeredResponsibles.includes(parseInt(userId))) {
+        showAlert("Este usuario ya está registrado como responsable.", "error");
+        return;
+      }
+  
+      const requestData = { userId, responsibilities };
       await axios.post("http://localhost:2025/api/responsible", requestData);
-      showAlert("Responsable registrado correctamente.", 'success');
+      showAlert("Responsable registrado correctamente.", "success");
       onResponsibleCreated();
       handleClose();
     } catch (error) {
       console.error("Error al registrar el responsable:", error);
-      showAlert("Error al registrar el responsable.", 'error');
+      showAlert("Error al registrar el responsable.", "error");
     }
   };
 

@@ -56,26 +56,27 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
 
     const handleSubmit = async () => {
         if (!validateFields()) return;
-
+    
         const today = new Date().toISOString().split("T")[0];
         const user = JSON.parse(localStorage.getItem("user"));
         if (!user || !user.id) {
             showAlert('No se pudo obtener la información del usuario.', 'error');
             return;
         }
-
+    
         try {
-            const { data: applications } = await axios.get(url);
-            const assignedCount = applications.filter(
-                (app) => app.reportType === TypeReport && app.status === "Asignada"
-            ).length;
-
-            const newStatus = assignedCount >= 3 ? "En espera" : "Asignada";
-
+            // 1. Verificar cuántas solicitudes tiene el usuario en estado "Asignada"
+            const response = await axios.get(`${url}?userId=${user.id}&status=Asignada`);
+            const assignedRequests = response.data.length;
+    
+            // 2. Determinar el estado de la nueva solicitud
+            let newStatus = assignedRequests >= 3 ? "En espera" : "Asignada";
+    
             if (newStatus === "En espera") {
-                showAlert(`Ya hay 3 solicitudes asignadas para ${TypeReport}. Se guardará como "En espera".`, 'warning');
+                showAlert("El usuario ya tiene 3 solicitudes asignadas. Se registrará en estado 'En espera'.", "warning");
             }
-
+    
+            // 3. Registrar la solicitud con el estado correspondiente
             const formData = new FormData();
             formData.append("reportDate", today);
             formData.append("dependence", Dependence);
@@ -86,27 +87,22 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
             }
             formData.append("reportType", TypeReport);
             formData.append("responsibleForSpace", ResponsibleForSpace);
-            formData.append("status", newStatus);
             formData.append("userId", user.id);
-
-            const registerRequest = axios.post(url, formData, {
+            formData.append("status", newStatus); // Se envía el estado determinado
+    
+            await axios.post(url, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
-
-            toast.promise(registerRequest, {
-                pending: "Registrando solicitud...",
-                success: `Solicitud registrada correctamente con estado: ${newStatus}`,
-                error: "Error al registrar la solicitud",
-            });
-
-            await registerRequest;
+    
+            toast.success(`Solicitud registrada correctamente en estado "${newStatus}"`);
             onSolicitudCreated();
             handleClose();
         } catch (error) {
             console.error("Error al registrar solicitud:", error);
-            showAlert("Error al registrar la solicitud", 'error');
+            showAlert("Error al registrar la solicitud", "error");
         }
     };
+    
 
     return (
         <Modal show={show} onHide={handleClose} backdrop="static">

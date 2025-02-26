@@ -113,6 +113,7 @@ const EditResponsibleModal = ({ show, handleClose, onResponsibleUpdated, respons
                                 onChange={handleUserChange}
                                 onBlur={() => setErrors((prev) => ({ ...prev, userId: !userId }))}
                                 isInvalid={errors.userId}
+                                disabled
                             >
                                 <option value="">Seleccione un usuario</option>
                                 {users.map(user => (

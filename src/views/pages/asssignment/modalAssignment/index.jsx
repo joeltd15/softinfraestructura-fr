@@ -1,109 +1,166 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import Modal from "react-bootstrap/Modal";
-import { Col, Row } from 'react-bootstrap';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import Select from 'react-select';
-import { useAlert } from '../../../../assets/functions/index';
+"use client"
+
+import { useState, useEffect } from "react"
+import axios from "axios"
+import Button from "react-bootstrap/Button"
+import Form from "react-bootstrap/Form"
+import Modal from "react-bootstrap/Modal"
+import { toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
+import Select from "react-select"
+import { useAlert } from "../../../../assets/functions/index"
 
 const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApplication = null }) => {
-  const urlUsers = 'http://localhost:2025/api/user';
-  const [applicationId, setApplicationId] = useState("");
-  const [responsibleId, setResponsibleId] = useState("");
-  const [applications, setApplications] = useState([]);
-  const [responsibles, setResponsibles] = useState([]);
-  const [Users, setUsers] = useState([]);
-  const { showAlert } = useAlert();
+  const urlUsers = "http://localhost:2025/api/user"
+  const [applicationId, setApplicationId] = useState("")
+  const [responsibleId, setResponsibleId] = useState("")
+  const [applications, setApplications] = useState([])
+  const [responsibles, setResponsibles] = useState([])
+  const [Users, setUsers] = useState([])
+  const { showAlert } = useAlert()
 
   useEffect(() => {
-    setApplicationId(assignmentApplication || "");
-  }, [assignmentApplication]);
+    setApplicationId(assignmentApplication || "")
+  }, [assignmentApplication])
 
   useEffect(() => {
     return () => {
-      toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
-    };
-  }, []);
+      toast.dismiss()
+    }
+  }, [])
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [appRes, respRes, userRes] = await Promise.all([
+        const [appRes, respRes, userRes, assignRes] = await Promise.all([
           axios.get("http://localhost:2025/api/application"),
           axios.get("http://localhost:2025/api/responsible"),
-          axios.get(urlUsers)
-        ]);
+          axios.get(urlUsers),
+          axios.get("http://localhost:2025/api/assignment"),
+        ])
 
-        setApplications(appRes.data);
-        setUsers(userRes.data);
+        setApplications(appRes.data)
+        setUsers(userRes.data)
 
-        // Agrupar solicitudes por responsable
-        const solicitudesPorResponsable = {};
-        appRes.data.forEach(app => {
-          if (app.status === "Asignada") {
-            solicitudesPorResponsable[app.userId] = (solicitudesPorResponsable[app.userId] || 0) + 1;
+        // Buscar el tipo de reporte seleccionado
+        const selectedApp = appRes.data.find((app) => app.id === Number(applicationId))
+        const reportType = selectedApp ? selectedApp.reportType : null
+
+        // 🟢 Verificar datos recibidos
+        console.log("🔹 Aplicaciones:", appRes.data)
+        console.log("🔹 Responsables:", respRes.data)
+        console.log("🔹 Asignaciones:", assignRes.data)
+        console.log("🔹 Reporte seleccionado:", reportType)
+
+        // Obtener el estado actual de cada asignación
+        const assignmentStatuses = {}
+
+        // Primero, obtener el estado de cada asignación desde las aplicaciones
+        appRes.data.forEach((app) => {
+          assignRes.data.forEach((assign) => {
+            if (assign.applicationId === app.id) {
+              assignmentStatuses[assign.id] = app.status
+            }
+          })
+        })
+
+        console.log("🔹 Estados de asignaciones:", assignmentStatuses)
+
+        // Contar solicitudes con estado "Asignada" por responsable
+        const asignacionesPorResponsable = {}
+
+        assignRes.data.forEach((assignment) => {
+          // Buscar la aplicación correspondiente a esta asignación
+          const app = appRes.data.find((app) => app.id === assignment.applicationId)
+
+          if (assignment.responsibleId && app) {
+            // Solo contar si el estado es "Asignada"
+            if (app.status === "Asignada") {
+              asignacionesPorResponsable[assignment.responsibleId] =
+                (asignacionesPorResponsable[assignment.responsibleId] || 0) + 1
+            }
           }
-        });
+        })
 
-        // Filtrar responsables con menos de 3 solicitudes en espera
-        const filteredResponsibles = respRes.data.filter(resp => {
-          return (solicitudesPorResponsable[resp.userId] || 0) < 3;
-        });
+        console.log("🔹 Contador de asignaciones en estado 'Asignada':", asignacionesPorResponsable)
 
-        setResponsibles(filteredResponsibles);
+        const filteredResponsibles = respRes.data.filter((resp) => {
+          // Obtener el número de asignaciones con estado "Asignada" para este responsable
+          const asignacionesActivas = asignacionesPorResponsable[resp.id] || 0
+
+          // ✅ Permitir asignación solo si tiene menos de 3 en estado "Asignada"
+          const disponible = asignacionesActivas < 3
+
+          const hasMatchingResponsibility =
+            Array.isArray(resp.Responsibilities) &&
+            resp.Responsibilities.some((r) => r.name.trim().toLowerCase() === reportType?.trim().toLowerCase())
+
+          console.log(
+            `🔹 Responsable: ${resp.id}, Asignaciones activas: ${asignacionesActivas}, Disponible: ${disponible}, Coincide con reporte: ${hasMatchingResponsibility}`,
+          )
+
+          return disponible && hasMatchingResponsibility
+        })
+
+        setResponsibles(filteredResponsibles)
       } catch (error) {
-        console.error("Error al obtener datos:", error);
+        console.error("❌ Error al obtener datos:", error)
       }
-    };
+    }
 
-    fetchData();
-  }, []);
-
-
-  const getUsers = async () => {
-    const response = await axios.get(urlUsers);
-    setUsers(response.data);
-  };
+    fetchData()
+  }, [applicationId])
 
   const userName = (userId) => {
-    const user = Users.find(user => user.id === userId);
-    return user ? user.name : 'Desconocido';
-  };
+    const user = Users.find((user) => user.id === userId)
+    return user ? user.name : "Desconocido"
+  }
 
   const responsibleName = (responsibleId) => {
-    if (!Users.length) return "Cargando..."; // Si Users aún no tiene datos, mostrar mensaje temporal
-
-    const responsible = responsibles.find(resp => resp.id === responsibleId);
-    return responsible ? userName(responsible.userId) : "Desconocido";
-  };
+    if (!Users.length || !responsibles.length) return "Cargando..."
+    const responsible = responsibles.find((resp) => resp.id === responsibleId)
+    if (!responsible) return "Desconocido"
+    return Users.find((user) => user.id === responsible.userId)?.name || "Desconocido"
+  }
 
   const handleSubmit = async () => {
     if (!applicationId || !responsibleId) {
-      showAlert('Todos los campos son obligatorios.', 'warning');
-      return;
+      showAlert("Todos los campos son obligatorios.", "warning")
+      return
     }
 
-    const assignmentDate = new Date().toISOString().split("T")[0]; // Fecha automática
-    const assignmentData = { assignmentDate, applicationId, responsibleId };
+    const assignmentDate = new Date().toISOString().split("T")[0]
+    const assignmentData = { assignmentDate, applicationId, responsibleId }
 
     try {
-      await axios.post("http://localhost:2025/api/assignment", assignmentData);
-      showAlert('Asignación registrada correctamente.', 'success');
-      await onAssignmentCreated();
-      handleClose();
-    } catch (error) {
-      console.error("Error al registrar la asignación:", error);
-      showAlert('Error al registrar la asignación.', 'error');
-    }
-  };
+      // Registrar la asignación
+      await axios.post("http://localhost:2025/api/assignment", assignmentData)
 
-  const options = applications.map(app => ({
+      try {
+        // Intentar actualizar el estado de la aplicación (si falla, no afectará el flujo principal)
+        await axios.put(`http://localhost:2025/api/application/${applicationId}`, {
+          status: "Asignada",
+        })
+      } catch (updateError) {
+        console.log(
+          "Aviso: No se pudo actualizar el estado de la aplicación, pero la asignación se registró correctamente.",
+        )
+        // No mostramos este error al usuario ya que la operación principal fue exitosa
+      }
+
+      showAlert("Asignación registrada correctamente.", "success")
+      await onAssignmentCreated()
+      handleClose()
+    } catch (error) {
+      console.error("Error al registrar la asignación:", error)
+      showAlert("Error al registrar la asignación.", "error")
+    }
+  }
+
+  const options = applications.map((app) => ({
     value: app.id,
-    label: `${app.location} | Fecha: ${new Date(app.reportDate).toISOString().split('T')[0]} | Codigo: ${app.id} | Tipo: ${userName(app.reportType)}`,
-  }));
+    label: `${app.location} | Fecha: ${new Date(app.reportDate).toISOString().split("T")[0]} | Codigo: ${app.id} | Tipo: ${app.reportType}`,
+  }))
 
   return (
     <Modal show={show} onHide={handleClose} backdrop="static">
@@ -112,32 +169,31 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
       </Modal.Header>
       <Modal.Body>
         <Form>
-          <Row className="mb-3">
-            <Col sm={12}>
-              <Form.Group>
-                <Form.Label className="required">Responsable</Form.Label>
-                <Form.Select
-                  value={responsibleId}
-                  onChange={(e) => setResponsibleId(e.target.value)}
-                >
-                  <option value="">Seleccione un responsable</option>
-                  {responsibles.map(resp => (
-                    <option key={resp.id} value={resp.id}>{responsibleName(resp.id)}</option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
-            </Col>
-          </Row>
-          <Form.Group>
+          <Form.Group className="mb-3">
             <Form.Label className="required">Solicitud</Form.Label>
             <Select
-              value={options.find(option => option.value === applicationId)}
+              value={options.find((option) => option.value === applicationId)}
               onChange={(selectedOption) => setApplicationId(selectedOption.value)}
               options={options}
               placeholder="Seleccione una solicitud"
-              isSearchable
               isDisabled
             />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label className="required">Responsable</Form.Label>
+            <Form.Select value={responsibleId} onChange={(e) => setResponsibleId(e.target.value)}>
+              <option value="">Seleccione un responsable</option>
+              {responsibles.map((resp) => (
+                <option key={resp.id} value={resp.id}>
+                  {responsibleName(resp.id)}
+                </option>
+              ))}
+            </Form.Select>
+            {responsibles.length === 0 && (
+              <div className="text-danger mt-2">
+                No hay responsables disponibles para este tipo de reporte o todos tienen 3 asignaciones activas.
+              </div>
+            )}
           </Form.Group>
         </Form>
       </Modal.Body>
@@ -150,7 +206,7 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
         </Button>
       </Modal.Footer>
     </Modal>
-  );
-};
+  )
+}
 
-export default ModalAssignment;
+export default ModalAssignment

@@ -235,19 +235,23 @@ const Tracking = () => {
                               <FaEye />
                             </button>
                           </Tooltip>
-                          <Tooltip title="Actualizar el seguimiento">
-                            <button className="Table-button Update-button" onClick={() => handleEdit(tracking)}>
-                              <FaPencilAlt />
-                            </button>
-                          </Tooltip>
-                          <Tooltip title="Eliminar el seguimiento">
-                            <button
-                              className="Table-button Delete-button"
-                              onClick={() => handleOpenDeleteDialog(tracking.id)}
-                            >
-                              <MdDelete />
-                            </button>
-                          </Tooltip>
+                          {tracking.status !== "Realizado" && (
+                            <>
+                              <Tooltip title="Actualizar el seguimiento">
+                                <button className="Table-button Update-button" onClick={() => handleEdit(tracking)}>
+                                  <FaPencilAlt />
+                                </button>
+                              </Tooltip>
+                              <Tooltip title="Eliminar el seguimiento">
+                                <button
+                                  className="Table-button Delete-button"
+                                  onClick={() => handleOpenDeleteDialog(tracking.id)}
+                                >
+                                  <MdDelete />
+                                </button>
+                              </Tooltip>
+                            </>
+                          )}
 
                         </td>
                       </tr>
