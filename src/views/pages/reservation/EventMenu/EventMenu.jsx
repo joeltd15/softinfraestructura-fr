@@ -8,12 +8,21 @@ import ModalEditReservation from "../reservationEdit/index";
 import ModalShowReservation from "../ShowReservation/index"
 import DialogDelete from "../deleteDialog/index";
 import { toast } from "react-toastify";
+import { useAlert } from '../../../../assets/functions/index';
+
 
 const EventMenu = ({ event, onClose, getReservations }) => {
     const [ModalEdit, setModalEdit] = useState(false);
     const [ModalShow, setModalShow] = useState(false);
     const [SelectedReservation, setSelectedReservation] = useState(null);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const { showAlert } = useAlert();
+
+    useEffect(() => {
+        return () => {
+            toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
+        };
+    }, []);
 
     if (!event) return null;
 
@@ -41,7 +50,7 @@ const EventMenu = ({ event, onClose, getReservations }) => {
         try {
             await fetch(`http://localhost:2025/api/reservation/${event.id}`, { method: 'DELETE' });
             getReservations();
-            toast.success("Reserva Eliminada correctamente.");
+            showAlert('Reserva Eliminada correctamente.', 'success');
             setOpenDeleteDialog(false);
             onClose();
         } catch (error) {
@@ -62,7 +71,7 @@ const EventMenu = ({ event, onClose, getReservations }) => {
                             </Button>
                         </>
                     )}
-                    <Button fullWidth className="Show-button"  onClick={handleShow}>
+                    <Button fullWidth className="Show-button" onClick={handleShow}>
                         <FaEye /> Ver detalle
                     </Button>
                     <Button fullWidth className="Delete-button" id="cerrar" onClick={onClose}>

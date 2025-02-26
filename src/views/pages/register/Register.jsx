@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Col, Row, Button } from 'react-bootstrap';
+import { useAlert } from '../../../assets/functions/index';
 import {
   CButton,
   CCard,
@@ -29,19 +30,25 @@ const Register = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+  const { showAlert } = useAlert();
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  useEffect(() => {
+    return () => {
+      toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
+    };
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (formData.password !== formData.confirmPassword) {
-      toast.error('Las contraseñas no coinciden');
+      showAlert('Las contraseñas no coinciden.', 'error');
       return;
     }
-  
+
     const dataToSend = {
       name: formData.name.trim(),
       email: formData.email.trim(),
@@ -49,19 +56,18 @@ const Register = () => {
       phone: formData.phone.trim(),
       roleId: 3
     };
-  
+
     try {
       await axios.post('http://localhost:2025/api/auth/register', dataToSend);
-      toast.success('Registro exitoso');
-  
+      showAlert('Registro exitoso.', 'success');
       setFormData({ name: '', email: '', password: '', confirmPassword: '', phone: '' });
-  
+
       setTimeout(() => {
         window.location.href = 'http://localhost:3000/#/login';
       }, 1500);
     } catch (error) {
       console.log("Error en la solicitud:", error.response?.data);
-      toast.error(error.response?.data?.message || 'Error en el registro');
+      showAlert(error.response?.data?.message || 'Error en el registro', 'error');
     }
   };
 

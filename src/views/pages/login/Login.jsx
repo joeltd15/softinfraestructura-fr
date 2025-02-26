@@ -18,14 +18,22 @@ import CIcon from '@coreui/icons-react';
 import { cilLockLocked, cilUser } from '@coreui/icons';
 import { Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useAlert } from '../../../assets/functions/index';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { showAlert } = useAlert();
+
+  useEffect(() => {
+    return () => {
+      toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
+    };
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -73,10 +81,7 @@ const Login = () => {
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("permissions", JSON.stringify(userPermissions));
 
-      toast.success("Inicio de sesión exitoso!", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      showAlert('Inicio de sesión exitoso!.', 'success');
 
       setTimeout(() => {
         navigate("/dashboard");
@@ -98,10 +103,7 @@ const Login = () => {
         errorMessage = "Error inesperado. Intenta de nuevo.";
       }
 
-      toast.error(errorMessage, {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      showAlert(errorMessage, 'error');
     }
   };
 
@@ -161,7 +163,6 @@ const Login = () => {
           </CCardBody>
         </CCard>
       </CContainer>
-      <ToastContainer />
     </div>
   );
 };

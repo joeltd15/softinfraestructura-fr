@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect, useState } from "react"
 import axios from "axios"
 import ModalAssignment from "./modalAssignment/index"
@@ -18,7 +16,6 @@ import { pdf } from "@react-pdf/renderer"
 import { saveAs } from "file-saver"
 import TablePagination from "../../../components/Paginator/index.jsx"
 import { useAlert } from '../../../assets/functions/index.jsx';
-
 
 const Assignment = () => {
   const [responsibles, setResponsibles] = useState([])

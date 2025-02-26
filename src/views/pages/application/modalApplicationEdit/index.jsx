@@ -7,7 +7,7 @@ import axios from "axios";
 import { useAlert } from '../../../../assets/functions/index';
 
 
-const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
+const Realizado = ({ show, handleClose, application, handleUpdate }) => {
     const [editedApplication, setEditedApplication] = useState({
         reportDate: new Date().toISOString().split("T")[0],
         dependence: "",
@@ -22,16 +22,12 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
     const { showAlert } = useAlert();
     const [errors, setErrors] = useState({});
     const [Users, setUsers] = useState([]);
+    const urlUsers = 'http://localhost:2025/api/user'
 
     useEffect(() => {
         getUsers();
     }, []);
 
-    useEffect(() => {
-        return () => {
-            toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
-        };
-    }, []);
 
     const getUsers = async () => {
         const response = await axios.get(urlUsers);
@@ -244,4 +240,4 @@ const CustomModal = ({ show, handleClose, application, handleUpdate }) => {
     );
 };
 
-export default CustomModal;
+export default Realizado;
