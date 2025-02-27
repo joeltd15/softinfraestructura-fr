@@ -336,7 +336,7 @@ input:hover {
     pointer-events: none !important;
 }
 
-/* Estado Pendiente - Amarillo */
+/* Estado Reservado - Amarillo */
 .event-pending {
     background-color: #00304D !important;
     border-color: #00304D !important;
@@ -477,4 +477,10 @@ button {
     height: 10px !important;
     margin-right: 5px !important;
     border-radius: 5px;
+}
+
+.Row-widgets{
+    display: flex !important;
+    align-items: center !important;
+    justify-content: stretch !important;
 }

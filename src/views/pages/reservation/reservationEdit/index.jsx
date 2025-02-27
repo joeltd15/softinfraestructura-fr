@@ -21,7 +21,7 @@ const EditReservationModal = ({ show, reservationId, onClose }) => {
 
   useEffect(() => {
     return () => {
-      toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
+      toast.dismiss(); // Limpia todas las alertas Reservados al desmontar el componente
     };
   }, []);
 
@@ -146,7 +146,7 @@ const EditReservationModal = ({ show, reservationId, onClose }) => {
                 isInvalid={!!errors.estatus}
               >
                 <option value="">Seleccione un estado</option>
-                <option value="Pendiente">Pendiente</option>
+                <option value="Reservado">Reservado</option>
                 <option value="Cancelado">Cancelado</option>
                 <option value="Realizado">Realizado</option>
               </Form.Select>

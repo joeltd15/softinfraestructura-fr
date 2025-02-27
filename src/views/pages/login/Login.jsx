@@ -31,7 +31,7 @@ const Login = () => {
 
   useEffect(() => {
     return () => {
-      toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
+      toast.dismiss(); // Limpia todas las alertas Reservados al desmontar el componente
     };
   }, []);
 

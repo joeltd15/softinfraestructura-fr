@@ -23,7 +23,7 @@ const Reservation = () => {
 
   useEffect(() => {
     return () => {
-      toast.dismiss(); // Limpia todas las alertas pendientes al desmontar el componente
+      toast.dismiss(); // Limpia todas las alertas Reservados al desmontar el componente
     };
   }, []);
 
@@ -68,7 +68,7 @@ const Reservation = () => {
   // Asignar clases según estado
   const getEventClass = (estatus) => {
     switch (estatus) {
-      case "Pendiente":
+      case "Reservado":
         return "event-pending";
       case "Realizado":
         return "event-completed";
@@ -121,7 +121,6 @@ const Reservation = () => {
 
   const user = JSON.parse(localStorage.getItem("user"));
 
-
   return (
     <div style={{ width: "100%", overflow: "hidden" }}>
       <div className="row">
@@ -134,7 +133,7 @@ const Reservation = () => {
           <Stack sx={{ width: "100%" }} spacing={2} className="mb-3">
             <Alert>
               <div className="d-flex align-items-center">
-                <div className="pending d-flex align-items-center"><div className="pending-Circle"></div><span>Pendiente</span></div>
+                <div className="pending d-flex align-items-center"><div className="pending-Circle"></div><span>Reservado</span></div>
                 <div className="completed d-flex align-items-center"><div className="completed-Circle"></div><span>Completado</span></div>
                 {
                   user.roleId == 1 && (

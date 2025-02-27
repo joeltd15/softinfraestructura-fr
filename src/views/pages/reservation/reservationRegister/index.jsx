@@ -64,7 +64,7 @@ const ReservationModal = ({ show, selectedDate, onClose, getReservations }) => {
       startTime: `${startTime}:00`,
       finishTime: `${endTime}:00`,
       activity,
-      estatus: "Pendiente",
+      estatus: "Reservado",
       userId: user?.id,
     };
 

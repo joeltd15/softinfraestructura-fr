@@ -1,152 +1,413 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Card, Row, Col } from "react-bootstrap";
-import { FaUser, FaClipboardList, FaCalendarAlt } from "react-icons/fa";
-import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { useEffect, useState } from "react"
+import axios from "axios"
+import CIcon from "@coreui/icons-react"
+import { cilArrowTop, cilOptions } from "@coreui/icons"
+import { CChartBar, CChartLine, CChartPie } from "@coreui/react-chartjs"
+
+import {
+  CCol,
+  CDropdown,
+  CDropdownItem,
+  CDropdownMenu,
+  CDropdownToggle,
+  CRow,
+  CWidgetStatsA,
+  CCard,
+  CCardBody,
+  CCardHeader,
+} from "@coreui/react"
+import { Row } from "react-bootstrap"
 
 const Dashboard = () => {
-  const [totalUsuarios, setTotalUsuarios] = useState(0);
-  const [totalSolicitudes, setTotalSolicitudes] = useState(0);
-  const [totalReservas, setTotalReservas] = useState(0);
-  const [reportData, setReportData] = useState([]);
-  const [sceneryData, setSceneryData] = useState([]); // Estado para escenarios
+  const [totalUsuarios, setTotalUsuarios] = useState(0)
+  const [totalSolicitudes, setTotalSolicitudes] = useState(0)
+  const [totalReservas, setTotalReservas] = useState(0)
+  const [reportData, setReportData] = useState([])
+  const [sceneryData, setSceneryData] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [monthlyReservations, setMonthlyReservations] = useState([])
+  const [monthlyApplications, setMonthlyApplications] = useState([])
+
+  // Function to get CSS variables
+  const getStyle = (variable) => String(getComputedStyle(document.documentElement).getPropertyValue(variable)).trim()
 
   useEffect(() => {
-    axios.get("http://localhost:2025/api/user").then((res) => {
-      setTotalUsuarios(res.data.length);
-    });
+    const fetchData = async () => {
+      try {
+        setLoading(true)
 
-    axios.get("http://localhost:2025/api/application").then((res) => {
-      setTotalSolicitudes(res.data.length);
-    });
+        const usersResponse = await axios.get("http://localhost:2025/api/user")
+        setTotalUsuarios(usersResponse.data.length)
 
-    axios.get("http://localhost:2025/api/reservation").then((res) => {
-      setTotalReservas(res.data.length);
-      
-      // Procesar datos de escenarios
-      const sceneryCounts = res.data.reduce((acc, resv) => {
-        acc[resv.scenery] = (acc[resv.scenery] || 0) + 1;
-        return acc;
-      }, {});
+        const applicationsResponse = await axios.get("http://localhost:2025/api/application")
+        setTotalSolicitudes(applicationsResponse.data.length)
+        setReportData(applicationsResponse.data)
 
-      // Convertir a formato de gráfico
-      const sceneryChartData = Object.keys(sceneryCounts).map((key) => ({
-        name: key,
-        value: sceneryCounts[key],
-      }));
+        // Process application data by month
+        const appsByMonth = processDataByMonth(applicationsResponse.data)
+        setMonthlyApplications(appsByMonth)
 
-      setSceneryData(sceneryChartData);
-    });
+        const reservationsResponse = await axios.get("http://localhost:2025/api/reservation")
+        setTotalReservas(reservationsResponse.data.length)
 
-    axios.get("http://localhost:2025/api/application").then((res) => {
-      setReportData(res.data);
-    });
-  }, []);
+        // Process reservation data by month
+        const reservationsByMonth = processDataByMonth(reservationsResponse.data)
+        setMonthlyReservations(reservationsByMonth)
 
+        // Process scenery data
+        const sceneryCounts = reservationsResponse.data.reduce((acc, resv) => {
+          acc[resv.scenery] = (acc[resv.scenery] || 0) + 1
+          return acc
+        }, {})
+
+        const sceneryChartData = Object.keys(sceneryCounts).map((key) => ({
+          name: key,
+          value: sceneryCounts[key],
+        }))
+
+        setSceneryData(sceneryChartData)
+      } catch (error) {
+        console.error("Error fetching data:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  // Helper function to process data by month
+  const processDataByMonth = (data) => {
+    const monthlyData = Array(12).fill(0)
+
+    data.forEach((item) => {
+      if (item.createdAt) {
+        const date = new Date(item.createdAt)
+        const month = date.getMonth()
+        monthlyData[month]++
+      }
+    })
+
+    return monthlyData
+  }
+
+  // Process report types
   const damageCounts = reportData.reduce((acc, report) => {
-    acc[report.reportType] = (acc[report.reportType] || 0) + 1;
-    return acc;
-  }, {});
+    if (report.reportType) {
+      acc[report.reportType] = (acc[report.reportType] || 0) + 1
+    }
+    return acc
+  }, {})
 
+  // Process status counts
   const statusCounts = reportData.reduce((acc, report) => {
-    acc[report.status] = (acc[report.status] || 0) + 1;
-    return acc;
-  }, {});
+    if (report.status) {
+      acc[report.status] = (acc[report.status] || 0) + 1
+    }
+    return acc
+  }, {})
 
-  const damageChartData = Object.keys(damageCounts).map((key) => ({ name: key, value: damageCounts[key] }));
-  const statusChartData = Object.keys(statusCounts).map((key) => ({ name: key, value: statusCounts[key] }));
+  // Convert to chart data format
+  const damageChartData = Object.keys(damageCounts).map((key) => ({ label: key, data: damageCounts[key] }))
+  const statusChartData = Object.keys(statusCounts).map((key) => ({ label: key, data: statusCounts[key] }))
 
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#A28DFF", "#FF6666", "#66CC99", "#D4A017"];
+  // Colors for charts
+  const COLORS = ["#5856d6", "#39f", "#f9b115", "#e55353", "#2eb85c", "#768192"]
+
+  if (loading) {
+    return <div>Cargando datos...</div>
+  }
 
   return (
-    <div className="container mt-4">
-      <Row>
-        <Col md={4} className="d-flex justify-content-start">
-          <Card className="shadow text-center p-2">
-            <FaClipboardList size={40} className="text-primary mb-2" />
-            <h6>Total de Solicitudes</h6>
-            <h4>{totalSolicitudes}</h4>
-          </Card>
-        </Col>
+    <CRow className="Row-widgets">
+      <CCol sm={6} lg={3}>
+        <CWidgetStatsA
+          className="mb-4"
+          color="primary"
+          value={
+            <>
+              {totalUsuarios}{" "}
+              <span className="fs-6 fw-normal">
+                <CIcon icon={cilArrowTop} />
+              </span>
+            </>
+          }
+          title="Total de Usuarios"
+          action={
+            <CDropdown alignment="end">
+              <CDropdownToggle color="transparent" caret={false} className="p-0">
+                <CIcon icon={cilOptions} className="text-high-emphasis-inverse" />
+              </CDropdownToggle>
+              <CDropdownMenu>
+                <CDropdownItem>Ver detalles</CDropdownItem>
+                <CDropdownItem>Exportar datos</CDropdownItem>
+              </CDropdownMenu>
+            </CDropdown>
+          }
+          chart={
+            <CChartLine
+              className="mt-3 mx-3"
+              style={{ height: "70px" }}
+              data={{
+                labels: ["January", "February", "March", "April", "May", "June", "July"],
+                datasets: [
+                  {
+                    label: "Usuarios",
+                    backgroundColor: "transparent",
+                    borderColor: "rgba(255,255,255,.55)",
+                    pointBackgroundColor: getStyle("--cui-primary"),
+                    data: [65, 59, 84, 84, 51, 55, totalUsuarios],
+                  },
+                ],
+              }}
+              options={{
+                plugins: {
+                  legend: {
+                    display: false,
+                  },
+                },
+                maintainAspectRatio: false,
+                scales: {
+                  x: {
+                    grid: {
+                      display: false,
+                      drawBorder: false,
+                    },
+                    ticks: {
+                      display: false,
+                    },
+                  },
+                  y: {
+                    min: 30,
+                    max: Math.max(89, totalUsuarios + 10),
+                    display: false,
+                    grid: {
+                      display: false,
+                    },
+                    ticks: {
+                      display: false,
+                    },
+                  },
+                },
+                elements: {
+                  line: {
+                    borderWidth: 1,
+                    tension: 0.4,
+                  },
+                  point: {
+                    radius: 4,
+                    hitRadius: 10,
+                    hoverRadius: 4,
+                  },
+                },
+              }}
+            />
+          }
+        />
+      </CCol>
+      <CCol sm={6} lg={3}>
+        <CWidgetStatsA
+          className="mb-4"
+          color="info"
+          value={
+            <>
+              {totalSolicitudes}{" "}
+              <span className="fs-6 fw-normal">
+                <CIcon icon={cilArrowTop} />
+              </span>
+            </>
+          }
+          title="Total de Solicitudes"
+          action={
+            <CDropdown alignment="end">
+              <CDropdownToggle color="transparent" caret={false} className="p-0">
+                <CIcon icon={cilOptions} className="text-high-emphasis-inverse" />
+              </CDropdownToggle>
+              <CDropdownMenu>
+                <CDropdownItem>Ver detalles</CDropdownItem>
+                <CDropdownItem>Exportar datos</CDropdownItem>
+              </CDropdownMenu>
+            </CDropdown>
+          }
+          chart={
+            <CChartLine
+              className="mt-3 mx-3"
+              style={{ height: "70px" }}
+              data={{
+                labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio"],
+                datasets: [
+                  {
+                    label: "Solicitudes",
+                    backgroundColor: "transparent",
+                    borderColor: "rgba(255,255,255,.55)",
+                    pointBackgroundColor: getStyle("--cui-info"),
+                    data: monthlyApplications.slice(0, 7),
+                  },
+                ],
+              }}
+              options={{
+                plugins: {
+                  legend: {
+                    display: false,
+                  },
+                },
+                maintainAspectRatio: false,
+                scales: {
+                  x: {
+                    grid: {
+                      display: false,
+                      drawBorder: false,
+                    },
+                    ticks: {
+                      display: false,
+                    },
+                  },
+                  y: {
+                    min: 0,
+                    max: Math.max(...monthlyApplications) + 5,
+                    display: false,
+                    grid: {
+                      display: false,
+                    },
+                    ticks: {
+                      display: false,
+                    },
+                  },
+                },
+                elements: {
+                  line: {
+                    borderWidth: 1,
+                  },
+                  point: {
+                    radius: 4,
+                    hitRadius: 10,
+                    hoverRadius: 4,
+                  },
+                },
+              }}
+            />
+          }
+        />
+      </CCol>
+      <CCol sm={6} lg={3}>
+        <CWidgetStatsA
+          className="mb-4"
+          color="warning"
+          value={
+            <>
+              {totalReservas}{" "}
+              <span className="fs-6 fw-normal">
+                <CIcon icon={cilArrowTop} />
+              </span>
+            </>
+          }
+          title="Total de Reservas"
+          action={
+            <CDropdown alignment="end">
+              <CDropdownToggle color="transparent" caret={false} className="p-0">
+                <CIcon icon={cilOptions} className="text-high-emphasis-inverse" />
+              </CDropdownToggle>
+              <CDropdownMenu>
+                <CDropdownItem>Ver detalles</CDropdownItem>
+                <CDropdownItem>Exportar datos</CDropdownItem>
+              </CDropdownMenu>
+            </CDropdown>
+          }
+          chart={
+            <CChartLine
+              className="mt-3"
+              style={{ height: "70px" }}
+              data={{
+                labels: ["January", "Febrero", "March", "April", "May", "June", "July"],
+                datasets: [
+                  {
+                    label: "Reservas",
+                    backgroundColor: "rgba(255,255,255,.2)",
+                    borderColor: "rgba(255,255,255,.55)",
+                    data: monthlyReservations.slice(0, 7),
+                    fill: true,
+                  },
+                ],
+              }}
+              options={{
+                plugins: {
+                  legend: {
+                    display: false,
+                  },
+                },
+                maintainAspectRatio: false,
+                scales: {
+                  x: {
+                    display: false,
+                  },
+                  y: {
+                    display: false,
+                  },
+                },
+                elements: {
+                  line: {
+                    borderWidth: 2,
+                    tension: 0.4,
+                  },
+                  point: {
+                    radius: 0,
+                    hitRadius: 10,
+                    hoverRadius: 4,
+                  },
+                },
+              }}
+            />
+          }
+        />
+      </CCol>
+      <CCol sm={6}>
+        <CCard className="mb-4">
+          <CCardHeader>Tipos de Reportes</CCardHeader>
+          <CCardBody>
+            <CChartPie
+              data={{
+                labels: damageChartData.map((item) => item.label),
+                datasets: [
+                  {
+                    data: damageChartData.map((item) => item.data),
+                    backgroundColor: COLORS.slice(0, damageChartData.length),
+                    hoverBackgroundColor: COLORS.slice(0, damageChartData.length),
+                  },
+                ],
+              }}
+            />
+          </CCardBody>
+        </CCard>
+      </CCol>
+      <CCol sm={6}>
+        <CCard className="mb-4">
+          <CCardHeader>Estado de Solicitudes</CCardHeader>
+          <CCardBody>
+            <CChartBar
+              data={{
+                labels: statusChartData.map((item) => item.label),
+                datasets: [
+                  {
+                    label: "Estado",
+                    backgroundColor: COLORS[3],
+                    data: statusChartData.map((item) => item.data),
+                  },
+                ],
+              }}
+              options={{
+                plugins: {
+                  legend: {
+                    display: false,
+                  },
+                },
+              }}
+            />
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
 
-        <Col md={4} className="d-flex justify-content-center">
-          <Card className="shadow text-center p-2">
-            <FaCalendarAlt size={40} className="text-warning mb-2" />
-            <h6>Total de Reservas</h6>
-            <h4>{totalReservas}</h4>
-          </Card>
-        </Col>
-        
-        <Col md={4} className="d-flex justify-content-end">
-          <Card className="shadow text-center p-2">
-            <FaUser size={40} className="text-danger mb-2" />
-            <h6>Total de Usuarios</h6>
-            <h4>{totalUsuarios}</h4>
-          </Card>
-        </Col>
-      </Row>
+  )
+}
 
-      <Row className="mt-4">
-        <Col md={6}>
-          <Card className="shadow p-3">
-            <h6 className="text-center">Tipos de Daños Reportados</h6>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={damageChartData}>
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="value">
-                  {damageChartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </Card>
-        </Col>
-
-        <Col md={6}>
-          <Card className="shadow p-3">
-            <h6 className="text-center">Estado de Solicitudes</h6>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie data={statusChartData} dataKey="value" nameKey="name" outerRadius={100}>
-                  {statusChartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </Card>
-        </Col>
-      </Row>
-
-      {/* Nueva Sección: Escenarios con más registros */}
-      <Row className="mt-4">
-        <Col md={12}>
-          <Card className="shadow p-3">
-            <h6 className="text-center">Escenarios con más Reservas</h6>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={sceneryData} layout="vertical">
-                <XAxis type="number" />
-                <YAxis dataKey="name" type="category" />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="value" fill="#8884d8">
-                  {sceneryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </Card>
-        </Col>
-      </Row>
-    </div>
-  );
-};
-
-export default Dashboard;
+export default Dashboard
