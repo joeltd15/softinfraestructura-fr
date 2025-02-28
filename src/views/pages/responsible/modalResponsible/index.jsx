@@ -42,21 +42,22 @@ const RegisterResponsibleModal = ({ show, handleClose, onResponsibleCreated }) =
       const response = await axios.get("http://localhost:2025/api/user");
       const allUsers = response.data;
   
-      // Filtrar solo los usuarios con rolId 2 (Encargados)
-      const encargados = allUsers.filter(user => user.roleId === 2);
+      // Filtrar solo los usuarios con rolId 2 (Encargados) y que estén en estado activo
+      const encargadosActivos = allUsers.filter(user => user.roleId === 2 && user.status === "Activo");
   
       // Obtener los usuarios ya registrados como responsables
       const responsibleResponse = await axios.get("http://localhost:2025/api/responsible");
       const registeredResponsibles = responsibleResponse.data.map(responsible => responsible.userId);
   
       // Filtrar los usuarios que no estén ya registrados como responsables
-      const availableUsers = encargados.filter(user => !registeredResponsibles.includes(user.id));
+      const availableUsers = encargadosActivos.filter(user => !registeredResponsibles.includes(user.id));
   
       setUsers(availableUsers);
     } catch (error) {
       console.error("Error al obtener los usuarios:", error);
     }
   };
+  
   
 
   const validateForm = () => {

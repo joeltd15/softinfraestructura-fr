@@ -16,7 +16,6 @@ import {
   CCardBody,
   CCardHeader,
 } from "@coreui/react"
-import { Row } from "react-bootstrap"
 
 const Dashboard = () => {
   const [totalUsuarios, setTotalUsuarios] = useState(0)
@@ -119,294 +118,378 @@ const Dashboard = () => {
   }
 
   return (
-    <CRow className="Row-widgets">
-      <CCol sm={6} lg={3}>
-        <CWidgetStatsA
-          className="mb-4"
-          color="primary"
-          value={
-            <>
-              {totalUsuarios}{" "}
-              <span className="fs-6 fw-normal">
-                <CIcon icon={cilArrowTop} />
-              </span>
-            </>
-          }
-          title="Total de Usuarios"
-          action={
-            <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="p-0">
-                <CIcon icon={cilOptions} className="text-high-emphasis-inverse" />
-              </CDropdownToggle>
-              <CDropdownMenu>
-                <CDropdownItem>Ver detalles</CDropdownItem>
-                <CDropdownItem>Exportar datos</CDropdownItem>
-              </CDropdownMenu>
-            </CDropdown>
-          }
-          chart={
-            <CChartLine
-              className="mt-3 mx-3"
-              style={{ height: "70px" }}
-              data={{
-                labels: ["January", "February", "March", "April", "May", "June", "July"],
-                datasets: [
-                  {
-                    label: "Usuarios",
-                    backgroundColor: "transparent",
-                    borderColor: "rgba(255,255,255,.55)",
-                    pointBackgroundColor: getStyle("--cui-primary"),
-                    data: [65, 59, 84, 84, 51, 55, totalUsuarios],
-                  },
-                ],
-              }}
-              options={{
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-                maintainAspectRatio: false,
-                scales: {
-                  x: {
-                    grid: {
-                      display: false,
-                      drawBorder: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                  y: {
-                    min: 30,
-                    max: Math.max(89, totalUsuarios + 10),
-                    display: false,
-                    grid: {
-                      display: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                },
-                elements: {
-                  line: {
-                    borderWidth: 1,
-                    tension: 0.4,
-                  },
-                  point: {
-                    radius: 4,
-                    hitRadius: 10,
-                    hoverRadius: 4,
-                  },
-                },
-              }}
-            />
-          }
-        />
-      </CCol>
-      <CCol sm={6} lg={3}>
-        <CWidgetStatsA
-          className="mb-4"
-          color="info"
-          value={
-            <>
-              {totalSolicitudes}{" "}
-              <span className="fs-6 fw-normal">
-                <CIcon icon={cilArrowTop} />
-              </span>
-            </>
-          }
-          title="Total de Solicitudes"
-          action={
-            <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="p-0">
-                <CIcon icon={cilOptions} className="text-high-emphasis-inverse" />
-              </CDropdownToggle>
-              <CDropdownMenu>
-                <CDropdownItem>Ver detalles</CDropdownItem>
-                <CDropdownItem>Exportar datos</CDropdownItem>
-              </CDropdownMenu>
-            </CDropdown>
-          }
-          chart={
-            <CChartLine
-              className="mt-3 mx-3"
-              style={{ height: "70px" }}
-              data={{
-                labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio"],
-                datasets: [
-                  {
-                    label: "Solicitudes",
-                    backgroundColor: "transparent",
-                    borderColor: "rgba(255,255,255,.55)",
-                    pointBackgroundColor: getStyle("--cui-info"),
-                    data: monthlyApplications.slice(0, 7),
-                  },
-                ],
-              }}
-              options={{
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-                maintainAspectRatio: false,
-                scales: {
-                  x: {
-                    grid: {
-                      display: false,
-                      drawBorder: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                  y: {
-                    min: 0,
-                    max: Math.max(...monthlyApplications) + 5,
-                    display: false,
-                    grid: {
-                      display: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                },
-                elements: {
-                  line: {
-                    borderWidth: 1,
-                  },
-                  point: {
-                    radius: 4,
-                    hitRadius: 10,
-                    hoverRadius: 4,
-                  },
-                },
-              }}
-            />
-          }
-        />
-      </CCol>
-      <CCol sm={6} lg={3}>
-        <CWidgetStatsA
-          className="mb-4"
-          color="warning"
-          value={
-            <>
-              {totalReservas}{" "}
-              <span className="fs-6 fw-normal">
-                <CIcon icon={cilArrowTop} />
-              </span>
-            </>
-          }
-          title="Total de Reservas"
-          action={
-            <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="p-0">
-                <CIcon icon={cilOptions} className="text-high-emphasis-inverse" />
-              </CDropdownToggle>
-              <CDropdownMenu>
-                <CDropdownItem>Ver detalles</CDropdownItem>
-                <CDropdownItem>Exportar datos</CDropdownItem>
-              </CDropdownMenu>
-            </CDropdown>
-          }
-          chart={
-            <CChartLine
-              className="mt-3"
-              style={{ height: "70px" }}
-              data={{
-                labels: ["January", "Febrero", "March", "April", "May", "June", "July"],
-                datasets: [
-                  {
-                    label: "Reservas",
-                    backgroundColor: "rgba(255,255,255,.2)",
-                    borderColor: "rgba(255,255,255,.55)",
-                    data: monthlyReservations.slice(0, 7),
-                    fill: true,
-                  },
-                ],
-              }}
-              options={{
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-                maintainAspectRatio: false,
-                scales: {
-                  x: {
-                    display: false,
-                  },
-                  y: {
-                    display: false,
-                  },
-                },
-                elements: {
-                  line: {
-                    borderWidth: 2,
-                    tension: 0.4,
-                  },
-                  point: {
-                    radius: 0,
-                    hitRadius: 10,
-                    hoverRadius: 4,
-                  },
-                },
-              }}
-            />
-          }
-        />
-      </CCol>
-      <CCol sm={6}>
-        <CCard className="mb-4">
-          <CCardHeader>Tipos de Reportes</CCardHeader>
-          <CCardBody>
-            <CChartPie
-              data={{
-                labels: damageChartData.map((item) => item.label),
-                datasets: [
-                  {
-                    data: damageChartData.map((item) => item.data),
-                    backgroundColor: COLORS.slice(0, damageChartData.length),
-                    hoverBackgroundColor: COLORS.slice(0, damageChartData.length),
-                  },
-                ],
-              }}
-            />
-          </CCardBody>
-        </CCard>
-      </CCol>
-      <CCol sm={6}>
-        <CCard className="mb-4">
-          <CCardHeader>Estado de Solicitudes</CCardHeader>
-          <CCardBody>
-            <CChartBar
-              data={{
-                labels: statusChartData.map((item) => item.label),
-                datasets: [
-                  {
-                    label: "Estado",
-                    backgroundColor: COLORS[3],
-                    data: statusChartData.map((item) => item.data),
-                  },
-                ],
-              }}
-              options={{
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-              }}
-            />
-          </CCardBody>
-        </CCard>
-      </CCol>
-    </CRow>
+    <>
+      <CRow>
+        <CCol sm={6} lg={4}>
+          <CWidgetStatsA
+            className="mb-4"
+            style={{ minHeight: "200px" }} // Ajusta según sea necesario
 
+            color="primary"
+            value={
+              <>
+                {totalUsuarios}{" "}
+                <span className="fs-6 fw-normal">
+                  <CIcon icon={cilArrowTop} />
+                </span>
+              </>
+            }
+            title="Total de Usuarios"
+            action={
+              <CDropdown alignment="end">
+                <CDropdownToggle color="transparent" caret={false} className="p-0">
+                  <CIcon icon={cilOptions} className="text-high-emphasis-inverse" />
+                </CDropdownToggle>
+                <CDropdownMenu>
+                  <CDropdownItem>Ver detalles</CDropdownItem>
+                  <CDropdownItem>Exportar datos</CDropdownItem>
+                </CDropdownMenu>
+              </CDropdown>
+            }
+            chart={
+              <CChartLine
+                className="mt-3 mx-3"
+                style={{ width: "100%", height: "100%" }}
+
+                data={{
+                  labels: ["January", "February", "March", "April", "May", "June", "July"],
+                  datasets: [
+                    {
+                      label: "Usuarios",
+                      backgroundColor: "transparent",
+                      borderColor: "rgba(255,255,255,.55)",
+                      pointBackgroundColor: getStyle("--cui-primary"),
+                      data: [65, 59, 84, 84, 51, 55, totalUsuarios],
+                    },
+                  ],
+                }}
+                options={{
+                  plugins: {
+                    legend: {
+                      display: false,
+                    },
+                  },
+                  maintainAspectRatio: false,
+                  scales: {
+                    x: {
+                      grid: {
+                        display: false,
+                        drawBorder: false,
+                      },
+                      ticks: {
+                        display: false,
+                      },
+                    },
+                    y: {
+                      min: 30,
+                      max: Math.max(89, totalUsuarios + 10),
+                      display: false,
+                      grid: {
+                        display: false,
+                      },
+                      ticks: {
+                        display: false,
+                      },
+                    },
+                  },
+                  elements: {
+                    line: {
+                      borderWidth: 1,
+                      tension: 0.4,
+                    },
+                    point: {
+                      radius: 4,
+                      hitRadius: 10,
+                      hoverRadius: 4,
+                    },
+                  },
+                }}
+              />
+            }
+          />
+        </CCol>
+        <CCol sm={6} lg={4}>
+          <CWidgetStatsA
+            className="mb-4"
+            color="info"
+            value={
+              <>
+                {totalSolicitudes}{" "}
+                <span className="fs-6 fw-normal">
+                  <CIcon icon={cilArrowTop} />
+                </span>
+              </>
+            }
+            title="Total de Solicitudes"
+            action={
+              <CDropdown alignment="end">
+                <CDropdownToggle color="transparent" caret={false} className="p-0">
+                  <CIcon icon={cilOptions} className="text-high-emphasis-inverse" />
+                </CDropdownToggle>
+                <CDropdownMenu>
+                  <CDropdownItem>Ver detalles</CDropdownItem>
+                  <CDropdownItem>Exportar datos</CDropdownItem>
+                </CDropdownMenu>
+              </CDropdown>
+            }
+            chart={
+              <CChartLine
+                className="mt-3 mx-3"
+                style={{ width: "100%", height: "100%" }}
+
+                data={{
+                  labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio"],
+                  datasets: [
+                    {
+                      label: "Solicitudes",
+                      backgroundColor: "transparent",
+                      borderColor: "rgba(255,255,255,.55)",
+                      pointBackgroundColor: getStyle("--cui-info"),
+                      data: monthlyApplications.slice(0, 7),
+                    },
+                  ],
+                }}
+                options={{
+                  plugins: {
+                    legend: {
+                      display: false,
+                    },
+                  },
+                  maintainAspectRatio: false,
+                  scales: {
+                    x: {
+                      grid: {
+                        display: false,
+                        drawBorder: false,
+                      },
+                      ticks: {
+                        display: false,
+                      },
+                    },
+                    y: {
+                      min: 0,
+                      max: Math.max(...monthlyApplications) + 5,
+                      display: false,
+                      grid: {
+                        display: false,
+                      },
+                      ticks: {
+                        display: false,
+                      },
+                    },
+                  },
+                  elements: {
+                    line: {
+                      borderWidth: 1,
+                    },
+                    point: {
+                      radius: 4,
+                      hitRadius: 10,
+                      hoverRadius: 4,
+                    },
+                  },
+                }}
+              />
+            }
+          />
+        </CCol>
+        <CCol sm={6} lg={4}>
+          <CWidgetStatsA
+            className="mb-4"
+            color="warning"
+            value={
+              <>
+                {totalReservas}{" "}
+                <span className="fs-6 fw-normal">
+                  <CIcon icon={cilArrowTop} />
+                </span>
+              </>
+            }
+            title="Total de Reservas"
+            action={
+              <CDropdown alignment="end">
+                <CDropdownToggle color="transparent" caret={false} className="p-0">
+                  <CIcon icon={cilOptions} className="text-high-emphasis-inverse" />
+                </CDropdownToggle>
+                <CDropdownMenu>
+                  <CDropdownItem>Ver detalles</CDropdownItem>
+                  <CDropdownItem>Exportar datos</CDropdownItem>
+                </CDropdownMenu>
+              </CDropdown>
+            }
+            chart={
+              <CChartLine
+                className="mt-3 mx-3"
+                style={{ width: "100%", height: "100%" }}
+
+                data={{
+                  labels: ["January", "Febrero", "March", "April", "May", "June", "July"],
+                  datasets: [
+                    {
+                      label: "Reservas",
+                      backgroundColor: "rgba(255,255,255,.2)",
+                      borderColor: "rgba(255,255,255,.55)",
+                      data: monthlyReservations.slice(0, 7),
+                      fill: true,
+                    },
+                  ],
+                }}
+                options={{
+                  plugins: {
+                    legend: {
+                      display: false,
+                    },
+                  },
+                  maintainAspectRatio: false,
+                  scales: {
+                    x: {
+                      display: false,
+                    },
+                    y: {
+                      display: false,
+                    },
+                  },
+                  elements: {
+                    line: {
+                      borderWidth: 2,
+                      tension: 0.4,
+                    },
+                    point: {
+                      radius: 0,
+                      hitRadius: 10,
+                      hoverRadius: 4,
+                    },
+                  },
+                }}
+              />
+            }
+          />
+        </CCol>
+      </CRow>
+
+      <CRow className="equal-height-charts">
+        <CCol sm={6}>
+          <CCard className="mb-4">
+            <CCardHeader>Tipos de Reportes</CCardHeader>
+            <CCardBody className="d-flex flex-column">
+              <div className="chart-container flex-grow-1">
+                <CChartPie
+                  data={{
+                    labels: damageChartData.map((item) => item.label),
+                    datasets: [
+                      {
+                        data: damageChartData.map((item) => item.data),
+                        backgroundColor: COLORS.slice(0, damageChartData.length),
+                        hoverBackgroundColor: COLORS.slice(0, damageChartData.length),
+                      },
+                    ],
+                  }}
+                  options={{
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    plugins: {
+                      legend: {
+                        position: "bottom",
+                      },
+                    },
+                  }}
+                />
+              </div>
+            </CCardBody>
+          </CCard>
+        </CCol>
+        <CCol sm={6}>
+          <CCard className="mb-4">
+            <CCardHeader>Estado de Solicitudes</CCardHeader>
+            <CCardBody className="d-flex flex-column">
+              <div className="chart-container flex-grow-1">
+                <CChartBar
+                  data={{
+                    labels: statusChartData.map((item) => item.label),
+                    datasets: [
+                      {
+                        label: "Estado",
+                        backgroundColor: COLORS[3],
+                        data: statusChartData.map((item) => item.data),
+                      },
+                    ],
+                  }}
+                  options={{
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    plugins: {
+                      legend: {
+                        display: false,
+                      },
+                    },
+                  }}
+                />
+              </div>
+            </CCardBody>
+          </CCard>
+        </CCol>
+      </CRow>
+
+      {sceneryData.length > 0 && (
+        <CRow>
+          <CCol sm={12}>
+            <CCard className="mb-4">
+              <CCardHeader>Escenarios más Reservados</CCardHeader>
+              <CCardBody className="d-flex flex-column">
+                <div className="chart-container flex-grow-1">
+                  <CChartBar
+                    data={{
+                      labels: sceneryData.map((item) => item.name),
+                      datasets: [
+                        {
+                          label: "Reservas",
+                          backgroundColor: COLORS[2],
+                          data: sceneryData.map((item) => item.value),
+                        },
+                      ],
+                    }}
+                    options={{
+                      maintainAspectRatio: false,
+                      responsive: true,
+                      plugins: {
+                        legend: {
+                          display: false,
+                        },
+                      },
+                    }}
+                  />
+                </div>
+              </CCardBody>
+            </CCard>
+          </CCol>
+        </CRow>
+      )}
+
+      <style jsx global>{`
+        .equal-height-charts .chart-container {
+          position: relative;
+          height: 100%;
+          width: 100%;
+        }
+        
+        .chart-container {
+          position: relative;
+          height: 100%;
+          width: 100%;
+          min-height: 300px;
+        }
+
+        .card-body {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+        }
+
+        .flex-grow-1 {
+          flex-grow: 1;
+        }
+      `}</style>
+    </>
   )
 }
 

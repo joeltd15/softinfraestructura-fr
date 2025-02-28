@@ -164,17 +164,17 @@ const ModalRegistro = ({ show, handleClose }) => {
                                         value={formData.password}
                                         onChange={handleChange}
                                         placeholder="Ingrese la contraseña"
-                                        className={errors.password ? "is-invalid" : ""}
+                                        className={errors.password ? "border-danger" : ""}
                                     />
                                     <Button
                                         variant="link"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="position-absolute end-0 top-50 translate-middle-y"
+                                        className="position-absolute end-0 top-50 translate-middle-y me-2"
                                     >
                                         {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                                     </Button>
-                                    <div className="invalid-feedback">{errors.password}</div>
                                 </div>
+                                {errors.password && <div className="text-danger mt-1">{errors.password}</div>}
                             </Form.Group>
                         </Col>
                         <Col sm="6">
@@ -187,7 +187,7 @@ const ModalRegistro = ({ show, handleClose }) => {
                                         value={formData.confirmPassword}
                                         onChange={handleChange}
                                         placeholder="Confirme la contraseña"
-                                        className={errors.confirmPassword ? "is-invalid" : ""}
+                                        className={errors.confirmPassword ? "border-danger" : ""}
                                     />
                                     <Button
                                         variant="link"
@@ -196,8 +196,8 @@ const ModalRegistro = ({ show, handleClose }) => {
                                     >
                                         {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                                     </Button>
-                                    <div className="invalid-feedback">{errors.confirmPassword}</div>
                                 </div>
+                                {errors.confirmPassword && <div className="text-danger mt-1">{errors.confirmPassword}</div>}
                             </Form.Group>
                         </Col>
                     </Row>
