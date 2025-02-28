@@ -338,14 +338,14 @@ input:hover {
 
 /* Estado Reservado - Amarillo */
 .event-pending {
-    background-color: #00304D !important;
-    border-color: #00304D !important;
+    background-color: #39A900 !important;
+    border-color: #007832 !important;
     color: #f3f3f3 !important;
 }
 
 .event-pending:hover {
-    background: #002f4df5 !important;
-    color: #888787 !important;
+    background: #007832 !important;
+    color: #ffffff !important;
 }
 
 /* Estado Completado - Verde */
@@ -358,7 +358,7 @@ input:hover {
 .event-completed:hover {
     background-color: #b3b2b2 !important;
     border-color: #ccc !important;
-    color: #c7c7c7 !important;
+    color: #fffcfc !important;
 }
 
 /* Estado Cancelado - Rojo */
@@ -370,7 +370,7 @@ input:hover {
 
 .event-canceled:hover {
     background-color: #990101ec !important;
-    color: #888787 !important;
+    color: #ffffff !important;
 }
 
 .css-1lt5qva-MuiCardContent-root {
@@ -447,23 +447,23 @@ button {
     color: #2b3d4f !important;
 }
 
-.pending{
+.pending {
     margin-right: 18px;
 }
 
-.pending .pending-Circle{
-    background: #00304D !important;
+.pending .pending-Circle {
+    background: #39A900 !important;
     width: 10px !important;
     height: 10px !important;
     margin-right: 5px !important;
     border-radius: 5px;
 }
 
-.completed{
+.completed {
     margin-right: 18px;
 }
 
-.completed .completed-Circle{
+.completed .completed-Circle {
     background: #b3b2b2 !important;
     width: 10px !important;
     height: 10px !important;
@@ -471,7 +471,7 @@ button {
     border-radius: 5px;
 }
 
-.cancelado .cancelado-Circle{
+.cancelado .cancelado-Circle {
     background: #990101 !important;
     width: 10px !important;
     height: 10px !important;
@@ -479,8 +479,17 @@ button {
     border-radius: 5px;
 }
 
-.Row-widgets{
+.Row-widgets {
     display: flex !important;
     align-items: center !important;
     justify-content: stretch !important;
+}
+
+/* Estilos adicionales para mejorar la transición del hover */
+.fc-event {
+    transition: background-color 0.2s ease;
+}
+
+.fc-event:hover {
+    cursor: pointer;
 }

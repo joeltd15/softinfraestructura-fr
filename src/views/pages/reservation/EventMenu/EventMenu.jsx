@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, Button } from "@mui/material";
-import { FaPencilAlt } from "react-icons/fa";
+import { FaPencilAlt, FaEye } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import { FaEye } from "react-icons/fa";
 import { IoCloseCircleSharp } from "react-icons/io5";
+import { FcCancel } from "react-icons/fc";
 import axios from "axios";
 import ModalEditReservation from "../reservationEdit/index";
-import ModalShowReservation from "../ShowReservation/index"
+import ModalShowReservation from "../ShowReservation/index";
 import DialogDelete from "../deleteDialog/index";
 import { useAlert } from '../../../../assets/functions/index';
-import { FcCancel } from "react-icons/fc";
 
 const EventMenu = ({ event, onClose, getReservations }) => {
     const [ModalEdit, setModalEdit] = useState(false);
@@ -76,39 +75,49 @@ const EventMenu = ({ event, onClose, getReservations }) => {
     };
 
     const user = JSON.parse(localStorage.getItem("user"));
+    const isAdmin = user.roleId === 1;
+    const isUser = user.roleId === 3;
+    const isCompletedOrCanceled = event.estatus === "Realizado" || event.estatus === "Cancelado";
 
     return (
         <>
             <Card style={{ position: "absolute", top: event.y, left: event.x, zIndex: 1000, width: '140px', padding: '0px' }}>
                 <CardContent className="CardComponent">
-                    {(event.estatus !== 'Realizado' && event.estatus !== 'Cancelado') && (
+                    {/* Si el estado es Cancelado o Realizado, solo mostrar "Ver detalle" */}
+                    {isCompletedOrCanceled ? (
+                        <Button fullWidth className="Show-button" onClick={handleShow}>
+                            <FaEye /> Ver detalle
+                        </Button>
+                    ) : (
                         <>
-                            <Button fullWidth className="Update-button" onClick={handleEdit}>
-                                <FaPencilAlt /> Editar
-                            </Button>
-                            {
-                                user.roleId != 3 && (
+                            {/* Si es admin (rol 1) puede ver todo menos "Cancelar" */}
+                            {isAdmin && (
+                                <>
+                                    <Button fullWidth className="Update-button" onClick={handleEdit}>
+                                        <FaPencilAlt /> Editar
+                                    </Button>
                                     <Button fullWidth className="Delete-button" onClick={handleOpenDeleteDialog}>
                                         <MdDelete /> Eliminar
                                     </Button>
-                                )
-                            }
+                                    <Button fullWidth className="Show-button" onClick={handleShow}>
+                                        <FaEye /> Ver detalle
+                                    </Button>
+                                </>
+                            )}
+
+                            {/* Si es usuario (rol 3) solo puede ver "Editar" y "Cancelar" */}
+                            {isUser && (
+                                <>
+                                    <Button fullWidth className="Update-button" onClick={handleEdit}>
+                                        <FaPencilAlt /> Editar
+                                    </Button>
+                                    <Button fullWidth className="Delete-button" onClick={handleOpenCancelDialog}>
+                                        <FcCancel /> Cancelar
+                                    </Button>
+                                </>
+                            )}
                         </>
                     )}
-                    {
-                        user.roleId != 3 && (
-                            <Button fullWidth className="Show-button" onClick={handleShow}>
-                                <FaEye /> Ver detalle
-                            </Button>
-                        )
-                    }
-                    {
-                        (event.estatus !== 'Realizado' && event.estatus !== 'Cancelado') && (
-                            <Button fullWidth className="Delete-button" onClick={handleOpenCancelDialog}>
-                                <FcCancel /> Cancelar
-                            </Button>
-                        )
-                    }
                     <Button fullWidth className="Delete-button" id="cerrar" onClick={onClose}>
                         <IoCloseCircleSharp /> Cerrar
                     </Button>
