@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect, useState } from "react"
 import axios from "axios"
 import CIcon from "@coreui/icons-react"
@@ -123,8 +125,7 @@ const Dashboard = () => {
         <CCol sm={6} lg={4}>
           <CWidgetStatsA
             className="mb-4"
-            style={{ minHeight: "200px" }} // Ajusta según sea necesario
-
+            style={{ minHeight: "125px" }} // Reducido a la mitad (de 250px a 125px)
             color="primary"
             value={
               <>
@@ -149,8 +150,7 @@ const Dashboard = () => {
             chart={
               <CChartLine
                 className="mt-3 mx-3"
-                style={{ width: "100%", height: "100%" }}
-
+                style={{ height: "90px" }} // Reducido a la mitad (de 180px a 90px)
                 data={{
                   labels: ["January", "February", "March", "April", "May", "June", "July"],
                   datasets: [
@@ -198,9 +198,9 @@ const Dashboard = () => {
                       tension: 0.4,
                     },
                     point: {
-                      radius: 4,
-                      hitRadius: 10,
-                      hoverRadius: 4,
+                      radius: 3, // Reducido de 4 a 3
+                      hitRadius: 8, // Reducido de 10 a 8
+                      hoverRadius: 3, // Reducido de 4 a 3
                     },
                   },
                 }}
@@ -211,6 +211,7 @@ const Dashboard = () => {
         <CCol sm={6} lg={4}>
           <CWidgetStatsA
             className="mb-4"
+            style={{ minHeight: "125px" }} // Reducido a la mitad (de 250px a 125px)
             color="info"
             value={
               <>
@@ -235,8 +236,7 @@ const Dashboard = () => {
             chart={
               <CChartLine
                 className="mt-3 mx-3"
-                style={{ width: "100%", height: "100%" }}
-
+                style={{ height: "90px" }} // Reducido a la mitad (de 180px a 90px)
                 data={{
                   labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio"],
                   datasets: [
@@ -283,9 +283,9 @@ const Dashboard = () => {
                       borderWidth: 1,
                     },
                     point: {
-                      radius: 4,
-                      hitRadius: 10,
-                      hoverRadius: 4,
+                      radius: 3, // Reducido de 4 a 3
+                      hitRadius: 8, // Reducido de 10 a 8
+                      hoverRadius: 3, // Reducido de 4 a 3
                     },
                   },
                 }}
@@ -296,6 +296,7 @@ const Dashboard = () => {
         <CCol sm={6} lg={4}>
           <CWidgetStatsA
             className="mb-4"
+            style={{ minHeight: "125px" }} // Reducido a la mitad (de 250px a 125px)
             color="warning"
             value={
               <>
@@ -320,8 +321,7 @@ const Dashboard = () => {
             chart={
               <CChartLine
                 className="mt-3 mx-3"
-                style={{ width: "100%", height: "100%" }}
-
+                style={{ height: "90px" }} // Reducido a la mitad (de 180px a 90px)
                 data={{
                   labels: ["January", "Febrero", "March", "April", "May", "June", "July"],
                   datasets: [
@@ -356,8 +356,8 @@ const Dashboard = () => {
                     },
                     point: {
                       radius: 0,
-                      hitRadius: 10,
-                      hoverRadius: 4,
+                      hitRadius: 8, // Reducido de 10 a 8
+                      hoverRadius: 3, // Reducido de 4 a 3
                     },
                   },
                 }}
@@ -374,6 +374,7 @@ const Dashboard = () => {
             <CCardBody className="d-flex flex-column">
               <div className="chart-container flex-grow-1">
                 <CChartPie
+                  style={{ height: "400px" }} // Mantenemos la altura del gráfico
                   data={{
                     labels: damageChartData.map((item) => item.label),
                     datasets: [
@@ -390,6 +391,20 @@ const Dashboard = () => {
                     plugins: {
                       legend: {
                         position: "bottom",
+                        labels: {
+                          font: {
+                            size: 14, // Mantenemos el tamaño de la fuente de la leyenda
+                          },
+                          padding: 20, // Mantenemos el espacio entre etiquetas
+                        },
+                      },
+                      tooltip: {
+                        bodyFont: {
+                          size: 14, // Mantenemos el tamaño de la fuente del tooltip
+                        },
+                        titleFont: {
+                          size: 16, // Mantenemos el tamaño del título del tooltip
+                        },
                       },
                     },
                   }}
@@ -404,6 +419,7 @@ const Dashboard = () => {
             <CCardBody className="d-flex flex-column">
               <div className="chart-container flex-grow-1">
                 <CChartBar
+                  style={{ height: "400px" }} // Mantenemos la altura del gráfico
                   data={{
                     labels: statusChartData.map((item) => item.label),
                     datasets: [
@@ -411,6 +427,7 @@ const Dashboard = () => {
                         label: "Estado",
                         backgroundColor: COLORS[3],
                         data: statusChartData.map((item) => item.data),
+                        barThickness: 40, // Mantenemos el grosor de las barras
                       },
                     ],
                   }}
@@ -420,6 +437,30 @@ const Dashboard = () => {
                     plugins: {
                       legend: {
                         display: false,
+                      },
+                      tooltip: {
+                        bodyFont: {
+                          size: 14, // Mantenemos el tamaño de la fuente del tooltip
+                        },
+                        titleFont: {
+                          size: 16, // Mantenemos el tamaño del título del tooltip
+                        },
+                      },
+                    },
+                    scales: {
+                      x: {
+                        ticks: {
+                          font: {
+                            size: 14, // Mantenemos el tamaño de la fuente de las etiquetas del eje X
+                          },
+                        },
+                      },
+                      y: {
+                        ticks: {
+                          font: {
+                            size: 14, // Mantenemos el tamaño de la fuente de las etiquetas del eje Y
+                          },
+                        },
                       },
                     },
                   }}
@@ -434,10 +475,11 @@ const Dashboard = () => {
         <CRow>
           <CCol sm={12}>
             <CCard className="mb-4">
-              <CCardHeader>Escenarios más Reservados</CCardHeader>
+              <CCardHeader>Escenarios más reservados</CCardHeader>
               <CCardBody className="d-flex flex-column">
                 <div className="chart-container flex-grow-1">
                   <CChartBar
+                    style={{ height: "450px" }} // Mantenemos la altura del gráfico
                     data={{
                       labels: sceneryData.map((item) => item.name),
                       datasets: [
@@ -445,6 +487,7 @@ const Dashboard = () => {
                           label: "Reservas",
                           backgroundColor: COLORS[2],
                           data: sceneryData.map((item) => item.value),
+                          barThickness: 50, // Mantenemos el grosor de las barras
                         },
                       ],
                     }}
@@ -454,6 +497,30 @@ const Dashboard = () => {
                       plugins: {
                         legend: {
                           display: false,
+                        },
+                        tooltip: {
+                          bodyFont: {
+                            size: 14, // Mantenemos el tamaño de la fuente del tooltip
+                          },
+                          titleFont: {
+                            size: 16, // Mantenemos el tamaño del título del tooltip
+                          },
+                        },
+                      },
+                      scales: {
+                        x: {
+                          ticks: {
+                            font: {
+                              size: 14, // Mantenemos el tamaño de la fuente de las etiquetas del eje X
+                            },
+                          },
+                        },
+                        y: {
+                          ticks: {
+                            font: {
+                              size: 14, // Mantenemos el tamaño de la fuente de las etiquetas del eje Y
+                            },
+                          },
                         },
                       },
                     }}
@@ -476,17 +543,30 @@ const Dashboard = () => {
           position: relative;
           height: 100%;
           width: 100%;
-          min-height: 300px;
+          min-height: 400px; /* Mantenemos la altura mínima para los gráficos principales */
         }
 
         .card-body {
           display: flex;
           flex-direction: column;
           height: 100%;
+          padding: 1.5rem; /* Mantenemos el padding */
         }
 
         .flex-grow-1 {
           flex-grow: 1;
+        }
+        
+        /* Ajustamos la altura de los widgets */
+        .widget-chart {
+          min-height: 125px; /* Reducido a la mitad */
+        }
+        
+        /* Mejorar la visualización en dispositivos móviles */
+        @media (max-width: 768px) {
+          .chart-container {
+            min-height: 350px; /* Mantenemos la altura mínima para móviles */
+          }
         }
       `}</style>
     </>
