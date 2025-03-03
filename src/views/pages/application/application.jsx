@@ -306,7 +306,7 @@ const Application = () => {
               <table class="table">
                 <thead className="thead">
                   <tr>
-                    <th></th>
+                    <th>Código</th>
                     <th>Fecha del reporte</th>
                     <th>Centro/dependencia</th>
                     <th>Lugar</th>
