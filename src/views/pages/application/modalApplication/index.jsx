@@ -86,10 +86,6 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
       // 2. Determinar el estado de la nueva solicitud
       const newStatus = assignedRequests >= 3 ? "En espera" : "Asignada"
 
-      if (newStatus === "En espera") {
-        showAlert("El usuario ya tiene 3 solicitudes asignadas. Se registrará en estado 'En espera'.", "warning")
-      }
-
       // 3. Registrar la solicitud con el estado correspondiente
       const formData = new FormData()
       formData.append("reportDate", today)
@@ -108,14 +104,13 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
         headers: { "Content-Type": "multipart/form-data" },
       })
 
-      // Si llegamos aquí, la solicitud fue exitosa
       onSolicitudCreated()
       handleClose()
-      return result // Devolvemos el resultado para que toast.promise lo maneje como éxito
+      return result 
     } catch (error) {
       console.error("Error al registrar solicitud:", error)
       setIsSubmitting(false)
-      throw error // Lanzamos el error para que toast.promise lo maneje como error
+      throw error 
     } finally {
       setIsSubmitting(false)
     }

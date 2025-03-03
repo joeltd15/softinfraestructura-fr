@@ -353,7 +353,7 @@ const Application = () => {
                               </button>
                             </Tooltip>
                           )}
-                          {application.status !== "Realizado" && (
+                          {application.status !== "Realizado" && application.status !== "Asignada" &&(
                             <>
                               <Tooltip title="Editar solicitud">
                                 <button className="Table-button Update-button" onClick={() => handleEdit(application)}>

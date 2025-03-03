@@ -42,9 +42,9 @@ const Assignment = () => {
 
   useEffect(() => {
     return () => {
-        toast.dismiss(); // Limpia todas las alertas Reservados al desmontar el componente
+      toast.dismiss(); // Limpia todas las alertas Reservados al desmontar el componente
     };
-}, []);
+  }, []);
 
   useEffect(() => {
     if (selectedAssignmentShow && showApplicationId) {
@@ -257,20 +257,15 @@ const Assignment = () => {
                                 <FaFilePdf />
                               </button>
                             </Tooltip>
-
-                            {user.roleId == "1" && (
-                              <>
-                                {applicationStatuses[assignment.applicationId] !== "Realizado" && (
-                                  <Tooltip title="Reasignar encargado">
-                                    <button
-                                      className="Table-button Update-button"
-                                      onClick={() => handleOpenEditModal(assignment)}
-                                    >
-                                      <FaPencilAlt />
-                                    </button>
-                                  </Tooltip>
-                                )}
-                              </>
+                            {applicationStatuses[assignment.applicationId] !== "Realizado" && (
+                              <Tooltip title="Reasignar encargado">
+                                <button
+                                  className="Table-button Update-button"
+                                  onClick={() => handleOpenEditModal(assignment)}
+                                >
+                                  <FaPencilAlt />
+                                </button>
+                              </Tooltip>
                             )}
                             {applicationStatuses[assignment.applicationId] !== "Realizado" && (
                               <Tooltip title="Registrar detalle de mantenimiento">
@@ -319,6 +314,7 @@ const Assignment = () => {
         show={showTracking}
         handleClose={() => setShowTracking(false)}
         selectedAssignmentId={selectedAssignmentId}
+        getAssignment={() => getAssignment()}
       />
       <ModalShowApplication
         show={showModalShow}

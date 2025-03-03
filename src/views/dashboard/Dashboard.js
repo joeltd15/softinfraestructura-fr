@@ -1,38 +1,63 @@
-"use client"
-
 import { useEffect, useState } from "react"
 import axios from "axios"
-import CIcon from "@coreui/icons-react"
-import { cilArrowTop, cilOptions } from "@coreui/icons"
-import { CChartBar, CChartLine, CChartPie } from "@coreui/react-chartjs"
-
+import './Dashboard.css'
 import {
-  CCol,
-  CDropdown,
-  CDropdownItem,
-  CDropdownMenu,
-  CDropdownToggle,
-  CRow,
-  CWidgetStatsA,
-  CCard,
-  CCardBody,
-  CCardHeader,
-  CContainer,
-} from "@coreui/react"
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts"
+
+// Month names for charts
+const MONTHS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
+
+// Colors for charts
+const COLORS = [
+  "#6366f1",
+  "#8b5cf6",
+  "#ec4899",
+  "#f43f5e",
+  "#f97316",
+  "#eab308",
+  "#22c55e",
+  "#06b6d4",
+  "#3b82f6",
+  "#a855f7",
+]
+
+// Custom tooltip component for charts
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="custom-tooltip">
+        <p className="tooltip-label">{`${label}`}</p>
+        <p className="tooltip-value">{`${payload[0].value}`}</p>
+      </div>
+    )
+  }
+  return null
+}
 
 const Dashboard = () => {
-  const [totalUsuarios, setTotalUsuarios] = useState(0)
-  const [totalSolicitudes, setTotalSolicitudes] = useState(0)
-  const [totalReservas, setTotalReservas] = useState(0)
+  const [totalUsers, setTotalUsers] = useState(0)
+  const [totalApplications, setTotalApplications] = useState(0)
+  const [totalReservations, setTotalReservations] = useState(0)
   const [reportData, setReportData] = useState([])
   const [sceneryData, setSceneryData] = useState([])
   const [dependencyData, setDependencyData] = useState([])
   const [loading, setLoading] = useState(true)
   const [monthlyReservations, setMonthlyReservations] = useState([])
   const [monthlyApplications, setMonthlyApplications] = useState([])
-
-  // Function to get CSS variables
-  const getStyle = (variable) => String(getComputedStyle(document.documentElement).getPropertyValue(variable)).trim()
+  const [activeTab, setActiveTab] = useState("overview")
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,10 +65,10 @@ const Dashboard = () => {
         setLoading(true)
 
         const usersResponse = await axios.get("http://localhost:2025/api/user")
-        setTotalUsuarios(usersResponse.data.length)
+        setTotalUsers(usersResponse.data.length)
 
         const applicationsResponse = await axios.get("http://localhost:2025/api/application")
-        setTotalSolicitudes(applicationsResponse.data.length)
+        setTotalApplications(applicationsResponse.data.length)
         setReportData(applicationsResponse.data)
 
         // Process application data by month
@@ -61,12 +86,12 @@ const Dashboard = () => {
         const dependencyChartData = Object.entries(dependencyCounts)
           .map(([name, count]) => ({ name, count }))
           .sort((a, b) => b.count - a.count)
-          .slice(0, 10) // Get top 10 dependencies
+          .slice(0, 6) // Get top 6 dependencies
 
         setDependencyData(dependencyChartData)
 
         const reservationsResponse = await axios.get("http://localhost:2025/api/reservation")
-        setTotalReservas(reservationsResponse.data.length)
+        setTotalReservations(reservationsResponse.data.length)
 
         // Process reservation data by month
         const reservationsByMonth = processDataByMonth(reservationsResponse.data)
@@ -74,14 +99,16 @@ const Dashboard = () => {
 
         // Process scenery data
         const sceneryCounts = reservationsResponse.data.reduce((acc, resv) => {
-          acc[resv.scenery] = (acc[resv.scenery] || 0) + 1
+          if (resv.scenery) {
+            acc[resv.scenery] = (acc[resv.scenery] || 0) + 1
+          }
           return acc
         }, {})
 
-        const sceneryChartData = Object.keys(sceneryCounts).map((key) => ({
-          name: key,
-          value: sceneryCounts[key],
-        }))
+        const sceneryChartData = Object.entries(sceneryCounts)
+          .map(([name, value]) => ({ name, value }))
+          .sort((a, b) => b.value - a.value)
+          .slice(0, 6) // Get top 6 sceneries
 
         setSceneryData(sceneryChartData)
       } catch (error) {
@@ -126,522 +153,297 @@ const Dashboard = () => {
   }, {})
 
   // Convert to chart data format
-  const damageChartData = Object.keys(damageCounts).map((key) => ({ label: key, data: damageCounts[key] }))
-  const statusChartData = Object.keys(statusCounts).map((key) => ({ label: key, data: statusCounts[key] }))
+  const damageChartData = Object.keys(damageCounts).map((key) => ({ name: key, value: damageCounts[key] }))
+  const statusChartData = Object.keys(statusCounts).map((key) => ({ name: key, value: statusCounts[key] }))
 
-  // Colors for charts
-  const COLORS = ["#5856d6", "#39f", "#f9b115", "#e55353", "#2eb85c", "#768192"]
+  // Format monthly data for charts
+  const monthlyReservationsData = monthlyReservations.map((value, index) => ({
+    name: MONTHS[index],
+    value,
+  }))
+
+  const monthlyApplicationsData = monthlyApplications.map((value, index) => ({
+    name: MONTHS[index],
+    value,
+  }))
 
   if (loading) {
-    return <div>Cargando datos...</div>
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <h2>Cargando datos...</h2>
+      </div>
+    )
   }
 
   return (
-    <>
-      <CRow>
-        <CCol sm={6} lg={4}>
-          <CWidgetStatsA
-            className="mb-4"
-            style={{ minHeight: "125px" }}
-            color="primary"
-            value={
-              <>
-                {totalUsuarios}{" "}
-                <span className="fs-6 fw-normal">
-                  <CIcon icon={cilArrowTop} />
-                </span>
-              </>
-            }
-            title="Total de Usuarios"
-            action={
-              <CDropdown alignment="end">
-                <CDropdownToggle color="transparent" caret={false} className="p-0">
-                  <CIcon icon={cilOptions} className="text-high-emphasis-inverse" />
-                </CDropdownToggle>
-                <CDropdownMenu>
-                  <CDropdownItem>Ver detalles</CDropdownItem>
-                  <CDropdownItem>Exportar datos</CDropdownItem>
-                </CDropdownMenu>
-              </CDropdown>
-            }
-            chart={
-              <CChartLine
-                className="mt-3 mx-3"
-                style={{ height: "90px" }}
-                data={{
-                  labels: ["January", "February", "March", "April", "May", "June", "July"],
-                  datasets: [
-                    {
-                      label: "Usuarios",
-                      backgroundColor: "transparent",
-                      borderColor: "rgba(255,255,255,.55)",
-                      pointBackgroundColor: getStyle("--cui-primary"),
-                      data: [65, 59, 84, 84, 51, 55, totalUsuarios],
-                    },
-                  ],
-                }}
-                options={{
-                  plugins: {
-                    legend: {
-                      display: false,
-                    },
-                  },
-                  maintainAspectRatio: false,
-                  scales: {
-                    x: {
-                      grid: {
-                        display: false,
-                        drawBorder: false,
-                      },
-                      ticks: {
-                        display: false,
-                      },
-                    },
-                    y: {
-                      min: 30,
-                      max: Math.max(89, totalUsuarios + 10),
-                      display: false,
-                      grid: {
-                        display: false,
-                      },
-                      ticks: {
-                        display: false,
-                      },
-                    },
-                  },
-                  elements: {
-                    line: {
-                      borderWidth: 1,
-                      tension: 0.4,
-                    },
-                    point: {
-                      radius: 3,
-                      hitRadius: 8,
-                      hoverRadius: 3,
-                    },
-                  },
-                }}
-              />
-            }
-          />
-        </CCol>
-        <CCol sm={6} lg={4}>
-          <CWidgetStatsA
-            className="mb-4"
-            style={{ minHeight: "125px" }}
-            color="info"
-            value={
-              <>
-                {totalSolicitudes}{" "}
-                <span className="fs-6 fw-normal">
-                  <CIcon icon={cilArrowTop} />
-                </span>
-              </>
-            }
-            title="Total de Solicitudes"
-            action={
-              <CDropdown alignment="end">
-                <CDropdownToggle color="transparent" caret={false} className="p-0">
-                  <CIcon icon={cilOptions} className="text-high-emphasis-inverse" />
-                </CDropdownToggle>
-                <CDropdownMenu>
-                  <CDropdownItem>Ver detalles</CDropdownItem>
-                  <CDropdownItem>Exportar datos</CDropdownItem>
-                </CDropdownMenu>
-              </CDropdown>
-            }
-            chart={
-              <CChartLine
-                className="mt-3 mx-3"
-                style={{ height: "90px" }}
-                data={{
-                  labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio"],
-                  datasets: [
-                    {
-                      label: "Solicitudes",
-                      backgroundColor: "transparent",
-                      borderColor: "rgba(255,255,255,.55)",
-                      pointBackgroundColor: getStyle("--cui-info"),
-                      data: monthlyApplications.slice(0, 7),
-                    },
-                  ],
-                }}
-                options={{
-                  plugins: {
-                    legend: {
-                      display: false,
-                    },
-                  },
-                  maintainAspectRatio: false,
-                  scales: {
-                    x: {
-                      grid: {
-                        display: false,
-                        drawBorder: false,
-                      },
-                      ticks: {
-                        display: false,
-                      },
-                    },
-                    y: {
-                      min: 0,
-                      max: Math.max(...monthlyApplications) + 5,
-                      display: false,
-                      grid: {
-                        display: false,
-                      },
-                      ticks: {
-                        display: false,
-                      },
-                    },
-                  },
-                  elements: {
-                    line: {
-                      borderWidth: 1,
-                    },
-                    point: {
-                      radius: 3,
-                      hitRadius: 8,
-                      hoverRadius: 3,
-                    },
-                  },
-                }}
-              />
-            }
-          />
-        </CCol>
-        <CCol sm={6} lg={4}>
-          <CWidgetStatsA
-            className="mb-4"
-            style={{ minHeight: "125px" }}
-            color="warning"
-            value={
-              <>
-                {totalReservas}{" "}
-                <span className="fs-6 fw-normal">
-                  <CIcon icon={cilArrowTop} />
-                </span>
-              </>
-            }
-            title="Total de Reservas"
-            action={
-              <CDropdown alignment="end">
-                <CDropdownToggle color="transparent" caret={false} className="p-0">
-                  <CIcon icon={cilOptions} className="text-high-emphasis-inverse" />
-                </CDropdownToggle>
-                <CDropdownMenu>
-                  <CDropdownItem>Ver detalles</CDropdownItem>
-                  <CDropdownItem>Exportar datos</CDropdownItem>
-                </CDropdownMenu>
-              </CDropdown>
-            }
-            chart={
-              <CChartLine
-                className="mt-3 mx-3"
-                style={{ height: "90px" }}
-                data={{
-                  labels: ["January", "Febrero", "March", "April", "May", "June", "July"],
-                  datasets: [
-                    {
-                      label: "Reservas",
-                      backgroundColor: "rgba(255,255,255,.2)",
-                      borderColor: "rgba(255,255,255,.55)",
-                      data: monthlyReservations.slice(0, 7),
-                      fill: true,
-                    },
-                  ],
-                }}
-                options={{
-                  plugins: {
-                    legend: {
-                      display: false,
-                    },
-                  },
-                  maintainAspectRatio: false,
-                  scales: {
-                    x: {
-                      display: false,
-                    },
-                    y: {
-                      display: false,
-                    },
-                  },
-                  elements: {
-                    line: {
-                      borderWidth: 2,
-                      tension: 0.4,
-                    },
-                    point: {
-                      radius: 0,
-                      hitRadius: 8,
-                      hoverRadius: 3,
-                    },
-                  },
-                }}
-              />
-            }
-          />
-        </CCol>
-      </CRow>
+    <div className="body-dashboard dashboard-container">
+      <header className="dashboard-header">
+        <h1>Panel de Control</h1>
+        <p>Visualización de datos y estadísticas del sistema</p>
+      </header>
 
-      <CContainer className="centered-charts">
-        <CRow className="justify-content-center">
-          <CCol sm={12} lg={6}>
-            <CCard className="mb-4">
-              <CCardHeader>Tipos de reportes</CCardHeader>
-              <CCardBody className="d-flex flex-column">
-                <div className="chart-container flex-grow-1">
-                  <CChartPie
-                    style={{ height: "400px" }}
-                    data={{
-                      labels: damageChartData.map((item) => item.label),
-                      datasets: [
-                        {
-                          data: damageChartData.map((item) => item.data),
-                          backgroundColor: COLORS.slice(0, damageChartData.length),
-                          hoverBackgroundColor: COLORS.slice(0, damageChartData.length),
-                        },
-                      ],
-                    }}
-                    options={{
-                      maintainAspectRatio: false,
-                      responsive: true,
-                      plugins: {
-                        legend: {
-                          position: "bottom",
-                          labels: {
-                            font: {
-                              size: 14,
-                            },
-                            padding: 20,
-                          },
-                        },
-                        tooltip: {
-                          bodyFont: {
-                            size: 14,
-                          },
-                          titleFont: {
-                            size: 16,
-                          },
-                        },
-                      },
-                    }}
-                  />
+      <div className="stats-cards">
+        {/* Total Users Card */}
+        <div className="stat-card">
+          <div className="stat-card-header">
+            <h3>Total de Usuarios</h3>
+            <span className="icon users-icon"></span>
+          </div>
+          <div className="stat-card-content">
+            <div className="stat-value">{totalUsers}</div>
+            <p className="stat-trend positive">
+              <span className="trend-arrow">↗</span>
+              12% más que el mes pasado
+            </p>
+          </div>
+          <div className="stat-card-chart">
+            <ResponsiveContainer width="100%" height={80}>
+              <LineChart
+                data={[
+                  { name: "Ene", value: 65 },
+                  { name: "Feb", value: 59 },
+                  { name: "Mar", value: 84 },
+                  { name: "Abr", value: 84 },
+                  { name: "May", value: 51 },
+                  { name: "Jun", value: 55 },
+                  { name: "Jul", value: totalUsers },
+                ]}
+                margin={{ top: 5, right: 10, left: 10, bottom: 0 }}
+              >
+                <Line type="monotone" dataKey="value" stroke="#6366f1" strokeWidth={2} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Total Applications Card */}
+        <div className="stat-card">
+          <div className="stat-card-header">
+            <h3>Total de Solicitudes</h3>
+            <span className="icon applications-icon"></span>
+          </div>
+          <div className="stat-card-content">
+            <div className="stat-value">{totalApplications}</div>
+            <p className="stat-trend positive">
+              <span className="trend-arrow">↗</span>
+              8% más que el mes pasado
+            </p>
+          </div>
+          <div className="stat-card-chart">
+            <ResponsiveContainer width="100%" height={80}>
+              <LineChart data={monthlyApplicationsData.slice(0, 7)} margin={{ top: 5, right: 10, left: 10, bottom: 0 }}>
+                <Line type="monotone" dataKey="value" stroke="#8b5cf6" strokeWidth={2} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Total Reservations Card */}
+        <div className="stat-card">
+          <div className="stat-card-header">
+            <h3>Total de Reservas</h3>
+            <span className="icon reservations-icon"></span>
+          </div>
+          <div className="stat-card-content">
+            <div className="stat-value">{totalReservations}</div>
+            <p className="stat-trend positive">
+              <span className="trend-arrow">↗</span>
+              15% más que el mes pasado
+            </p>
+          </div>
+          <div className="stat-card-chart">
+            <ResponsiveContainer width="100%" height={80}>
+              <LineChart data={monthlyReservationsData.slice(0, 7)} margin={{ top: 5, right: 10, left: 10, bottom: 0 }}>
+                <Line type="monotone" dataKey="value" stroke="#f43f5e" strokeWidth={2} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      <div className="tabs-container">
+        <div className="tabs-header">
+          <div className="tabs-nav">
+            <button
+              className={`tab-button ${activeTab === "overview" ? "active" : ""}`}
+              onClick={() => setActiveTab("overview")}
+            >
+              Resumen
+            </button>
+            <button
+              className={`tab-button ${activeTab === "analytics" ? "active" : ""}`}
+              onClick={() => setActiveTab("analytics")}
+            >
+              Análisis
+            </button>
+          </div>
+          <div className="tabs-actions">
+            <div className="dropdown">
+              <button className="dropdown-button">
+                <span className="more-icon">⋮</span>
+              </button>
+              <div className="dropdown-content">
+                <a href="#">Descargar PDF</a>
+                <a href="#">Exportar datos</a>
+                <a href="#">Compartir</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="tab-content" style={{ display: activeTab === "overview" ? "block" : "none" }}>
+          <div className="charts-grid">
+            {/* Report Types Chart */}
+            <div className="chart-card">
+              <div className="chart-card-header">
+                <h3>Tipos de Reportes</h3>
+                <p>Distribución por categoría</p>
+              </div>
+              <div className="chart-card-content">
+                <div className="chart-container">
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={damageChartData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {damageChartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip content={<CustomTooltip />} />
+                      <Legend layout="vertical" verticalAlign="middle" align="right" />
+                    </PieChart>
+                  </ResponsiveContainer>
                 </div>
-              </CCardBody>
-            </CCard>
-          </CCol>
-          <CCol sm={12} lg={6}>
-            <CCard className="mb-4">
-              <CCardHeader>Estado de solicitudes</CCardHeader>
-              <CCardBody className="d-flex flex-column">
-                <div className="chart-container flex-grow-1">
-                  <CChartBar
-                    style={{ height: "400px" }}
-                    data={{
-                      labels: statusChartData.map((item) => item.label),
-                      datasets: [
-                        {
-                          label: "Estado",
-                          backgroundColor: COLORS[3],
-                          data: statusChartData.map((item) => item.data),
-                          barThickness: 40,
-                        },
-                      ],
-                    }}
-                    options={{
-                      maintainAspectRatio: false,
-                      responsive: true,
-                      plugins: {
-                        legend: {
-                          display: false,
-                        },
-                        tooltip: {
-                          bodyFont: {
-                            size: 14,
-                          },
-                          titleFont: {
-                            size: 16,
-                          },
-                        },
-                      },
-                      scales: {
-                        x: {
-                          ticks: {
-                            font: {
-                              size: 14,
-                            },
-                          },
-                        },
-                        y: {
-                          ticks: {
-                            font: {
-                              size: 14,
-                            },
-                          },
-                        },
-                      },
-                    }}
-                  />
+              </div>
+            </div>
+
+            {/* Application Status Chart */}
+            <div className="chart-card">
+              <div className="chart-card-header">
+                <h3>Estado de Solicitudes</h3>
+                <p>Distribución por estado actual</p>
+              </div>
+              <div className="chart-card-content">
+                <div className="chart-container">
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={statusChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                        {statusChartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
-              </CCardBody>
-            </CCard>
-          </CCol>
-        </CRow>
+              </div>
+            </div>
 
-        <CRow className="justify-content-center">
-          <CCol sm={12} lg={6}>
-            <CCard className="mb-4">
-              <CCardHeader>Escenarios más reservados</CCardHeader>
-              <CCardBody className="d-flex flex-column">
-                <div className="chart-container flex-grow-1">
-                  <CChartBar
-                    style={{ height: "450px" }}
-                    data={{
-                      labels: sceneryData.map((item) => item.name),
-                      datasets: [
-                        {
-                          label: "Reservas",
-                          backgroundColor: COLORS[2],
-                          data: sceneryData.map((item) => item.value),
-                          barThickness: 50,
-                        },
-                      ],
-                    }}
-                    options={{
-                      maintainAspectRatio: false,
-                      responsive: true,
-                      plugins: {
-                        legend: {
-                          display: false,
-                        },
-                        tooltip: {
-                          bodyFont: {
-                            size: 14,
-                          },
-                          titleFont: {
-                            size: 16,
-                          },
-                        },
-                      },
-                      scales: {
-                        x: {
-                          ticks: {
-                            font: {
-                              size: 14,
-                            },
-                          },
-                        },
-                        y: {
-                          ticks: {
-                            font: {
-                              size: 14,
-                            },
-                          },
-                        },
-                      },
-                    }}
-                  />
+            {/* Most Reserved Scenarios Chart */}
+            <div className="chart-card">
+              <div className="chart-card-header">
+                <h3>Escenarios más Reservados</h3>
+                <p>Top escenarios por número de reservas</p>
+                <span className="badge">Top 6</span>
+              </div>
+              <div className="chart-card-content">
+                <div className="chart-container">
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={sceneryData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.1} horizontal={false} />
+                      <XAxis type="number" />
+                      <YAxis dataKey="name" type="category" width={100} />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+                        {sceneryData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[(index + 2) % COLORS.length]} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
-              </CCardBody>
-            </CCard>
-          </CCol>
-          <CCol sm={12} lg={6}>
-            <CCard className="mb-4">
-              <CCardHeader>Dependencias con más solicitudes</CCardHeader>
-              <CCardBody className="d-flex flex-column">
-                <div className="chart-container flex-grow-1">
-                  <CChartBar
-                    style={{ height: "450px" }}
-                    data={{
-                      labels: dependencyData.map((item) => item.name),
-                      datasets: [
-                        {
-                          label: "Solicitudes",
-                          backgroundColor: COLORS[4],
-                          data: dependencyData.map((item) => item.count),
-                          barThickness: 50,
-                        },
-                      ],
-                    }}
-                    options={{
-                      maintainAspectRatio: false,
-                      responsive: true,
-                      plugins: {
-                        legend: {
-                          display: false,
-                        },
-                        tooltip: {
-                          bodyFont: {
-                            size: 14,
-                          },
-                          titleFont: {
-                            size: 16,
-                          },
-                        },
-                      },
-                      scales: {
-                        x: {
-                          ticks: {
-                            font: {
-                              size: 14,
-                            },
-                          },
-                        },
-                        y: {
-                          ticks: {
-                            font: {
-                              size: 14,
-                            },
-                          },
-                        },
-                      },
-                    }}
-                  />
+              </div>
+            </div>
+
+            {/* Dependencies with Most Applications Chart */}
+            <div className="chart-card">
+              <div className="chart-card-header">
+                <h3>Dependencias con más Solicitudes</h3>
+                <p>Top dependencias por número de solicitudes</p>
+                <span className="badge">Top 6</span>
+              </div>
+              <div className="chart-card-content">
+                <div className="chart-container">
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart
+                      data={dependencyData}
+                      layout="vertical"
+                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.1} horizontal={false} />
+                      <XAxis type="number" />
+                      <YAxis dataKey="name" type="category" width={100} />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                        {dependencyData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[(index + 4) % COLORS.length]} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
-              </CCardBody>
-            </CCard>
-          </CCol>
-        </CRow>
-      </CContainer>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      <style jsx global>{`
-        .centered-charts {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-        
-        .chart-container {
-          position: relative;
-          height: 100%;
-          width: 100%;
-          min-height: 400px;
-        }
+        <div className="tab-content" style={{ display: activeTab === "analytics" ? "block" : "none" }}>
+          <div className="chart-card full-width">
+            <div className="chart-card-header">
+              <h3>Tendencias Mensuales</h3>
+              <p>Solicitudes y reservas por mes</p>
+            </div>
+            <div className="chart-card-content">
+              <div className="chart-container">
+                <ResponsiveContainer width="100%" height={400}>
+                  <LineChart
+                    data={MONTHS.map((month, index) => ({
+                      name: month,
+                      solicitudes: monthlyApplications[index] || 0,
+                      reservas: monthlyReservations[index] || 0,
+                    }))}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend />
+                    <Line type="monotone" dataKey="solicitudes" stroke="#8b5cf6" strokeWidth={2} activeDot={{ r: 8 }} />
+                    <Line type="monotone" dataKey="reservas" stroke="#f43f5e" strokeWidth={2} activeDot={{ r: 8 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        .card-body {
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-          padding: 1.5rem;
-        }
-
-        .flex-grow-1 {
-          flex-grow: 1;
-        }
-        
-        .widget-chart {
-          min-height: 125px;
-        }
-        
-        @media (max-width: 768px) {
-          .chart-container {
-            min-height: 350px;
-          }
-        }
-      `}</style>
-    </>
+      </div>
+    </div>
   )
 }
 
 export default Dashboard
+

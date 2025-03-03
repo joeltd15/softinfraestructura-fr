@@ -7,7 +7,7 @@ import { Col, Row } from "react-bootstrap";
 import { useAlert } from "../../../../assets/functions/index";
 import { toast } from "react-toastify";
 
-const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignmentId }) => {
+const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignmentId, getAssignment = null }) => {
   const [observations, setObservations] = useState("");
   const [buildingMaterials, setBuildingMaterials] = useState("");
   const [actionsTaken, setActionsTaken] = useState("");
@@ -84,6 +84,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
           error: "Error al registrar el seguimiento",
         }
       );
+      getAssignment();
       handleClose();
     } catch (error) {
       console.error("Error al registrar seguimiento:", error);

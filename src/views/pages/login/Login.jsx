@@ -112,8 +112,8 @@ const Login = () => {
       <CContainer className='d-flex flex-row align-items-center justify-content-center'>
         <CCard className="p-4 d-flex align-items-center">
           <CCardBody>
-            <CForm onSubmit={handleLogin}>
-              <h1>Iniciar Sesión</h1>
+            <CForm onSubmit={handleLogin} className='p-4'>
+              <h1 className='text-center mb-5'>Iniciar sesión</h1>
               <CInputGroup className="mb-3">
                 <CInputGroupText>
                   <CIcon icon={cilUser} />
@@ -147,18 +147,16 @@ const Login = () => {
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </CButton>
               </CInputGroup>
-              <CRow>
-                <CCol xs={6}>
-                  <CButton type="submit" className="btn-green px-4">
-                    Ingresar
-                  </CButton>
-                </CCol>
-                <CCol xs={6} className="text-right">
-                  <CButton color="link" className="px-0" onClick={() => navigate('/sendEmail')}>
-                    Recuperar Contraseña
-                  </CButton>
-                </CCol>
-              </CRow>
+              <div className='text-center d-block mb-2'>
+                <CButton type="submit" className="btn-green px-4">
+                  Ingresar
+                </CButton>
+              </div>
+              <div className="d-flex justify-content-end mt-3">
+                <CButton color="link" className="px-0" onClick={() => navigate('/sendEmail')}>
+                  Recuperar Contraseña
+                </CButton>
+              </div>
             </CForm>
           </CCardBody>
         </CCard>
