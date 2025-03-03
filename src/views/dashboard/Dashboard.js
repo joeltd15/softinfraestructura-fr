@@ -17,6 +17,7 @@ import {
   CCard,
   CCardBody,
   CCardHeader,
+  CContainer,
 } from "@coreui/react"
 
 const Dashboard = () => {
@@ -25,6 +26,7 @@ const Dashboard = () => {
   const [totalReservas, setTotalReservas] = useState(0)
   const [reportData, setReportData] = useState([])
   const [sceneryData, setSceneryData] = useState([])
+  const [dependencyData, setDependencyData] = useState([])
   const [loading, setLoading] = useState(true)
   const [monthlyReservations, setMonthlyReservations] = useState([])
   const [monthlyApplications, setMonthlyApplications] = useState([])
@@ -47,6 +49,21 @@ const Dashboard = () => {
         // Process application data by month
         const appsByMonth = processDataByMonth(applicationsResponse.data)
         setMonthlyApplications(appsByMonth)
+
+        // Process dependency data
+        const dependencyCounts = applicationsResponse.data.reduce((acc, app) => {
+          if (app.dependence) {
+            acc[app.dependence] = (acc[app.dependence] || 0) + 1
+          }
+          return acc
+        }, {})
+
+        const dependencyChartData = Object.entries(dependencyCounts)
+          .map(([name, count]) => ({ name, count }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 10) // Get top 10 dependencies
+
+        setDependencyData(dependencyChartData)
 
         const reservationsResponse = await axios.get("http://localhost:2025/api/reservation")
         setTotalReservas(reservationsResponse.data.length)
@@ -125,7 +142,7 @@ const Dashboard = () => {
         <CCol sm={6} lg={4}>
           <CWidgetStatsA
             className="mb-4"
-            style={{ minHeight: "125px" }} // Reducido a la mitad (de 250px a 125px)
+            style={{ minHeight: "125px" }}
             color="primary"
             value={
               <>
@@ -150,7 +167,7 @@ const Dashboard = () => {
             chart={
               <CChartLine
                 className="mt-3 mx-3"
-                style={{ height: "90px" }} // Reducido a la mitad (de 180px a 90px)
+                style={{ height: "90px" }}
                 data={{
                   labels: ["January", "February", "March", "April", "May", "June", "July"],
                   datasets: [
@@ -198,9 +215,9 @@ const Dashboard = () => {
                       tension: 0.4,
                     },
                     point: {
-                      radius: 3, // Reducido de 4 a 3
-                      hitRadius: 8, // Reducido de 10 a 8
-                      hoverRadius: 3, // Reducido de 4 a 3
+                      radius: 3,
+                      hitRadius: 8,
+                      hoverRadius: 3,
                     },
                   },
                 }}
@@ -211,7 +228,7 @@ const Dashboard = () => {
         <CCol sm={6} lg={4}>
           <CWidgetStatsA
             className="mb-4"
-            style={{ minHeight: "125px" }} // Reducido a la mitad (de 250px a 125px)
+            style={{ minHeight: "125px" }}
             color="info"
             value={
               <>
@@ -236,7 +253,7 @@ const Dashboard = () => {
             chart={
               <CChartLine
                 className="mt-3 mx-3"
-                style={{ height: "90px" }} // Reducido a la mitad (de 180px a 90px)
+                style={{ height: "90px" }}
                 data={{
                   labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio"],
                   datasets: [
@@ -283,9 +300,9 @@ const Dashboard = () => {
                       borderWidth: 1,
                     },
                     point: {
-                      radius: 3, // Reducido de 4 a 3
-                      hitRadius: 8, // Reducido de 10 a 8
-                      hoverRadius: 3, // Reducido de 4 a 3
+                      radius: 3,
+                      hitRadius: 8,
+                      hoverRadius: 3,
                     },
                   },
                 }}
@@ -296,7 +313,7 @@ const Dashboard = () => {
         <CCol sm={6} lg={4}>
           <CWidgetStatsA
             className="mb-4"
-            style={{ minHeight: "125px" }} // Reducido a la mitad (de 250px a 125px)
+            style={{ minHeight: "125px" }}
             color="warning"
             value={
               <>
@@ -321,7 +338,7 @@ const Dashboard = () => {
             chart={
               <CChartLine
                 className="mt-3 mx-3"
-                style={{ height: "90px" }} // Reducido a la mitad (de 180px a 90px)
+                style={{ height: "90px" }}
                 data={{
                   labels: ["January", "Febrero", "March", "April", "May", "June", "July"],
                   datasets: [
@@ -356,8 +373,8 @@ const Dashboard = () => {
                     },
                     point: {
                       radius: 0,
-                      hitRadius: 8, // Reducido de 10 a 8
-                      hoverRadius: 3, // Reducido de 4 a 3
+                      hitRadius: 8,
+                      hoverRadius: 3,
                     },
                   },
                 }}
@@ -367,127 +384,68 @@ const Dashboard = () => {
         </CCol>
       </CRow>
 
-      <CRow className="equal-height-charts">
-        <CCol sm={6}>
-          <CCard className="mb-4">
-            <CCardHeader>Tipos de Reportes</CCardHeader>
-            <CCardBody className="d-flex flex-column">
-              <div className="chart-container flex-grow-1">
-                <CChartPie
-                  style={{ height: "400px" }} // Mantenemos la altura del gráfico
-                  data={{
-                    labels: damageChartData.map((item) => item.label),
-                    datasets: [
-                      {
-                        data: damageChartData.map((item) => item.data),
-                        backgroundColor: COLORS.slice(0, damageChartData.length),
-                        hoverBackgroundColor: COLORS.slice(0, damageChartData.length),
-                      },
-                    ],
-                  }}
-                  options={{
-                    maintainAspectRatio: false,
-                    responsive: true,
-                    plugins: {
-                      legend: {
-                        position: "bottom",
-                        labels: {
-                          font: {
-                            size: 14, // Mantenemos el tamaño de la fuente de la leyenda
-                          },
-                          padding: 20, // Mantenemos el espacio entre etiquetas
-                        },
-                      },
-                      tooltip: {
-                        bodyFont: {
-                          size: 14, // Mantenemos el tamaño de la fuente del tooltip
-                        },
-                        titleFont: {
-                          size: 16, // Mantenemos el tamaño del título del tooltip
-                        },
-                      },
-                    },
-                  }}
-                />
-              </div>
-            </CCardBody>
-          </CCard>
-        </CCol>
-        <CCol sm={6}>
-          <CCard className="mb-4">
-            <CCardHeader>Estado de Solicitudes</CCardHeader>
-            <CCardBody className="d-flex flex-column">
-              <div className="chart-container flex-grow-1">
-                <CChartBar
-                  style={{ height: "400px" }} // Mantenemos la altura del gráfico
-                  data={{
-                    labels: statusChartData.map((item) => item.label),
-                    datasets: [
-                      {
-                        label: "Estado",
-                        backgroundColor: COLORS[3],
-                        data: statusChartData.map((item) => item.data),
-                        barThickness: 40, // Mantenemos el grosor de las barras
-                      },
-                    ],
-                  }}
-                  options={{
-                    maintainAspectRatio: false,
-                    responsive: true,
-                    plugins: {
-                      legend: {
-                        display: false,
-                      },
-                      tooltip: {
-                        bodyFont: {
-                          size: 14, // Mantenemos el tamaño de la fuente del tooltip
-                        },
-                        titleFont: {
-                          size: 16, // Mantenemos el tamaño del título del tooltip
-                        },
-                      },
-                    },
-                    scales: {
-                      x: {
-                        ticks: {
-                          font: {
-                            size: 14, // Mantenemos el tamaño de la fuente de las etiquetas del eje X
-                          },
-                        },
-                      },
-                      y: {
-                        ticks: {
-                          font: {
-                            size: 14, // Mantenemos el tamaño de la fuente de las etiquetas del eje Y
-                          },
-                        },
-                      },
-                    },
-                  }}
-                />
-              </div>
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
-
-      {sceneryData.length > 0 && (
-        <CRow>
-          <CCol sm={12}>
+      <CContainer className="centered-charts">
+        <CRow className="justify-content-center">
+          <CCol sm={12} lg={6}>
             <CCard className="mb-4">
-              <CCardHeader>Escenarios más reservados</CCardHeader>
+              <CCardHeader>Tipos de reportes</CCardHeader>
+              <CCardBody className="d-flex flex-column">
+                <div className="chart-container flex-grow-1">
+                  <CChartPie
+                    style={{ height: "400px" }}
+                    data={{
+                      labels: damageChartData.map((item) => item.label),
+                      datasets: [
+                        {
+                          data: damageChartData.map((item) => item.data),
+                          backgroundColor: COLORS.slice(0, damageChartData.length),
+                          hoverBackgroundColor: COLORS.slice(0, damageChartData.length),
+                        },
+                      ],
+                    }}
+                    options={{
+                      maintainAspectRatio: false,
+                      responsive: true,
+                      plugins: {
+                        legend: {
+                          position: "bottom",
+                          labels: {
+                            font: {
+                              size: 14,
+                            },
+                            padding: 20,
+                          },
+                        },
+                        tooltip: {
+                          bodyFont: {
+                            size: 14,
+                          },
+                          titleFont: {
+                            size: 16,
+                          },
+                        },
+                      },
+                    }}
+                  />
+                </div>
+              </CCardBody>
+            </CCard>
+          </CCol>
+          <CCol sm={12} lg={6}>
+            <CCard className="mb-4">
+              <CCardHeader>Estado de solicitudes</CCardHeader>
               <CCardBody className="d-flex flex-column">
                 <div className="chart-container flex-grow-1">
                   <CChartBar
-                    style={{ height: "450px" }} // Mantenemos la altura del gráfico
+                    style={{ height: "400px" }}
                     data={{
-                      labels: sceneryData.map((item) => item.name),
+                      labels: statusChartData.map((item) => item.label),
                       datasets: [
                         {
-                          label: "Reservas",
-                          backgroundColor: COLORS[2],
-                          data: sceneryData.map((item) => item.value),
-                          barThickness: 50, // Mantenemos el grosor de las barras
+                          label: "Estado",
+                          backgroundColor: COLORS[3],
+                          data: statusChartData.map((item) => item.data),
+                          barThickness: 40,
                         },
                       ],
                     }}
@@ -500,10 +458,10 @@ const Dashboard = () => {
                         },
                         tooltip: {
                           bodyFont: {
-                            size: 14, // Mantenemos el tamaño de la fuente del tooltip
+                            size: 14,
                           },
                           titleFont: {
-                            size: 16, // Mantenemos el tamaño del título del tooltip
+                            size: 16,
                           },
                         },
                       },
@@ -511,14 +469,14 @@ const Dashboard = () => {
                         x: {
                           ticks: {
                             font: {
-                              size: 14, // Mantenemos el tamaño de la fuente de las etiquetas del eje X
+                              size: 14,
                             },
                           },
                         },
                         y: {
                           ticks: {
                             font: {
-                              size: 14, // Mantenemos el tamaño de la fuente de las etiquetas del eje Y
+                              size: 14,
                             },
                           },
                         },
@@ -530,42 +488,155 @@ const Dashboard = () => {
             </CCard>
           </CCol>
         </CRow>
-      )}
+
+        <CRow className="justify-content-center">
+          <CCol sm={12} lg={6}>
+            <CCard className="mb-4">
+              <CCardHeader>Escenarios más reservados</CCardHeader>
+              <CCardBody className="d-flex flex-column">
+                <div className="chart-container flex-grow-1">
+                  <CChartBar
+                    style={{ height: "450px" }}
+                    data={{
+                      labels: sceneryData.map((item) => item.name),
+                      datasets: [
+                        {
+                          label: "Reservas",
+                          backgroundColor: COLORS[2],
+                          data: sceneryData.map((item) => item.value),
+                          barThickness: 50,
+                        },
+                      ],
+                    }}
+                    options={{
+                      maintainAspectRatio: false,
+                      responsive: true,
+                      plugins: {
+                        legend: {
+                          display: false,
+                        },
+                        tooltip: {
+                          bodyFont: {
+                            size: 14,
+                          },
+                          titleFont: {
+                            size: 16,
+                          },
+                        },
+                      },
+                      scales: {
+                        x: {
+                          ticks: {
+                            font: {
+                              size: 14,
+                            },
+                          },
+                        },
+                        y: {
+                          ticks: {
+                            font: {
+                              size: 14,
+                            },
+                          },
+                        },
+                      },
+                    }}
+                  />
+                </div>
+              </CCardBody>
+            </CCard>
+          </CCol>
+          <CCol sm={12} lg={6}>
+            <CCard className="mb-4">
+              <CCardHeader>Dependencias con más solicitudes</CCardHeader>
+              <CCardBody className="d-flex flex-column">
+                <div className="chart-container flex-grow-1">
+                  <CChartBar
+                    style={{ height: "450px" }}
+                    data={{
+                      labels: dependencyData.map((item) => item.name),
+                      datasets: [
+                        {
+                          label: "Solicitudes",
+                          backgroundColor: COLORS[4],
+                          data: dependencyData.map((item) => item.count),
+                          barThickness: 50,
+                        },
+                      ],
+                    }}
+                    options={{
+                      maintainAspectRatio: false,
+                      responsive: true,
+                      plugins: {
+                        legend: {
+                          display: false,
+                        },
+                        tooltip: {
+                          bodyFont: {
+                            size: 14,
+                          },
+                          titleFont: {
+                            size: 16,
+                          },
+                        },
+                      },
+                      scales: {
+                        x: {
+                          ticks: {
+                            font: {
+                              size: 14,
+                            },
+                          },
+                        },
+                        y: {
+                          ticks: {
+                            font: {
+                              size: 14,
+                            },
+                          },
+                        },
+                      },
+                    }}
+                  />
+                </div>
+              </CCardBody>
+            </CCard>
+          </CCol>
+        </CRow>
+      </CContainer>
 
       <style jsx global>{`
-        .equal-height-charts .chart-container {
-          position: relative;
-          height: 100%;
-          width: 100%;
+        .centered-charts {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
         }
         
         .chart-container {
           position: relative;
           height: 100%;
           width: 100%;
-          min-height: 400px; /* Mantenemos la altura mínima para los gráficos principales */
+          min-height: 400px;
         }
 
         .card-body {
           display: flex;
           flex-direction: column;
           height: 100%;
-          padding: 1.5rem; /* Mantenemos el padding */
+          padding: 1.5rem;
         }
 
         .flex-grow-1 {
           flex-grow: 1;
         }
         
-        /* Ajustamos la altura de los widgets */
         .widget-chart {
-          min-height: 125px; /* Reducido a la mitad */
+          min-height: 125px;
         }
         
-        /* Mejorar la visualización en dispositivos móviles */
         @media (max-width: 768px) {
           .chart-container {
-            min-height: 350px; /* Mantenemos la altura mínima para móviles */
+            min-height: 350px;
           }
         }
       `}</style>
