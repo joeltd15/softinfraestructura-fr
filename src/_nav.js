@@ -12,7 +12,7 @@ import {
   cilUserFollow,
   cilWc,
 } from "@coreui/icons"
-import { CNavGroup, CNavItem, CNavTitle } from "@coreui/react"
+import {  CNavItem, CNavTitle } from "@coreui/react"
 import { checkPermission } from "./authUtils"
 
 const _nav = [
@@ -91,38 +91,7 @@ const _nav = [
     to: "/reservas",
     icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
     permission: "Reservas",
-  },
-  {
-    component: CNavItem,
-    name: "Charts",
-    to: "/charts",
-    icon: <CIcon icon={cilChartPie} customClassName="nav-icon" />,
-    permission: "view_charts",
-  },
-  {
-    component: CNavGroup,
-    name: "Notifications",
-    icon: <CIcon icon={cilBell} customClassName="nav-icon" />,
-    permission: "view_notifications",
-    items: [
-      {
-        component: CNavItem,
-        name: "Toasts",
-        to: "/notifications/toasts",
-      },
-    ],
-  },
-  {
-    component: CNavItem,
-    name: "Widgets",
-    to: "/widgets",
-    icon: <CIcon icon={cilCalculator} customClassName="nav-icon" />,
-    permission: "view_widgets",
-    badge: {
-      color: "info",
-      text: "NEW",
-    },
-  },
+  }
 ]
 
 // Función para filtrar los elementos de navegación basados en los permisos

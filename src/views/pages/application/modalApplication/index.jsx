@@ -56,26 +56,26 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
 
     const handleSubmit = async () => {
         if (!validateFields()) return;
-    
+
         const today = new Date().toISOString().split("T")[0];
         const user = JSON.parse(localStorage.getItem("user"));
         if (!user || !user.id) {
             showAlert('No se pudo obtener la información del usuario.', 'error');
             return;
         }
-    
+
         try {
             // 1. Verificar cuántas solicitudes tiene el usuario en estado "Asignada"
             const response = await axios.get(`${url}?userId=${user.id}&status=Asignada`);
             const assignedRequests = response.data.length;
-    
+
             // 2. Determinar el estado de la nueva solicitud
             let newStatus = assignedRequests >= 3 ? "En espera" : "Asignada";
-    
+
             if (newStatus === "En espera") {
                 showAlert("El usuario ya tiene 3 solicitudes asignadas. Se registrará en estado 'En espera'.", "warning");
             }
-    
+
             // 3. Registrar la solicitud con el estado correspondiente
             const formData = new FormData();
             formData.append("reportDate", today);
@@ -89,12 +89,12 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
             formData.append("responsibleForSpace", ResponsibleForSpace);
             formData.append("userId", user.id);
             formData.append("status", newStatus); // Se envía el estado determinado
-    
+
             await axios.post(url, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
-    
-            toast.success(`Solicitud registrada correctamente en estado "${newStatus}"`);
+
+            toast.success(`Solicitud registrada correctamente`);
             onSolicitudCreated();
             handleClose();
         } catch (error) {
@@ -102,7 +102,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
             showAlert("Error al registrar la solicitud", "error");
         }
     };
-    
+
 
     return (
         <Modal show={show} onHide={handleClose} backdrop="static">
@@ -114,16 +114,20 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
                     <Form.Group className="mb-3" as={Row} controlId="formReportDate">
                         <Col sm="6">
                             <Form.Label className="required">Centro/dependencia</Form.Label>
-                            <Form.Control
-                                type="text"
+                            <Form.Select
                                 value={Dependence}
                                 onChange={(e) => {
                                     setDependence(e.target.value);
                                     setErrors({ ...errors, Dependence: "" });
                                 }}
                                 isInvalid={!!errors.Dependence}
-                                placeholder="Ingrese la dependencia"
-                            />
+                            >
+                                <option value="">Seleccione una opción</option>
+                                <option value="Centro de Servicios de salud">Centro de Servicios de salud</option>
+                                <option value="Centro de comercio">Centro de comercio</option>
+                                <option value="Centro de servicios">Centro de servicios</option>
+                                <option value="Despacho Regional">Despacho Regional</option>
+                            </Form.Select>
                             <Form.Control.Feedback type="invalid">{errors.Dependence}</Form.Control.Feedback>
                         </Col>
                         <Col sm="6">

@@ -84,7 +84,7 @@ const Login = () => {
       showAlert('Inicio de sesión exitoso!.', 'success');
 
       setTimeout(() => {
-        navigate("/dashboard");
+        navigate("/");
       }, 3000);
     } catch (error) {
       console.error("Error completo:", error);

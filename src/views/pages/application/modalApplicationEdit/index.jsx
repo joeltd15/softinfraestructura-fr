@@ -115,14 +115,19 @@ const Realizado = ({ show, handleClose, application, handleUpdate }) => {
                     <Form.Group className="mb-3" as={Row} controlId="formReportDate">
                         <Col sm="6">
                             <Form.Label className="required">Centro/dependencia</Form.Label>
-                            <Form.Control
-                                type="text"
+                            <Form.Select
                                 name="dependence"
                                 value={editedApplication.dependence}
                                 onChange={handleChange}
-                                placeholder="Ingrese la dependencia"
                                 isInvalid={!!errors.dependence}
-                            />
+                            >
+                                <option value="">Seleccione una opción</option>
+                                <option value="Centro de Servicios de salud">Centro de Servicios de salud</option>
+                                <option value="Centro de comercio">Centro de comercio</option>
+                                <option value="Centro de servicios">Centro de servicios</option>
+                                <option value="Despacho Regional">Despacho Regional</option>
+                            </Form.Select>
+
                             <Form.Control.Feedback type="invalid">
                                 {errors.dependence}
                             </Form.Control.Feedback>
