@@ -37,60 +37,61 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+  
     try {
       const response = await axios.post("http://localhost:2025/api/auth/login", {
         email,
         password,
       });
-
+  
       const { user, token } = response.data;
-
+  
       if (!token || !user) {
         throw new Error("La respuesta del servidor no contiene token o información de usuario");
       }
-
+  
       console.log("User data:", user);
-
-      const permissionsResponse = await axios.get(`http://localhost:2025/api/permissionRole?roleId=${user.roleId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
+  
+      const permissionsResponse = await axios.get(
+        `http://localhost:2025/api/permissionRole?roleId=${user.roleId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+  
       console.log("Permissions response:", permissionsResponse.data);
-
+  
       const userRolePermissions = permissionsResponse.data.filter(
         (permission) => permission.roleId === user.roleId
       );
-
+  
       console.log("Filtered user role permissions:", userRolePermissions);
-
+  
       const permissionIds = userRolePermissions.map((pr) => pr.permissionId);
-      const permissionsDetailsResponse = await axios.get(`http://localhost:2025/api/permission`, {
+      const permissionsDetailsResponse = await axios.get("http://localhost:2025/api/permission", {
         headers: { Authorization: `Bearer ${token}` },
       });
-
+  
       console.log("Permissions details:", permissionsDetailsResponse.data);
-
+  
       const userPermissions = permissionsDetailsResponse.data
         .filter((p) => permissionIds.includes(p.id))
         .map((p) => p.name);
-
+  
       console.log("Filtered user permissions:", userPermissions);
-
+  
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("permissions", JSON.stringify(userPermissions));
-
-      showAlert('Inicio de sesión exitoso!.', 'success');
-
+  
+      showAlert("Inicio de sesión exitoso!.", "success");
+  
       setTimeout(() => {
-        navigate("/");
+        navigate(user.roleId === 1 ? "/dashboard" : "/");
       }, 3000);
     } catch (error) {
       console.error("Error completo:", error);
-
+  
       let errorMessage = "Error en el inicio de sesión. Verifica tus credenciales.";
-
+  
       if (error.response) {
         console.error("Datos del error:", error.response.data);
         console.error("Estado del error:", error.response.status);
@@ -102,10 +103,11 @@ const Login = () => {
         console.error("Error:", error.message);
         errorMessage = "Error inesperado. Intenta de nuevo.";
       }
-
-      showAlert(errorMessage, 'error');
+  
+      showAlert(errorMessage, "error");
     }
   };
+  
 
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center pattern">
