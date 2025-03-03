@@ -11,6 +11,10 @@
     --cui-border-color: #012338 !important;
 }
 
+.t-decoration{
+    text-decoration: none !important;
+}
+
 .sidebar-brand {
     text-decoration: none;
 }
@@ -102,6 +106,17 @@
     justify-content: center;
 }
 
+.content-buttons-responsibles {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media screen and (max-width: 768px) {
+    .content-buttons-responsibles {
+        padding: 100% 0px !important;
+    }
+}
 .Table-button {
     border-radius: 8px;
     height: 28px;
@@ -447,6 +462,10 @@ button {
     color: #2b3d4f !important;
 }
 
+[data-coreui-theme=dark] .fc-direction-ltr{
+    background: #fffbd8 !important;
+}
+
 .pending {
     margin-right: 18px;
 }
@@ -491,5 +510,27 @@ button {
 }
 
 .fc-event:hover {
+    cursor: pointer;
+}
+
+.input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-container input {
+    flex: 1;
+    padding-right: 40px; /* Espacio para el ojito */
+}
+
+.eye-button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    padding: 5px;
     cursor: pointer;
 }

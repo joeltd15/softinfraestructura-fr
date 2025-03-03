@@ -185,7 +185,7 @@ const Responsible = () => {
                             : "Sin responsabilidades"}
                         </td>
                         <td>{user ? user.name : "Desconocido"}</td>
-                        <td className="content-buttons">
+                        <td className="content-buttons-responsibles">
                         <Tooltip title="Ver detalle">
 
                           <button className="Table-button Show-button" onClick={() => handleOpenShowModal(responsible)}>

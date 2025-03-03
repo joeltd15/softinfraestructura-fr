@@ -260,135 +260,147 @@ const Application = () => {
       <div className="container">
         <div className="row">
           <div className="panel panel-primary filterable">
-            <div className="panel-heading mb-3 d-flex align-items-center row">
-              <div className="col-sm-6 d-flex align-items-center justify-content-start">
-                <button className="Register-button Button-save" onClick={() => setShow(true)}>
-                  <FaCirclePlus /> Registrar
-                </button>
-              </div>
-              <div className="col-sm-6 d-flex align-items-center justify-content-end">
-                <div className="col-sm-6 d-flex align-items-center justify-content-end">
-                  <Tooltip title="Descargar informes" arrow>
-                    <button className="Btn-download" onClick={() => setDateRangeModalOpen(true)}>
-                      <svg
-                        className="svgIcon-download"
-                        viewBox="0 0 384 512"
-                        height="1em"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"></path>
+            <div className="panel-heading mb-3">
+              <div className="row w-100">
+                {/* Columna izquierda - Botón de registro */}
+                <div className="col-12 col-md-6 d-flex align-items-center justify-content-center justify-content-md-start mb-3 mb-md-0">
+                  <button className="Register-button Button-save" onClick={() => setShow(true)}>
+                    <FaCirclePlus /> Registrar
+                  </button>
+                </div>
+
+                <div className="col-12 col-md-6 d-flex align-items-center justify-content-center justify-content-md-end">
+                  <div className="d-flex align-items-center flex-wrap justify-content-center justify-content-md-end">
+                    <Tooltip title="Descargar informes" arrow>
+                      <button className="Btn-download me-3 mb-2 mb-sm-0" onClick={() => setDateRangeModalOpen(true)}>
+                        <svg
+                          className="svgIcon-download"
+                          viewBox="0 0 384 512"
+                          height="1em"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"></path>
+                        </svg>
+                        <span className="icon2-download"></span>
+                      </button>
+                    </Tooltip>
+                    <div className="group">
+                      <svg className="icon-search" aria-hidden="true" viewBox="0 0 24 24">
+                        <g>
+                          <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
+                        </g>
                       </svg>
-                      <span className="icon2-download"></span>
-                    </button>
-                  </Tooltip>
-                  <div class="group">
-                    <svg class="icon-search" aria-hidden="true" viewBox="0 0 24 24">
-                      <g>
-                        <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
-                      </g>
-                    </svg>
-                    <input placeholder="Buscar" value={search} onChange={searcher} type="search" class="input-search" />
+                      <input
+                        placeholder="Buscar"
+                        value={search}
+                        onChange={searcher}
+                        type="search"
+                        className="input-search"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            <table class="table">
-              <thead className="thead">
-                <tr>
-                  <th>Código</th>
-                  <th>Fecha del reporte</th>
-                  <th>Centro/dependencia</th>
-                  <th>Lugar</th>
-                  <th>Detalles</th>
-                  <th>Evidencia</th>
-                  <th>Tipo de reporte</th>
-                  <th>Estado</th>
-                  <th>Usuario</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody className="tbody">
-                {results.length > 0 ? (
-                  results.map((application, i) => (
-                    <tr key={application.id}>
-                      <td>{application.id}</td>
-                      <td>{new Date(application.reportDate).toISOString().split("T")[0]}</td>
-                      <td>{application.dependence}</td>
-                      <td>{application.location}</td>
-                      <td>{application.news}</td>
-                      <td>
-                        <img
-                          src={
-                            application.photographicEvidence && application.photographicEvidence.trim() !== ""
-                              ? `http://localhost:2025/uploads/${application.photographicEvidence}`
-                              : "/noImage.png"
-                          }
-                          alt=""
-                        />
-                      </td>
-                      <td>{application.reportType}</td>
-                      <td>{application.status}</td>
-                      <td>{userName(application.userId)}</td>
-                      <td className="content-buttons">
-                        <Tooltip title="Ver detalles de la solicitud">
-                          <button className="Table-button Show-button" onClick={() => handleShow(application)}>
-                            <FaEye />
-                          </button>
-                        </Tooltip>
-                        {application.status === "Realizado" && (
-                          <Tooltip title="Ver detalle del mantenimiento">
-                            <button className="Table-button" onClick={() => handleShowTracking(application.id)}>
-                              <FaVoteYea />
+            <div className="table-responsive">
+              <table class="table">
+                <thead className="thead">
+                  <tr>
+                    <th>Código</th>
+                    <th>Fecha del reporte</th>
+                    <th>Centro/dependencia</th>
+                    <th>Lugar</th>
+                    <th>Detalles</th>
+                    <th>Evidencia</th>
+                    <th>Tipo de reporte</th>
+                    <th>Estado</th>
+                    <th>Usuario</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody className="tbody">
+                  {results.length > 0 ? (
+                    results.map((application, i) => (
+                      <tr key={application.id}>
+                        <td>{application.id}</td>
+                        <td>{new Date(application.reportDate).toISOString().split("T")[0]}</td>
+                        <td>{application.dependence}</td>
+                        <td>{application.location}</td>
+                        <td>{application.news}</td>
+                        <td>
+                          <img
+                            src={
+                              application.photographicEvidence && application.photographicEvidence.trim() !== ""
+                                ? `http://localhost:2025/uploads/${application.photographicEvidence}`
+                                : "/noImage.png"
+                            }
+                            alt=""
+                          />
+                        </td>
+                        <td>{application.reportType}</td>
+                        <td>{application.status}</td>
+                        <td>{userName(application.userId)}</td>
+                        <td className="content-buttons">
+                          <Tooltip title="Ver detalles de la solicitud">
+                            <button className="Table-button Show-button" onClick={() => handleShow(application)}>
+                              <FaEye />
                             </button>
                           </Tooltip>
-                        )}
-                        {application.status !== "Realizado" && (
-                          <>
-                            <Tooltip title="Editar solicitud">
-                              <button className="Table-button Update-button" onClick={() => handleEdit(application)}>
-                                <FaPencilAlt />
-                              </button>
-                            </Tooltip>
-                            <Tooltip title="Eliminar solicitud">
-                              <button
-                                className="Table-button Delete-button"
-                                onClick={() => handleOpenDeleteDialog(application.id)}
-                              >
-                                <MdDelete />
-                              </button>
-                            </Tooltip>
-                          </>
-                        )}
-
-                        {application.status !== "Asignada" &&
-                          application.status !== "Realizado" &&
-                          application.status != "En espera por falta de material" &&
-                          user.roleId == 1 && (
-                            <Tooltip title="Asignar encargado">
-                              <button
-                                className="Table-button Asign-button"
-                                onClick={() => {
-                                  console.log("Asignando ID:", application.id)
-                                  setShowAssign(true)
-                                  setSelectId(application.id)
-                                }}
-                              >
-                                <FaUserPlus />
+                          {application.status === "Realizado" && (
+                            <Tooltip title="Ver detalle del mantenimiento">
+                              <button className="Table-button" onClick={() => handleShowTracking(application.id)}>
+                                <FaVoteYea />
                               </button>
                             </Tooltip>
                           )}
+                          {application.status !== "Realizado" && (
+                            <>
+                              <Tooltip title="Editar solicitud">
+                                <button className="Table-button Update-button" onClick={() => handleEdit(application)}>
+                                  <FaPencilAlt />
+                                </button>
+                              </Tooltip>
+                              <Tooltip title="Eliminar solicitud">
+                                <button
+                                  className="Table-button Delete-button"
+                                  onClick={() => handleOpenDeleteDialog(application.id)}
+                                >
+                                  <MdDelete />
+                                </button>
+                              </Tooltip>
+                            </>
+                          )}
+
+                          {application.status !== "Asignada" &&
+                            application.status !== "Realizado" &&
+                            application.status != "En espera por falta de material" &&
+                            user.roleId == 1 && (
+                              <Tooltip title="Asignar encargado">
+                                <button
+                                  className="Table-button Asign-button"
+                                  onClick={() => {
+                                    console.log("Asignando ID:", application.id)
+                                    setShowAssign(true)
+                                    setSelectId(application.id)
+                                  }}
+                                >
+                                  <FaUserPlus />
+                                </button>
+                              </Tooltip>
+                            )}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={10} className="text-center">
+                        No hay solicitudes disponibles
                       </td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={10} className="text-center">
-                      No hay solicitudes disponibles
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                  )}
+                </tbody>
+              </table>
+            </div>
             {results.length > 0 ? (
               <div className="row mb-5">
                 <div className="col-sm-6 d-flex align-items-center justify-content-start">
