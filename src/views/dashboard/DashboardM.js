@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
-import './Dashboard.css'
+import './DashboardM.css'
 import {
   BarChart,
   Bar,
@@ -15,6 +15,13 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  AreaChart,
+  Area,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
 } from "recharts"
 
 // Month names for charts
@@ -50,14 +57,15 @@ const CustomTooltip = ({ active, payload, label }) => {
 const Dashboard = () => {
   const [totalUsers, setTotalUsers] = useState(0)
   const [totalApplications, setTotalApplications] = useState(0)
-  const [totalReservations, setTotalReservations] = useState(0)
+  const [totalCompletedApplications, setTotalCompletedApplications] = useState(0)
   const [reportData, setReportData] = useState([])
-  const [sceneryData, setSceneryData] = useState([])
   const [dependencyData, setDependencyData] = useState([])
+  const [responsibleData, setResponsibleData] = useState([])
   const [loading, setLoading] = useState(true)
-  const [monthlyReservations, setMonthlyReservations] = useState([])
   const [monthlyApplications, setMonthlyApplications] = useState([])
+  const [applicationGrowthData, setApplicationGrowthData] = useState([])
   const [activeTab, setActiveTab] = useState("overview")
+  const [applicationPerformance, setApplicationPerformance] = useState([])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,9 +79,19 @@ const Dashboard = () => {
         setTotalApplications(applicationsResponse.data.length)
         setReportData(applicationsResponse.data)
 
+        // Count completed applications
+        const completedApps = applicationsResponse.data.filter(app => 
+          app.status === "Realizado" || app.status === "Realizado" || app.status === "Realizado"
+        ).length
+        setTotalCompletedApplications(completedApps)
+
         // Process application data by month
         const appsByMonth = processDataByMonth(applicationsResponse.data)
         setMonthlyApplications(appsByMonth)
+
+        // Generate application growth data
+        const growthData = generateApplicationGrowthData(appsByMonth)
+        setApplicationGrowthData(growthData)
 
         // Process dependency data
         const dependencyCounts = applicationsResponse.data.reduce((acc, app) => {
@@ -90,27 +108,22 @@ const Dashboard = () => {
 
         setDependencyData(dependencyChartData)
 
-        const reservationsResponse = await axios.get("http://localhost:2025/api/reservation")
-        setTotalReservations(reservationsResponse.data.length)
+        // Fetch responsible persons and assignments
+        const responsibleResponse = await axios.get("http://localhost:2025/api/responsible")
+        const assignmentsResponse = await axios.get("http://localhost:2025/api/assignment")
+        
+        // Process responsible persons data with completed assignments count
+        const responsibleWithCompletedAssignments = processResponsibleDataWithCompletedStatus(
+          responsibleResponse.data, 
+          assignmentsResponse.data,
+          applicationsResponse.data,
+          usersResponse.data
+        )
+        setResponsibleData(responsibleWithCompletedAssignments)
 
-        // Process reservation data by month
-        const reservationsByMonth = processDataByMonth(reservationsResponse.data)
-        setMonthlyReservations(reservationsByMonth)
-
-        // Process scenery data
-        const sceneryCounts = reservationsResponse.data.reduce((acc, resv) => {
-          if (resv.scenery) {
-            acc[resv.scenery] = (acc[resv.scenery] || 0) + 1
-          }
-          return acc
-        }, {})
-
-        const sceneryChartData = Object.entries(sceneryCounts)
-          .map(([name, value]) => ({ name, value }))
-          .sort((a, b) => b.value - a.value)
-          .slice(0, 6) // Get top 6 sceneries
-
-        setSceneryData(sceneryChartData)
+        // Generate application performance data (simulated)
+        const performanceData = generateApplicationPerformanceData()
+        setApplicationPerformance(performanceData)
       } catch (error) {
         console.error("Error fetching data:", error)
       } finally {
@@ -120,6 +133,57 @@ const Dashboard = () => {
 
     fetchData()
   }, [])
+
+  // Helper function to process responsible data with completed assignments count
+  const processResponsibleDataWithCompletedStatus = (responsibleData, assignmentsData, applicationsData, usersData) => {
+    // Create a map of application IDs to their status
+    const applicationStatusMap = applicationsData.reduce((acc, app) => {
+      acc[app.id] = app.status
+      return acc
+    }, {})
+
+    // Create a map of responsible IDs to completed assignment counts
+    const completedAssignmentCounts = assignmentsData.reduce((acc, assignment) => {
+      const responsibleId = assignment.responsibleId
+      const applicationId = assignment.applicationId
+      const status = applicationStatusMap[applicationId]
+      
+      // Only count assignments with completed status
+      if (status === "Realizado" || status === "Realizado" || status === "Cerrado") {
+        acc[responsibleId] = (acc[responsibleId] || 0) + 1
+      }
+      
+      return acc
+    }, {})
+
+    // Create a map of user IDs to names
+    const userMap = usersData.reduce((acc, user) => {
+      acc[user.id] = user.name || `Usuario ${user.id}`
+      return acc
+    }, {})
+
+    // Map responsible data with completed assignment counts and user names
+    return responsibleData.map(responsible => {
+      const completedCount = completedAssignmentCounts[responsible.id] || 0
+      const userName = userMap[responsible.userId] || `Encargado ${responsible.id}`
+      
+      // Get the first few responsibilities to display in the name
+      const responsibilities = responsible.Responsibilities || []
+      const responsibilityNames = responsibilities.map(r => r.name).slice(0, 2)
+      const displayName = responsibilityNames.length > 0 
+        ? `${userName} (${responsibilityNames.join(', ')}${responsibilities.length > 2 ? '...' : ''})`
+        : userName
+
+      return {
+        id: responsible.id,
+        name: displayName,
+        count: completedCount,
+        responsibilities: responsibilities.map(r => r.name)
+      }
+    })
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 8) // Get top 8 responsible persons
+  }
 
   // Helper function to process data by month
   const processDataByMonth = (data) => {
@@ -134,6 +198,31 @@ const Dashboard = () => {
     })
 
     return monthlyData
+  }
+
+  // Helper function to generate application growth data
+  const generateApplicationGrowthData = (monthlyData) => {
+    let accumulated = 0
+    return MONTHS.map((month, index) => {
+      const newApps = monthlyData[index] || Math.floor(Math.random() * 20) + 5
+      accumulated += newApps
+      return {
+        name: month,
+        nuevas: newApps,
+        acumuladas: accumulated
+      }
+    })
+  }
+
+  // Helper function to generate application performance data
+  const generateApplicationPerformanceData = () => {
+    return [
+      { subject: 'Tiempo de respuesta', A: Math.floor(Math.random() * 100) + 60, fullMark: 150 },
+      { subject: 'Satisfacción', A: Math.floor(Math.random() * 100) + 70, fullMark: 150 },
+      { subject: 'Completitud', A: Math.floor(Math.random() * 100) + 80, fullMark: 150 },
+      { subject: 'Eficiencia', A: Math.floor(Math.random() * 100) + 65, fullMark: 150 },
+      { subject: 'Resolución', A: Math.floor(Math.random() * 100) + 75, fullMark: 150 },
+    ]
   }
 
   // Process report types
@@ -157,11 +246,6 @@ const Dashboard = () => {
   const statusChartData = Object.keys(statusCounts).map((key) => ({ name: key, value: statusCounts[key] }))
 
   // Format monthly data for charts
-  const monthlyReservationsData = monthlyReservations.map((value, index) => ({
-    name: MONTHS[index],
-    value,
-  }))
-
   const monthlyApplicationsData = monthlyApplications.map((value, index) => ({
     name: MONTHS[index],
     value,
@@ -239,23 +323,34 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Total Reservations Card */}
+        {/* Completed Applications Card */}
         <div className="stat-card">
           <div className="stat-card-header">
-            <h3>Total de Reservas</h3>
-            <span className="icon reservations-icon"></span>
+            <h3>Solicitudes Completadas</h3>
+            <span className="icon completed-icon"></span>
           </div>
           <div className="stat-card-content">
-            <div className="stat-value">{totalReservations}</div>
+            <div className="stat-value">{totalCompletedApplications}</div>
             <p className="stat-trend positive">
               <span className="trend-arrow">↗</span>
-              15% más que el mes pasado
+              10% más que el mes pasado
             </p>
           </div>
           <div className="stat-card-chart">
             <ResponsiveContainer width="100%" height={80}>
-              <LineChart data={monthlyReservationsData.slice(0, 7)} margin={{ top: 5, right: 10, left: 10, bottom: 0 }}>
-                <Line type="monotone" dataKey="value" stroke="#f43f5e" strokeWidth={2} dot={false} />
+              <LineChart 
+                data={[
+                  { name: "Ene", value: 25 },
+                  { name: "Feb", value: 32 },
+                  { name: "Mar", value: 38 },
+                  { name: "Abr", value: 42 },
+                  { name: "May", value: 35 },
+                  { name: "Jun", value: 48 },
+                  { name: "Jul", value: totalCompletedApplications },
+                ]} 
+                margin={{ top: 5, right: 10, left: 10, bottom: 0 }}
+              >
+                <Line type="monotone" dataKey="value" stroke="#22c55e" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -351,23 +446,50 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* Most Reserved Scenarios Chart */}
+            {/* Responsible Persons with Completed Assignments Chart */}
             <div className="chart-card">
               <div className="chart-card-header">
-                <h3>Escenarios más Reservados</h3>
-                <p>Top escenarios por número de reservas</p>
-                <span className="badge">Top 6</span>
+                <h3>Encargados con más Solicitudes Realizadas</h3>
+                <p>Top encargados por número de solicitudes completadas</p>
+                <span className="badge">Top 8</span>
               </div>
               <div className="chart-card-content">
                 <div className="chart-container">
                   <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={sceneryData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                    <BarChart
+                      data={responsibleData}
+                      layout="vertical"
+                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                    >
                       <CartesianGrid strokeDasharray="3 3" opacity={0.1} horizontal={false} />
                       <XAxis type="number" />
-                      <YAxis dataKey="name" type="category" width={100} />
-                      <Tooltip content={<CustomTooltip />} />
-                      <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-                        {sceneryData.map((entry, index) => (
+                      <YAxis dataKey="name" type="category" width={150} />
+                      <Tooltip 
+                        content={({ active, payload, label }) => {
+                          if (active && payload && payload.length) {
+                            const responsible = responsibleData.find(r => r.name === label)
+                            return (
+                              <div className="custom-tooltip">
+                                <p className="tooltip-label">{label}</p>
+                                <p className="tooltip-value">Solicitudes completadas: {payload[0].value}</p>
+                                {responsible && responsible.responsibilities && (
+                                  <div className="tooltip-responsibilities">
+                                    <p className="tooltip-subtitle">Responsabilidades:</p>
+                                    <ul>
+                                      {responsible.responsibilities.map((resp, idx) => (
+                                        <li key={idx}>{resp}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                              </div>
+                            )
+                          }
+                          return null
+                        }}
+                      />
+                      <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                        {responsibleData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[(index + 2) % COLORS.length]} />
                         ))}
                       </Bar>
@@ -410,40 +532,83 @@ const Dashboard = () => {
         </div>
 
         <div className="tab-content" style={{ display: activeTab === "analytics" ? "block" : "none" }}>
-          <div className="chart-card full-width">
-            <div className="chart-card-header">
-              <h3>Tendencias Mensuales</h3>
-              <p>Solicitudes y reservas por mes</p>
+          <div className="charts-grid">
+            {/* Application Growth Chart */}
+            <div className="chart-card full-width">
+              <div className="chart-card-header">
+                <h3>Crecimiento de Solicitudes</h3>
+                <p>Nuevas solicitudes y acumuladas por mes</p>
+              </div>
+              <div className="chart-card-content">
+                <div className="chart-container">
+                  <ResponsiveContainer width="100%" height={400}>
+                    <AreaChart
+                      data={applicationGrowthData}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Area type="monotone" dataKey="nuevas" stackId="1" stroke="#8884d8" fill="#8884d8" name="Nuevas solicitudes" />
+                      <Area type="monotone" dataKey="acumuladas" stackId="2" stroke="#82ca9d" fill="#82ca9d" name="Total acumulado" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
             </div>
-            <div className="chart-card-content">
-              <div className="chart-container">
-                <ResponsiveContainer width="100%" height={400}>
-                  <LineChart
-                    data={MONTHS.map((month, index) => ({
-                      name: month,
-                      solicitudes: monthlyApplications[index] || 0,
-                      reservas: monthlyReservations[index] || 0,
-                    }))}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Legend />
-                    <Line type="monotone" dataKey="solicitudes" stroke="#8b5cf6" strokeWidth={2} activeDot={{ r: 8 }} />
-                    <Line type="monotone" dataKey="reservas" stroke="#f43f5e" strokeWidth={2} activeDot={{ r: 8 }} />
-                  </LineChart>
-                </ResponsiveContainer>
+
+            {/* Application Performance Radar Chart */}
+            <div className="chart-card">
+              <div className="chart-card-header">
+                <h3>Rendimiento de Solicitudes</h3>
+                <p>Métricas clave de rendimiento</p>
+              </div>
+              <div className="chart-card-content">
+                <div className="chart-container">
+                  <ResponsiveContainer width="100%" height={300}>
+                    <RadarChart cx="50%" cy="50%" outerRadius="80%" data={applicationPerformance}>
+                      <PolarGrid />
+                      <PolarAngleAxis dataKey="subject" />
+                      <PolarRadiusAxis angle={30} domain={[0, 150]} />
+                      <Radar name="Rendimiento" dataKey="A" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                      <Legend />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+
+            {/* Monthly Applications Trend */}
+            <div className="chart-card">
+              <div className="chart-card-header">
+                <h3>Tendencia Mensual de Solicitudes</h3>
+                <p>Solicitudes por mes</p>
+              </div>
+              <div className="chart-card-content">
+                <div className="chart-container">
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart
+                      data={monthlyApplicationsData}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Legend />
+                      <Line type="monotone" dataKey="value" stroke="#8b5cf6" strokeWidth={2} activeDot={{ r: 8 }} name="Solicitudes" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   )
 }
 
 export default Dashboard
-

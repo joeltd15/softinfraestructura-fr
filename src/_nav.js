@@ -19,14 +19,21 @@ const _nav = [
   {
     component: CNavTitle,
     name: "Indicadores de desempeño",
-    permission: "Dashboard",
+    permission: "Dashboard Mantenimiento",
   },
   {
     component: CNavItem,
     name: "Dashboard",
-    to: "/dashboard",
+    to: "/dashboardM",
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-    permission: "Dashboard",
+    permission: "Dashboard Mantenimiento",
+  },
+  {
+    component: CNavItem,
+    name: "Dashboard Reservas",
+    to: "/dashboardR",
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+    permission: "Dashboard Reservas",
   },
   {
     component: CNavTitle,

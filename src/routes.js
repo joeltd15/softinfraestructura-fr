@@ -1,7 +1,9 @@
 import { element } from 'prop-types'
 import React from 'react'
 
-const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
+const DashboardM = React.lazy(() => import('./views/dashboard/DashboardM'))
+const DashboardR = React.lazy(() => import('./views/dashboard/DashboardR'))
+
 
 const welcome = React.lazy(() => import('./views/pages/index'))
 
@@ -17,7 +19,8 @@ const Reservation = React.lazy(() => import('./views/pages/reservation/reservati
 
 const routes = [
   { path: '/', exact: true, name: 'Bienvenido', element: welcome },
-  { path: '/dashboard', name: 'Dashboard', element: Dashboard },
+  { path: '/dashboardM', name: 'Dashboard', element: DashboardM },
+  { path: '/dashboardR', name: 'Dashboard', element: DashboardR },
   { path: '/application', name: 'Solicitudes', element: Application },
   { path: '/Seguimiento', name: 'Seguimientos', element: Tracking },
   { path: '/Asignamientos', name: 'Asignamientos', element: Assignment },

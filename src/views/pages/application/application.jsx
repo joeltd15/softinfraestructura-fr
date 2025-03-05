@@ -20,6 +20,7 @@ import { pdf } from "@react-pdf/renderer"
 import TablePagination from "../../../components/Paginator/index.jsx"
 import { FaVoteYea } from "react-icons/fa"
 import ModalTrackingView from "./../tracking/modalTrackingShow/index.jsx"
+import { MdOutlineDownloading } from "react-icons/md"
 
 const Application = () => {
   const url = "http://localhost:2025/api/application"
@@ -46,7 +47,6 @@ const Application = () => {
     getUsers()
   }, [])
 
-  //Buscador y paginador
   const searcher = (e) => {
     setSearch(e.target.value)
     console.log(e.target.value)
@@ -260,32 +260,62 @@ const Application = () => {
           <div className="panel panel-primary filterable">
             <div className="panel-heading mb-3">
               <div className="row w-100">
-                {/* Columna izquierda - Botón de registro */}
                 <div className="col-12 col-md-6 d-flex align-items-center justify-content-center justify-content-md-start mb-3 mb-md-0">
                   <button className="Register-button Button-save" onClick={() => setShow(true)}>
                     <FaCirclePlus /> Registrar
                   </button>
+                  {user && user.roleId === 1 && (
+                    <Tooltip title="Asignar todas las pendientes" arrow>
+                      <button
+                        className="Register-button ms-3"
+                        style={{
+                          backgroundColor: "#222",
+                          color: "white",
+                          border: "none",
+                          padding: "8px 16px",
+                          borderRadius: "4px",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                          transition: "all 0.3s ease",
+                        }}
+                        onClick={() => {
+                          axios
+                            .post("http://localhost:2025/api/application/assign-all-pending")
+                            .then((response) => {
+                              toast.success("Las solicitudes pendientes han sido asignadas")
+                              getApplications()
+                            })
+                            .catch((error) => {
+                              console.error("Error al asignar solicitudes pendientes:", error)
+                              toast.error("Error al asignar solicitudes pendientes")
+                            })
+                        }}
+                      >
+                        <MdOutlineDownloading /> Asignar Pendientes
+                      </button>
+                    </Tooltip>
+                  )}
                 </div>
 
                 <div className="col-12 col-md-6 d-flex align-items-center justify-content-center justify-content-md-end">
                   <div className="d-flex align-items-center flex-wrap justify-content-center justify-content-md-end">
-                    {
-                      user.roleId == 1 && (
-                        <Tooltip title="Descargar informes" arrow>
-                          <button className="Btn-download me-3 mb-2 mb-sm-0" onClick={() => setDateRangeModalOpen(true)}>
-                            <svg
-                              className="svgIcon-download"
-                              viewBox="0 0 384 512"
-                              height="1em"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"></path>
-                            </svg>
-                            <span className="icon2-download"></span>
-                          </button>
-                        </Tooltip>
-                      )
-                    }
+                    {user.roleId == 1 && (
+                      <Tooltip title="Descargar informes" arrow>
+                        <button className="Btn-download me-3 mb-2 mb-sm-0" onClick={() => setDateRangeModalOpen(true)}>
+                          <svg
+                            className="svgIcon-download"
+                            viewBox="0 0 384 512"
+                            height="1em"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"></path>
+                          </svg>
+                          <span className="icon2-download"></span>
+                        </button>
+                      </Tooltip>
+                    )}
                     <div className="group">
                       <svg className="icon-search" aria-hidden="true" viewBox="0 0 24 24">
                         <g>
