@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
-import './DashboardM.css'
+import "./DashboardM.css"
 import {
   BarChart,
   Bar,
@@ -17,11 +17,6 @@ import {
   ResponsiveContainer,
   AreaChart,
   Area,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
 } from "recharts"
 
 // Month names for charts
@@ -80,8 +75,8 @@ const Dashboard = () => {
         setReportData(applicationsResponse.data)
 
         // Count completed applications
-        const completedApps = applicationsResponse.data.filter(app => 
-          app.status === "Realizado" || app.status === "Realizado" || app.status === "Realizado"
+        const completedApps = applicationsResponse.data.filter(
+          (app) => app.status === "Realizado" || app.status === "Realizado" || app.status === "Realizado",
         ).length
         setTotalCompletedApplications(completedApps)
 
@@ -111,19 +106,19 @@ const Dashboard = () => {
         // Fetch responsible persons and assignments
         const responsibleResponse = await axios.get("http://localhost:2025/api/responsible")
         const assignmentsResponse = await axios.get("http://localhost:2025/api/assignment")
-        
+
         // Process responsible persons data with completed assignments count
         const responsibleWithCompletedAssignments = processResponsibleDataWithCompletedStatus(
-          responsibleResponse.data, 
+          responsibleResponse.data,
           assignmentsResponse.data,
           applicationsResponse.data,
-          usersResponse.data
+          usersResponse.data,
         )
         setResponsibleData(responsibleWithCompletedAssignments)
 
         // Generate application performance data (simulated)
-        const performanceData = generateApplicationPerformanceData()
-        setApplicationPerformance(performanceData)
+        // const performanceData = generateApplicationPerformanceData()
+        // setApplicationPerformance(performanceData)
       } catch (error) {
         console.error("Error fetching data:", error)
       } finally {
@@ -147,12 +142,12 @@ const Dashboard = () => {
       const responsibleId = assignment.responsibleId
       const applicationId = assignment.applicationId
       const status = applicationStatusMap[applicationId]
-      
+
       // Only count assignments with completed status
       if (status === "Realizado" || status === "Realizado" || status === "Cerrado") {
         acc[responsibleId] = (acc[responsibleId] || 0) + 1
       }
-      
+
       return acc
     }, {})
 
@@ -163,26 +158,28 @@ const Dashboard = () => {
     }, {})
 
     // Map responsible data with completed assignment counts and user names
-    return responsibleData.map(responsible => {
-      const completedCount = completedAssignmentCounts[responsible.id] || 0
-      const userName = userMap[responsible.userId] || `Encargado ${responsible.id}`
-      
-      // Get the first few responsibilities to display in the name
-      const responsibilities = responsible.Responsibilities || []
-      const responsibilityNames = responsibilities.map(r => r.name).slice(0, 2)
-      const displayName = responsibilityNames.length > 0 
-        ? `${userName} (${responsibilityNames.join(', ')}${responsibilities.length > 2 ? '...' : ''})`
-        : userName
+    return responsibleData
+      .map((responsible) => {
+        const completedCount = completedAssignmentCounts[responsible.id] || 0
+        const userName = userMap[responsible.userId] || `Encargado ${responsible.id}`
 
-      return {
-        id: responsible.id,
-        name: displayName,
-        count: completedCount,
-        responsibilities: responsibilities.map(r => r.name)
-      }
-    })
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 8) // Get top 8 responsible persons
+        // Get the first few responsibilities to display in the name
+        const responsibilities = responsible.Responsibilities || []
+        const responsibilityNames = responsibilities.map((r) => r.name).slice(0, 2)
+        const displayName =
+          responsibilityNames.length > 0
+            ? `${userName} (${responsibilityNames.join(", ")}${responsibilities.length > 2 ? "..." : ""})`
+            : userName
+
+        return {
+          id: responsible.id,
+          name: displayName,
+          count: completedCount,
+          responsibilities: responsibilities.map((r) => r.name),
+        }
+      })
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 8) // Get top 8 responsible persons
   }
 
   // Helper function to process data by month
@@ -202,28 +199,33 @@ const Dashboard = () => {
 
   // Helper function to generate application growth data
   const generateApplicationGrowthData = (monthlyData) => {
+    // Create a running total to track accumulated applications
     let accumulated = 0
+
+    // Map the monthly data to the format needed for the chart
     return MONTHS.map((month, index) => {
-      const newApps = monthlyData[index] || Math.floor(Math.random() * 20) + 5
+      // Use actual data from the API instead of random values
+      const newApps = monthlyData[index] || 0
       accumulated += newApps
+
       return {
         name: month,
         nuevas: newApps,
-        acumuladas: accumulated
+        acumuladas: accumulated,
       }
     })
   }
 
   // Helper function to generate application performance data
-  const generateApplicationPerformanceData = () => {
-    return [
-      { subject: 'Tiempo de respuesta', A: Math.floor(Math.random() * 100) + 60, fullMark: 150 },
-      { subject: 'Satisfacción', A: Math.floor(Math.random() * 100) + 70, fullMark: 150 },
-      { subject: 'Completitud', A: Math.floor(Math.random() * 100) + 80, fullMark: 150 },
-      { subject: 'Eficiencia', A: Math.floor(Math.random() * 100) + 65, fullMark: 150 },
-      { subject: 'Resolución', A: Math.floor(Math.random() * 100) + 75, fullMark: 150 },
-    ]
-  }
+  // const generateApplicationPerformanceData = () => {
+  //   return [
+  //     { subject: 'Tiempo de respuesta', A: Math.floor(Math.random() * 100) + 60, fullMark: 150 },
+  //     { subject: 'Satisfacción', A: Math.floor(Math.random() * 100) + 70, fullMark: 150 },
+  //     { subject: 'Completitud', A: Math.floor(Math.random() * 100) + 80, fullMark: 150 },
+  //     { subject: 'Eficiencia', A: Math.floor(Math.random() * 100) + 65, fullMark: 150 },
+  //     { subject: 'Resolución', A: Math.floor(Math.random() * 100) + 75, fullMark: 150 },
+  //   ]
+  // }
 
   // Process report types
   const damageCounts = reportData.reduce((acc, report) => {
@@ -338,7 +340,7 @@ const Dashboard = () => {
           </div>
           <div className="stat-card-chart">
             <ResponsiveContainer width="100%" height={80}>
-              <LineChart 
+              <LineChart
                 data={[
                   { name: "Ene", value: 25 },
                   { name: "Feb", value: 32 },
@@ -347,7 +349,7 @@ const Dashboard = () => {
                   { name: "May", value: 35 },
                   { name: "Jun", value: 48 },
                   { name: "Jul", value: totalCompletedApplications },
-                ]} 
+                ]}
                 margin={{ top: 5, right: 10, left: 10, bottom: 0 }}
               >
                 <Line type="monotone" dataKey="value" stroke="#22c55e" strokeWidth={2} dot={false} />
@@ -464,10 +466,10 @@ const Dashboard = () => {
                       <CartesianGrid strokeDasharray="3 3" opacity={0.1} horizontal={false} />
                       <XAxis type="number" />
                       <YAxis dataKey="name" type="category" width={150} />
-                      <Tooltip 
+                      <Tooltip
                         content={({ active, payload, label }) => {
                           if (active && payload && payload.length) {
-                            const responsible = responsibleData.find(r => r.name === label)
+                            const responsible = responsibleData.find((r) => r.name === label)
                             return (
                               <div className="custom-tooltip">
                                 <p className="tooltip-label">{label}</p>
@@ -542,17 +544,28 @@ const Dashboard = () => {
               <div className="chart-card-content">
                 <div className="chart-container">
                   <ResponsiveContainer width="100%" height={400}>
-                    <AreaChart
-                      data={applicationGrowthData}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
-                    >
+                    <AreaChart data={applicationGrowthData} margin={{ top: 20, right: 30, left: 20, bottom: 10 }}>
                       <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
                       <XAxis dataKey="name" />
                       <YAxis />
                       <Tooltip />
                       <Legend />
-                      <Area type="monotone" dataKey="nuevas" stackId="1" stroke="#8884d8" fill="#8884d8" name="Nuevas solicitudes" />
-                      <Area type="monotone" dataKey="acumuladas" stackId="2" stroke="#82ca9d" fill="#82ca9d" name="Total acumulado" />
+                      <Area
+                        type="monotone"
+                        dataKey="nuevas"
+                        stackId="1"
+                        stroke="#8884d8"
+                        fill="#8884d8"
+                        name="Nuevas solicitudes"
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="acumuladas"
+                        stackId="2"
+                        stroke="#82ca9d"
+                        fill="#82ca9d"
+                        name="Total acumulado"
+                      />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
@@ -560,7 +573,7 @@ const Dashboard = () => {
             </div>
 
             {/* Application Performance Radar Chart */}
-            <div className="chart-card">
+            {/* <div className="chart-card">
               <div className="chart-card-header">
                 <h3>Rendimiento de Solicitudes</h3>
                 <p>Métricas clave de rendimiento</p>
@@ -578,10 +591,10 @@ const Dashboard = () => {
                   </ResponsiveContainer>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Monthly Applications Trend */}
-            <div className="chart-card">
+            <div className="chart-card full-width">
               <div className="chart-card-header">
                 <h3>Tendencia Mensual de Solicitudes</h3>
                 <p>Solicitudes por mes</p>
@@ -589,16 +602,20 @@ const Dashboard = () => {
               <div className="chart-card-content">
                 <div className="chart-container">
                   <ResponsiveContainer width="100%" height={300}>
-                    <LineChart
-                      data={monthlyApplicationsData}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
-                    >
+                    <LineChart data={monthlyApplicationsData} margin={{ top: 20, right: 30, left: 20, bottom: 10 }}>
                       <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
                       <XAxis dataKey="name" />
                       <YAxis />
                       <Tooltip content={<CustomTooltip />} />
                       <Legend />
-                      <Line type="monotone" dataKey="value" stroke="#8b5cf6" strokeWidth={2} activeDot={{ r: 8 }} name="Solicitudes" />
+                      <Line
+                        type="monotone"
+                        dataKey="value"
+                        stroke="#8b5cf6"
+                        strokeWidth={2}
+                        activeDot={{ r: 8 }}
+                        name="Solicitudes"
+                      />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -612,3 +629,4 @@ const Dashboard = () => {
 }
 
 export default Dashboard
+

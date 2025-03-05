@@ -1,6 +1,8 @@
+"use client"
+
 import { useEffect, useState } from "react"
 import axios from "axios"
-import './DashboardR.css'
+import "./DashboardR.css"
 import {
   BarChart,
   Bar,
@@ -17,11 +19,6 @@ import {
   ResponsiveContainer,
   AreaChart,
   Area,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
 } from "recharts"
 
 // Month names for charts
@@ -48,6 +45,20 @@ const CustomTooltip = ({ active, payload, label }) => {
       <div className="custom-tooltip">
         <p className="tooltip-label">{`${label}`}</p>
         <p className="tooltip-value">{`${payload[0].value}`}</p>
+      </div>
+    )
+  }
+  return null
+}
+
+// Enhanced tooltip for growth chart
+const GrowthTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="custom-tooltip">
+        <p className="tooltip-label">{`${label}`}</p>
+        <p className="tooltip-value">Nuevas reservas: {payload[0].value}</p>
+        <p className="tooltip-value">Total acumulado: {payload[1].value}</p>
       </div>
     )
   }
@@ -81,8 +92,8 @@ const Dashboard = () => {
         setReservationData(reservationsResponse.data)
 
         // Count active reservations
-        const active = reservationsResponse.data.filter(res => 
-          res.estatus === "Reservado" || res.estatus === "Confirmado"
+        const active = reservationsResponse.data.filter(
+          (res) => res.estatus === "Reservado" || res.estatus === "Confirmado",
         ).length
         setActiveReservations(active)
 
@@ -90,8 +101,8 @@ const Dashboard = () => {
         const reservationsByMonth = processDataByMonth(reservationsResponse.data)
         setMonthlyReservations(reservationsByMonth)
 
-        // Generate reservation growth data
-        const growthData = generateReservationGrowthData(reservationsByMonth)
+        // Generate reservation growth data with real data
+        const growthData = generateReservationGrowthData(reservationsResponse.data)
         setReservationGrowthData(growthData)
 
         // Process scenery data
@@ -110,10 +121,7 @@ const Dashboard = () => {
         setSceneryData(sceneryChartData)
 
         // Process user reservations data
-        const userReservations = processUserReservationsData(
-          reservationsResponse.data,
-          usersResponse.data
-        )
+        const userReservations = processUserReservationsData(reservationsResponse.data, usersResponse.data)
         setUserReservationsData(userReservations)
 
         // Generate time distribution data
@@ -155,7 +163,7 @@ const Dashboard = () => {
         return {
           id: userId,
           name: userName,
-          count: count
+          count: count,
         }
       })
       .sort((a, b) => b.count - a.count)
@@ -177,16 +185,34 @@ const Dashboard = () => {
     return monthlyData
   }
 
-  // Helper function to generate reservation growth data
-  const generateReservationGrowthData = (monthlyData) => {
+  // Helper function to generate reservation growth data with real data
+  const generateReservationGrowthData = (reservationsData) => {
+    // Create a monthly count of reservations
+    const monthlyData = Array(12).fill(0)
+
+    // Sort reservations by date
+    const sortedReservations = [...reservationsData].sort((a, b) => {
+      return new Date(a.createdAt) - new Date(b.createdAt)
+    })
+
+    // Count reservations by month
+    sortedReservations.forEach((reservation) => {
+      if (reservation.createdAt) {
+        const date = new Date(reservation.createdAt)
+        const month = date.getMonth()
+        monthlyData[month]++
+      }
+    })
+
+    // Generate the growth data with accumulated values
     let accumulated = 0
     return MONTHS.map((month, index) => {
-      const newReservations = monthlyData[index] || Math.floor(Math.random() * 10) + 2
+      const newReservations = monthlyData[index] || 0
       accumulated += newReservations
       return {
         name: month,
         nuevas: newReservations,
-        acumuladas: accumulated
+        acumuladas: accumulated,
       }
     })
   }
@@ -196,13 +222,13 @@ const Dashboard = () => {
     const timeSlots = {
       "Mañana (8-12)": 0,
       "Mediodía (12-14)": 0,
-      "Tarde (14-18)": 0
+      "Tarde (14-18)": 0,
     }
-    
-    data.forEach(reservation => {
+
+    data.forEach((reservation) => {
       if (reservation.startTime) {
-        const hour = parseInt(reservation.startTime.split(':')[0])
-        
+        const hour = Number.parseInt(reservation.startTime.split(":")[0])
+
         if (hour >= 8 && hour < 12) {
           timeSlots["Mañana (8-12)"]++
         } else if (hour >= 12 && hour < 14) {
@@ -212,29 +238,29 @@ const Dashboard = () => {
         }
       }
     })
-    
+
     return Object.entries(timeSlots).map(([name, value]) => ({ name, value }))
   }
 
   // Helper function to generate duration data
   const generateDurationData = (data) => {
     const durations = []
-    
-    data.forEach(reservation => {
+
+    data.forEach((reservation) => {
       if (reservation.startTime && reservation.finishTime) {
         const start = new Date(`2000-01-01T${reservation.startTime}`)
         const end = new Date(`2000-01-01T${reservation.finishTime}`)
         const durationHours = (end - start) / (1000 * 60 * 60)
-        
+
         durations.push({
           id: reservation.id,
           scenery: reservation.scenery,
           duration: durationHours,
-          activity: reservation.activity
+          activity: reservation.activity,
         })
       }
     })
-    
+
     return durations.sort((a, b) => b.duration - a.duration).slice(0, 10)
   }
 
@@ -342,7 +368,7 @@ const Dashboard = () => {
           </div>
           <div className="stat-card-chart">
             <ResponsiveContainer width="100%" height={80}>
-              <LineChart 
+              <LineChart
                 data={[
                   { name: "Ene", value: 15 },
                   { name: "Feb", value: 22 },
@@ -351,7 +377,7 @@ const Dashboard = () => {
                   { name: "May", value: 25 },
                   { name: "Jun", value: 38 },
                   { name: "Jul", value: activeReservations },
-                ]} 
+                ]}
                 margin={{ top: 5, right: 10, left: 10, bottom: 0 }}
               >
                 <Line type="monotone" dataKey="value" stroke="#22c55e" strokeWidth={2} dot={false} />
@@ -468,7 +494,7 @@ const Dashboard = () => {
                       <CartesianGrid strokeDasharray="3 3" opacity={0.1} horizontal={false} />
                       <XAxis type="number" />
                       <YAxis dataKey="name" type="category" width={150} />
-                      <Tooltip 
+                      <Tooltip
                         content={({ active, payload, label }) => {
                           if (active && payload && payload.length) {
                             return (
@@ -502,11 +528,7 @@ const Dashboard = () => {
               <div className="chart-card-content">
                 <div className="chart-container">
                   <ResponsiveContainer width="100%" height={300}>
-                    <BarChart
-                      data={sceneryData}
-                      layout="vertical"
-                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                    >
+                    <BarChart data={sceneryData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" opacity={0.1} horizontal={false} />
                       <XAxis type="number" />
                       <YAxis dataKey="name" type="category" width={150} />
@@ -530,22 +552,33 @@ const Dashboard = () => {
             <div className="chart-card full-width">
               <div className="chart-card-header">
                 <h3>Crecimiento de Reservas</h3>
-                <p>Nuevas reservas y acumuladas por mes</p>
+                <p>Nuevas reservas y acumuladas por mes (datos reales)</p>
               </div>
               <div className="chart-card-content">
                 <div className="chart-container">
                   <ResponsiveContainer width="100%" height={400}>
-                    <AreaChart
-                      data={reservationGrowthData}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
-                    >
+                    <AreaChart data={reservationGrowthData} margin={{ top: 20, right: 30, left: 20, bottom: 10 }}>
                       <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
                       <XAxis dataKey="name" />
                       <YAxis />
-                      <Tooltip />
+                      <Tooltip content={<GrowthTooltip />} />
                       <Legend />
-                      <Area type="monotone" dataKey="nuevas" stackId="1" stroke="#8884d8" fill="#8884d8" name="Nuevas reservas" />
-                      <Area type="monotone" dataKey="acumuladas" stackId="2" stroke="#82ca9d" fill="#82ca9d" name="Total acumulado" />
+                      <Area
+                        type="monotone"
+                        dataKey="nuevas"
+                        stackId="1"
+                        stroke="#8884d8"
+                        fill="#8884d8"
+                        name="Nuevas reservas"
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="acumuladas"
+                        stackId="2"
+                        stroke="#82ca9d"
+                        fill="#82ca9d"
+                        name="Total acumulado"
+                      />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
@@ -561,14 +594,11 @@ const Dashboard = () => {
               <div className="chart-card-content">
                 <div className="chart-container">
                   <ResponsiveContainer width="100%" height={300}>
-                    <BarChart
-                      data={durationData}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                    >
+                    <BarChart data={durationData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
                       <XAxis dataKey="scenery" tick={false} />
-                      <YAxis label={{ value: 'Horas', angle: -90, position: 'insideLeft' }} />
-                      <Tooltip 
+                      <YAxis label={{ value: "Horas", angle: -90, position: "insideLeft" }} />
+                      <Tooltip
                         content={({ active, payload, label }) => {
                           if (active && payload && payload.length) {
                             const data = payload[0].payload
@@ -604,16 +634,20 @@ const Dashboard = () => {
               <div className="chart-card-content">
                 <div className="chart-container">
                   <ResponsiveContainer width="100%" height={300}>
-                    <LineChart
-                      data={monthlyReservationsData}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
-                    >
+                    <LineChart data={monthlyReservationsData} margin={{ top: 20, right: 30, left: 20, bottom: 10 }}>
                       <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
                       <XAxis dataKey="name" />
                       <YAxis />
                       <Tooltip content={<CustomTooltip />} />
                       <Legend />
-                      <Line type="monotone" dataKey="value" stroke="#8b5cf6" strokeWidth={2} activeDot={{ r: 8 }} name="Reservas" />
+                      <Line
+                        type="monotone"
+                        dataKey="value"
+                        stroke="#8b5cf6"
+                        strokeWidth={2}
+                        activeDot={{ r: 8 }}
+                        name="Reservas"
+                      />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
