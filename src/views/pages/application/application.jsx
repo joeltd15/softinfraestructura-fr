@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect, useState } from "react"
 import axios from "axios"
 import { FaPencilAlt } from "react-icons/fa"
@@ -271,19 +269,23 @@ const Application = () => {
 
                 <div className="col-12 col-md-6 d-flex align-items-center justify-content-center justify-content-md-end">
                   <div className="d-flex align-items-center flex-wrap justify-content-center justify-content-md-end">
-                    <Tooltip title="Descargar informes" arrow>
-                      <button className="Btn-download me-3 mb-2 mb-sm-0" onClick={() => setDateRangeModalOpen(true)}>
-                        <svg
-                          className="svgIcon-download"
-                          viewBox="0 0 384 512"
-                          height="1em"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"></path>
-                        </svg>
-                        <span className="icon2-download"></span>
-                      </button>
-                    </Tooltip>
+                    {
+                      user.roleId == 1 && (
+                        <Tooltip title="Descargar informes" arrow>
+                          <button className="Btn-download me-3 mb-2 mb-sm-0" onClick={() => setDateRangeModalOpen(true)}>
+                            <svg
+                              className="svgIcon-download"
+                              viewBox="0 0 384 512"
+                              height="1em"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"></path>
+                            </svg>
+                            <span className="icon2-download"></span>
+                          </button>
+                        </Tooltip>
+                      )
+                    }
                     <div className="group">
                       <svg className="icon-search" aria-hidden="true" viewBox="0 0 24 24">
                         <g>
@@ -353,7 +355,7 @@ const Application = () => {
                               </button>
                             </Tooltip>
                           )}
-                          {application.status !== "Realizado" && application.status !== "Asignada" &&(
+                          {application.status !== "Realizado" && application.status !== "Asignada" && (
                             <>
                               <Tooltip title="Editar solicitud">
                                 <button className="Table-button Update-button" onClick={() => handleEdit(application)}>

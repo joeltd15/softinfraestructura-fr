@@ -72,6 +72,10 @@ const DocumentPdf = ({ Application }) => {
                     <Text style={styles.label}>Estado:</Text>
                     <Text style={styles.value}>{Application.status}</Text>
                 </View>
+                <View style={styles.section}>
+                    <Text style={styles.label}>Responsable:</Text>
+                    <Text style={styles.value}>{Application.responsibleForSpace}</Text>
+                </View>
                 <View>
                     <Text style={styles.label}>Evidencia fotográfica:</Text>
                     {Application.photographicEvidence && Application.photographicEvidence.trim() !== "" ? (
