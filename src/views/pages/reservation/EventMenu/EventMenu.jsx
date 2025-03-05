@@ -9,6 +9,7 @@ import ModalEditReservation from "../reservationEdit/index";
 import ModalShowReservation from "../ShowReservation/index";
 import DialogDelete from "../deleteDialog/index";
 import { useAlert } from '../../../../assets/functions/index';
+import { FaCalendarCheck } from "react-icons/fa6";
 
 const EventMenu = ({ event, onClose, getReservations }) => {
     const [ModalEdit, setModalEdit] = useState(false);
@@ -48,6 +49,15 @@ const EventMenu = ({ event, onClose, getReservations }) => {
         setOpenCancelDialog(false);
     };
 
+    const handleOpenConfirmDialog = () => {
+        setSelectedReservation(event.id);
+        setOpenCancelDialog(true);
+    };
+
+    const handleCloseConfirmDialog = () => {
+        setOpenCancelDialog(false);
+    };
+
     const handleConfirmDelete = async () => {
         try {
             await fetch(`http://localhost:2025/api/reservation/${event.id}`, { method: 'DELETE' });
@@ -71,6 +81,21 @@ const EventMenu = ({ event, onClose, getReservations }) => {
         } catch (error) {
             console.error("Error al cancelar la reserva:", error);
             showAlert("Error al cancelar la reserva.", 'error');
+        }
+    };
+
+    const handleConfirmReserved = async () => {
+        try {
+            await axios.put(
+                `http://localhost:2025/api/reservation/${event.id}`,
+                { estatus: "Reservado" }
+            );
+            getReservations();
+            onClose();
+            setOpenCancelDialog(false);
+        } catch (error) {
+            console.error("Error al confirmar la reserva:", error);
+            showAlert("Error al confirmar la reserva.", 'error');
         }
     };
 
@@ -102,6 +127,13 @@ const EventMenu = ({ event, onClose, getReservations }) => {
                                     <Button fullWidth className="Show-button" onClick={handleShow}>
                                         <FaEye /> Ver detalle
                                     </Button>
+                                    {
+                                        event.estatus == 'Pendiente' && (
+                                            <Button fullWidth className="Update-button" onClick={handleOpenConfirmDialog}>
+                                                <FaCalendarCheck /> Confirmar
+                                            </Button>
+                                        )
+                                    }
                                 </>
                             )}
 
@@ -136,6 +168,14 @@ const EventMenu = ({ event, onClose, getReservations }) => {
                 onConfirm={handleConfirmCancel}
                 title="¿Estás seguro que deseas cancelar?"
                 confirmText="Cancelar reserva"
+            />
+            <DialogDelete
+                open={openCancelDialog}
+                onClose={handleCloseConfirmDialog}
+                onConfirm={handleConfirmReserved}
+                title="¿Estás seguro que deseas confirmar esta reserva?"
+                confirmText="Confirmar reserva"
+                style="Button-save"
             />
         </>
     );

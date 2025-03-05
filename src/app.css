@@ -352,14 +352,25 @@ input:hover {
 }
 
 /* Estado Reservado - Amarillo */
-.event-pending {
+.event-reserved {
     background-color: #39A900 !important;
     border-color: #007832 !important;
     color: #f3f3f3 !important;
 }
 
-.event-pending:hover {
+.event-reserved:hover {
     background: #007832 !important;
+    color: #ffffff !important;
+}
+
+.event-pending {
+    background-color: #caae2f !important;
+    border-color: #bb9900 !important;
+    color: #f3f3f3 !important;
+}
+
+.event-pending:hover {
+    background: #bb9900b4 !important;
     color: #ffffff !important;
 }
 
@@ -466,11 +477,11 @@ button {
     background: #fffbd8 !important;
 }
 
-.pending {
+.reserved {
     margin-right: 18px;
 }
 
-.pending .pending-Circle {
+.reserved .reserved-Circle {
     background: #39A900 !important;
     width: 10px !important;
     height: 10px !important;
@@ -490,8 +501,20 @@ button {
     border-radius: 5px;
 }
 
+.cancelado {
+    margin-right: 18px;
+}
+
 .cancelado .cancelado-Circle {
     background: #990101 !important;
+    width: 10px !important;
+    height: 10px !important;
+    margin-right: 5px !important;
+    border-radius: 5px;
+}
+
+.pending .pending-Circle {
+    background: #caae2f !important;
     width: 10px !important;
     height: 10px !important;
     margin-right: 5px !important;

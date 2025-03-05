@@ -75,12 +75,14 @@ const Reservation = () => {
   // Asignar clases según estado
   const getEventClass = (estatus) => {
     switch (estatus) {
-      case "Reservado":
+      case "Pendiente":
         return "event-pending"
       case "Realizado":
         return "event-completed"
       case "Cancelado":
         return "event-canceled"
+      case "Reservado":
+        return "event-reserved"
       default:
         return ""
     }
@@ -163,8 +165,8 @@ const Reservation = () => {
           <Stack sx={{ width: "100%" }} spacing={2} className="mb-3">
             <Alert>
               <div className="d-flex align-items-center">
-                <div className="pending d-flex align-items-center">
-                  <div className="pending-Circle"></div>
+                <div className="reserved d-flex align-items-center">
+                  <div className="reserved-Circle"></div>
                   <span>Reservado</span>
                 </div>
                 <div className="completed d-flex align-items-center">
@@ -177,6 +179,10 @@ const Reservation = () => {
                     <span>Cancelado</span>
                   </div>
                 )}
+                <div className="pending d-flex align-items-center">
+                  <div className="pending-Circle"></div>
+                  <span>Pendiente</span>
+                </div>
               </div>
             </Alert>
           </Stack>
