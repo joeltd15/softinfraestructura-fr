@@ -27,15 +27,15 @@ const ModalAssignmentEdit = ({ show, handleClose, assignment, handleUpdate }) =>
   }, [assignment]);
 
   useEffect(() => {
-    axios.get("http://localhost:2025/api/application")
+    axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/application")
       .then(response => setApplications(response.data))
       .catch(error => console.error("Error al obtener solicitudes:", error));
 
-    axios.get("http://localhost:2025/api/responsible")
+    axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/responsible")
       .then(response => setResponsibles(response.data))
       .catch(error => console.error("Error al obtener responsables:", error));
 
-    axios.get("http://localhost:2025/api/user")
+    axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/user")
       .then(response => setUsers(response.data))
       .catch(error => console.error("Error al obtener usuarios:", error));
   }, []);

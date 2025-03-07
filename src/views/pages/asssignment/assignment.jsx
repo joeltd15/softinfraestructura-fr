@@ -55,9 +55,9 @@ const Assignment = () => {
   const getAssignment = async () => {
     try {
       const [assignmentsResponse, responsiblesResponse, applicationsResponse] = await Promise.all([
-        axios.get("http://localhost:2025/api/assignment"),
-        axios.get("http://localhost:2025/api/responsible"),
-        axios.get("http://localhost:2025/api/application"),
+        axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/assignment"),
+        axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/responsible"),
+        axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/application"),
       ])
 
       const assignmentsData = assignmentsResponse.data
@@ -98,7 +98,7 @@ const Assignment = () => {
 
   const handleShow = async (applicationId) => {
     try {
-      const response = await axios.get(`http://localhost:2025/api/application/${applicationId}`)
+      const response = await axios.get(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/application/${applicationId}`)
       setSelectedAssignmentShow(response.data)
       setShowModalShow(true)
     } catch (error) {
@@ -109,7 +109,7 @@ const Assignment = () => {
 
   const handlePdf = async (applicationId) => {
     try {
-      const response = await axios.get(`http://localhost:2025/api/application/${applicationId}`)
+      const response = await axios.get(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/application/${applicationId}`)
       setSelectedAssignmentShow(response.data)
       setShowApplicationId(applicationId)
     } catch (error) {
@@ -120,7 +120,7 @@ const Assignment = () => {
 
   const getUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:2025/api/user")
+      const response = await axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/user")
       setUsers(response.data)
     } catch (error) {
       console.error("Error al obtener los usuarios:", error)
@@ -140,7 +140,7 @@ const Assignment = () => {
 
   const handleUpdateAssignment = async (updatedAssignment) => {
     try {
-      await axios.put(`http://localhost:2025/api/assignment/${updatedAssignment.id}`, updatedAssignment)
+      await axios.put(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/assignment/${updatedAssignment.id}`, updatedAssignment)
       showAlert('Asignación actualizada con éxito.', 'success');
       getAssignment()
       setShowEditModal(false)
@@ -154,7 +154,7 @@ const Assignment = () => {
 
   const handlePdfDownload = async (applicationId) => {
     try {
-      const response = await axios.get(`http://localhost:2025/api/application/${applicationId}`)
+      const response = await axios.get(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/application/${applicationId}`)
       setSelectedAssignmentShow(response.data)
 
       const doc = <DocumentPdf Application={response.data} />

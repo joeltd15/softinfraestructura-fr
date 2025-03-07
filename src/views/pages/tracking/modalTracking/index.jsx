@@ -33,7 +33,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
   useEffect(() => {
     const fetchAssignments = async () => {
       try {
-        const response = await axios.get("http://localhost:2025/api/assignment");
+        const response = await axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/assignment");
         setAssignments(response.data);
       } catch (error) {
         console.error("Error al obtener asignaciones:", error);
@@ -75,7 +75,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
 
     try {
       await toast.promise(
-        axios.post("http://localhost:2025/api/tracking", formData, {
+        axios.post("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/tracking", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         }),
         {

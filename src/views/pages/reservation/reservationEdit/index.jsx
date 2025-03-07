@@ -35,7 +35,7 @@ const EditReservationModal = ({ show, reservationId, onClose, getReservations })
   useEffect(() => {
     if (reservationId) {
       axios
-        .get(`http://localhost:2025/api/reservation/${reservationId}`)
+        .get(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/reservation/${reservationId}`)
         .then((response) => {
           const reservation = response.data
           setScenery(reservation.scenery)
@@ -62,7 +62,7 @@ const EditReservationModal = ({ show, reservationId, onClose, getReservations })
 
   const fetchAvailability = async () => {
     try {
-      const response = await axios.post(`http://localhost:2025/api/reservation/availability`, {
+      const response = await axios.post(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/reservation/availability`, {
         scenery,
         date: selectedDate,
       })
@@ -268,7 +268,7 @@ const EditReservationModal = ({ show, reservationId, onClose, getReservations })
 
     try {
       // Verificación final de disponibilidad
-      const availabilityCheck = await axios.post(`http://localhost:2025/api/reservation/availability`, {
+      const availabilityCheck = await axios.post(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/reservation/availability`, {
         scenery,
         date: selectedDate,
       })
@@ -303,7 +303,7 @@ const EditReservationModal = ({ show, reservationId, onClose, getReservations })
       }
 
       // Si está disponible, proceder con la actualización
-      await axios.put(`http://localhost:2025/api/reservation/${reservationId}`, requestData)
+      await axios.put(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/reservation/${reservationId}`, requestData)
 
       toast.success("Reserva actualizada correctamente!", {
         position: "top-right",

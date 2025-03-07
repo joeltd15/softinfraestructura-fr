@@ -42,7 +42,7 @@ const ResetPassword = () => {
     setLoading(true);
     try {
       const { data } = await axios.post(
-        'http://localhost:2025/api/auth/reset-password',
+        'https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/auth/reset-password',
         { email, resetCode, newPassword },
         { headers: { 'Content-Type': 'application/json' } }
       );
@@ -71,7 +71,7 @@ const ResetPassword = () => {
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center pattern">
       <CContainer className="p-4 d-flex align-items-center justify-content-center">
         <CCol md={9} lg={7} xl={6} className="p-4 d-flex align-items-center justify-content-center">
-          <CCard className="mx-4">
+          <CCard className="p-4 d-flex align-items-center">
             <CCardBody>
               <CForm onSubmit={handleResetPassword}>
                 <h2 className="pb-3 text-center">Restablecer contraseña</h2>

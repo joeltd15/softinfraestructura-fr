@@ -11,7 +11,7 @@ import Select from "react-select"
 import { useAlert } from "../../../../assets/functions/index"
 
 const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApplication = null }) => {
-  const urlUsers = "http://localhost:2025/api/user"
+  const urlUsers = "https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/user"
   const [applicationId, setApplicationId] = useState("")
   const [responsibleId, setResponsibleId] = useState("")
   const [applications, setApplications] = useState([])
@@ -33,10 +33,10 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
     const fetchData = async () => {
       try {
         const [appRes, respRes, userRes, assignRes] = await Promise.all([
-          axios.get("http://localhost:2025/api/application"),
-          axios.get("http://localhost:2025/api/responsible"),
+          axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/application"),
+          axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/responsible"),
           axios.get(urlUsers),
-          axios.get("http://localhost:2025/api/assignment"),
+          axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/assignment"),
         ])
 
         setApplications(appRes.data)
@@ -134,11 +134,11 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
 
     try {
       // Registrar la asignación
-      await axios.post("http://localhost:2025/api/assignment", assignmentData)
+      await axios.post("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/assignment", assignmentData)
 
       try {
         // Intentar actualizar el estado de la aplicación (si falla, no afectará el flujo principal)
-        await axios.put(`http://localhost:2025/api/application/${applicationId}`, {
+        await axios.put(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/application/${applicationId}`, {
           status: "Asignada",
         })
       } catch (updateError) {

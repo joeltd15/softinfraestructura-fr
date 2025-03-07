@@ -60,7 +60,7 @@ const EventMenu = ({ event, onClose, getReservations }) => {
 
     const handleConfirmDelete = async () => {
         try {
-            await fetch(`http://localhost:2025/api/reservation/${event.id}`, { method: 'DELETE' });
+            await fetch(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/reservation/${event.id}`, { method: 'DELETE' });
             showAlert("Eliminado correctamente", 'success');
             getReservations();
             setOpenDeleteDialog(false);
@@ -72,7 +72,7 @@ const EventMenu = ({ event, onClose, getReservations }) => {
     const handleConfirmCancel = async () => {
         try {
             await axios.put(
-                `http://localhost:2025/api/reservation/${event.id}`,
+                `https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/reservation/${event.id}`,
                 { estatus: "Cancelado" }
             );
             showAlert("Reserva cancelada correctamente", 'success');
@@ -87,7 +87,7 @@ const EventMenu = ({ event, onClose, getReservations }) => {
     const handleConfirmReserved = async () => {
         try {
             await axios.put(
-                `http://localhost:2025/api/reservation/${event.id}`,
+                `https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/reservation/${event.id}`,
                 { estatus: "Reservado" }
             );
             getReservations();

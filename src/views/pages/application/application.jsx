@@ -23,8 +23,8 @@ import ModalTrackingView from "./../tracking/modalTrackingShow/index.jsx"
 import { MdOutlineDownloading } from "react-icons/md"
 
 const Application = () => {
-  const url = "http://localhost:2025/api/application"
-  const urlUsers = "http://localhost:2025/api/user"
+  const url = "https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/application"
+  const urlUsers = "https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/user"
   const [Users, setUsers] = useState([])
   const [applications, setApplication] = useState([])
   const [show, setShow] = useState(false)
@@ -78,7 +78,7 @@ const Application = () => {
     try {
       const [applicationsResponse, assignmentsResponse] = await Promise.all([
         axios.get(url),
-        axios.get("http://localhost:2025/api/assignment"),
+        axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/assignment"),
       ])
 
       const applicationsData = applicationsResponse.data
@@ -97,7 +97,7 @@ const Application = () => {
           .filter((assignment) => assignment.responsibleId === user.id)
           .map((assignment) => assignment.applicationId)
         filteredApplications = applicationsData.filter((app) => assignedApps.includes(app.id))
-      } else if (user.roleId === 3) {
+      } else if (user.roleId != 1) {
         // Si es usuario normal, solo ve las aplicaciones que él creó
         filteredApplications = applicationsData.filter((app) => app.userId === user.id)
       }
@@ -141,7 +141,7 @@ const Application = () => {
     }
 
     axios
-      .put(`http://localhost:2025/api/application/${selectedApplication.id}`, formData, {
+      .put(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/application/${selectedApplication.id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((response) => {
@@ -221,7 +221,7 @@ const Application = () => {
   const handleShowTracking = async (applicationId) => {
     try {
       // Obtener todas las asignaciones
-      const assignmentsResponse = await axios.get("http://localhost:2025/api/assignment")
+      const assignmentsResponse = await axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/assignment")
       const assignments = assignmentsResponse.data
 
       // Buscar la asignación relacionada con esta applicationId
@@ -233,7 +233,7 @@ const Application = () => {
       }
 
       // Ahora obtener el tracking con el assignmentId encontrado
-      const trackingResponse = await axios.get("http://localhost:2025/api/tracking")
+      const trackingResponse = await axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/tracking")
       const trackings = trackingResponse.data
       const tracking = trackings.find((t) => t.assignmentId === assignment.id)
 
@@ -282,7 +282,7 @@ const Application = () => {
                         }}
                         onClick={() => {
                           axios
-                            .post("http://localhost:2025/api/application/assign-all-pending")
+                            .post("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/application/assign-all-pending")
                             .then((response) => {
                               toast.success("Las solicitudes pendientes han sido asignadas")
                               getApplications()

@@ -9,11 +9,14 @@ import { toast } from "react-toastify"
 import { useAlert } from "../../../../assets/functions/index"
 
 function ShowModal({ show, onClose, reservationId }) {
+  const urlUsers = 'https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/user'
+  const [Users, setUsers] = useState([])
   const [scenery, setScenery] = useState("")
   const [startTime, setStartTime] = useState("")
   const [endTime, setEndTime] = useState("")
   const [activity, setActivity] = useState("")
   const [estatus, setStatus] = useState("")
+  const [userId, setUserId] = useState("")
   const { showAlert } = useAlert()
 
   useEffect(() => {
@@ -23,16 +26,31 @@ function ShowModal({ show, onClose, reservationId }) {
   }, [])
 
   useEffect(() => {
+    getUsers()
+  }, [])
+
+  const getUsers = async () => {
+    const response = await axios.get(urlUsers)
+    setUsers(response.data)
+  }
+
+  const userName = (userId) => {
+    const user = Users.find((user) => user.id === userId)
+    return user ? user.name : "Desconocido"
+  }
+
+  useEffect(() => {
     if (reservationId) {
       axios
-        .get(`http://localhost:2025/api/reservation/${reservationId}`)
+        .get(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/reservation/${reservationId}`)
         .then((response) => {
-          const { scenery, startTime, finishTime, activity, estatus } = response.data
+          const { scenery, startTime, finishTime, activity, estatus, userId } = response.data
           setScenery(scenery)
           setStartTime(startTime)
           setEndTime(finishTime)
           setActivity(activity)
           setStatus(estatus)
+          setUserId(userId)
         })
         .catch((error) => {
           console.error("Error al obtener la reserva:", error)
@@ -103,9 +121,14 @@ function ShowModal({ show, onClose, reservationId }) {
               </Col>
             </Row>
             <Row className="mb-2">
-              <Col sm={12}>
+              <Col sm={6}>
                 <p>
                   <strong>Detalles:</strong> {activity}
+                </p>
+              </Col>
+              <Col sm={6}>
+                <p>
+                  <strong>Usuario:</strong> {userName(userId)}
                 </p>
               </Col>
             </Row>

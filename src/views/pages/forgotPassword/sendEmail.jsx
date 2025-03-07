@@ -38,7 +38,7 @@ const SendEmail = () => {
 
     try {
       // 1️⃣ Consultar la lista de usuarios
-      const usersResponse = await axios.get('http://localhost:2025/api/user');
+      const usersResponse = await axios.get('https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/user');
       const users = usersResponse.data;
 
       // 2️⃣ Verificar si el correo existe en la base de datos
@@ -52,7 +52,7 @@ const SendEmail = () => {
 
       // 3️⃣ Si existe, enviar la solicitud de recuperación de contraseña
       const response = await axios.post(
-        'http://localhost:2025/api/auth/forgot-password',
+        'https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/auth/forgot-password',
         { email },
         { headers: { 'Content-Type': 'application/json' } }
       );
@@ -74,7 +74,7 @@ const SendEmail = () => {
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center pattern">
       <CContainer className="p-4 d-flex align-items-center justify-content-center">
         <CCol md={9} lg={7} xl={6} className="p-4 d-flex align-items-center justify-content-center">
-          <CCard className="mx-4">
+          <CCard className="p-4 d-flex align-items-center">
             <CCardBody>
               <CForm onSubmit={handleSubmit}>
                 <h2 className="pb-3 text-center">Recuperar contraseña</h2>

@@ -32,9 +32,9 @@ const Tracking = () => {
     setLoading(true) // Set loading to true before fetching data
     try {
       const [trackingResponse, assignmentsResponse, responsiblesResponse] = await Promise.all([
-        axios.get("http://localhost:2025/api/tracking"),
-        axios.get("http://localhost:2025/api/assignment"),
-        axios.get("http://localhost:2025/api/responsible"),
+        axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/tracking"),
+        axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/assignment"),
+        axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/responsible"),
       ])
 
       const trackingData = trackingResponse.data
@@ -97,7 +97,7 @@ const Tracking = () => {
 
   const handleUpdate = (formData) => {
     axios
-      .put(`http://localhost:2025/api/tracking/${selectedTracking.id}`, formData, {
+      .put(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/tracking/${selectedTracking.id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then(() => {
@@ -125,7 +125,7 @@ const Tracking = () => {
     if (!selectedId) return
 
     axios
-      .delete(`http://localhost:2025/api/tracking/${selectedId}`)
+      .delete(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/tracking/${selectedId}`)
       .then(() => {
         showAlert("El registro ha sido eliminado.", 'success');
 

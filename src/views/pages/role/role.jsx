@@ -37,7 +37,7 @@ const Roles = () => {
 
   const getRoles = async () => {
     try {
-      const response = await axios.get("http://localhost:2025/api/role")
+      const response = await axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/role")
       setRoles(response.data)
     } catch (error) {
       console.error("Error al obtener los roles:", error)
@@ -59,7 +59,7 @@ const Roles = () => {
     if (!selectedId) return
 
     try {
-      await axios.delete(`http://localhost:2025/api/role/${selectedId}`)
+      await axios.delete(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/role/${selectedId}`)
       showAlert("Rol eliminado correctamente.", "success");
       getRoles()
     } catch (error) {
@@ -79,8 +79,8 @@ const Roles = () => {
 
     try {
       const [roleResponse, permissionRoleResponse] = await Promise.all([
-        axios.get(`http://localhost:2025/api/role/${role.id}`),
-        axios.get(`http://localhost:2025/api/permissionRole?roleId=${role.id}`),
+        axios.get(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/role/${role.id}`),
+        axios.get(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/permissionRole?roleId=${role.id}`),
       ])
 
       const roleData = roleResponse.data

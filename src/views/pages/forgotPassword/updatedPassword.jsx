@@ -55,7 +55,7 @@ const UpdatedPasswordModal = ({ show, handleClose, token }) => {
 
         try {
             const response = await axios.post(
-                "http://localhost:2025/api/auth/change-password",
+                "https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/auth/change-password",
                 {
                     currentPassword,
                     newPassword,

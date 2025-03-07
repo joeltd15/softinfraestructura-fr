@@ -3,9 +3,9 @@ import axios from "axios"
 const fetchFilteredData = async (startDate, endDate) => {
   try {
     const [applicationsResponse, assignmentsResponse, trackingsResponse] = await Promise.all([
-      axios.get("http://localhost:2025/api/application"),
-      axios.get("http://localhost:2025/api/assignment"),
-      axios.get("http://localhost:2025/api/tracking"),
+      axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/application"),
+      axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/assignment"),
+      axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/tracking"),
     ])
 
     const applications = applicationsResponse.data

@@ -47,7 +47,7 @@ const EditResponsibleModal = ({ show, handleClose, onResponsibleUpdated, respons
 
     const getUsers = async () => {
         try {
-            const response = await axios.get("http://localhost:2025/api/user");
+            const response = await axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/user");
             setUsers(response.data);
         } catch (error) {
             console.error("Error al obtener los usuarios:", error);
@@ -87,7 +87,7 @@ const EditResponsibleModal = ({ show, handleClose, onResponsibleUpdated, respons
         const requestData = { userId, responsibilities };
 
         try {
-            const response = await axios.put(`http://localhost:2025/api/responsible/${responsible.id}`, requestData);
+            const response = await axios.put(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/responsible/${responsible.id}`, requestData);
             showAlert("Responsable actualizado correctamente.", 'success');
             onResponsibleUpdated(response.data);
             handleClose();

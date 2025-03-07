@@ -41,7 +41,7 @@ const Reservation = () => {
   // Función para obtener reservas
   const fetchReservations = useCallback(async () => {
     try {
-      const response = await axios.get("http://localhost:2025/api/reservation")
+      const response = await axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/reservation")
       const reservations = response.data
 
       // Obtener usuario logueado

@@ -22,7 +22,7 @@ const Realizado = ({ show, handleClose, application, handleUpdate }) => {
     const { showAlert } = useAlert();
     const [errors, setErrors] = useState({});
     const [Users, setUsers] = useState([]);
-    const urlUsers = 'http://localhost:2025/api/user'
+    const urlUsers = 'https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/user'
 
     useEffect(() => {
         getUsers();

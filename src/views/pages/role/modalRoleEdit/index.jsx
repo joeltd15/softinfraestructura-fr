@@ -24,7 +24,7 @@ const EditRoleModal = ({ show, handleClose, onRoleUpdated, role }) => {
   const fetchPermissions = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get("http://localhost:2025/api/permission");
+      const response = await axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/permission");
       setPermissions(response.data);
     } catch (error) {
       console.error("❌ Error al obtener permisos:", error);
@@ -76,7 +76,7 @@ const EditRoleModal = ({ show, handleClose, onRoleUpdated, role }) => {
     if (!validateForm()) return;
 
     try {
-      await axios.put(`http://localhost:2025/api/role/${role.id}`, {
+      await axios.put(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/role/${role.id}`, {
         name: roleName,
         permissions: selectedPermissions,
       });
