@@ -67,16 +67,20 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("overview")
   const [timeDistribution, setTimeDistribution] = useState([])
   const [durationData, setDurationData] = useState([])
+  const token = localStorage.getItem("token");
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  }
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true)
 
-        const usersResponse = await axios.get("http://localhost:2025/api/user")
+        const usersResponse = await axios.get("http://localhost:2025/api/user", {headers})
         setTotalUsers(usersResponse.data.length)
 
-        const reservationsResponse = await axios.get("http://localhost:2025/api/reservation")
+        const reservationsResponse = await axios.get("http://localhost:2025/api/reservation", {headers})
         setTotalReservations(reservationsResponse.data.length)
         setReservationData(reservationsResponse.data)
 
