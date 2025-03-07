@@ -11,7 +11,7 @@
     --cui-border-color: #012338 !important;
 }
 
-.t-decoration{
+.t-decoration {
     text-decoration: none !important;
 }
 
@@ -117,6 +117,7 @@
         padding: 100% 0px !important;
     }
 }
+
 .Table-button {
     border-radius: 8px;
     height: 28px;
@@ -477,7 +478,7 @@ button {
     color: #2b3d4f !important;
 }
 
-[data-coreui-theme=dark] .fc-direction-ltr{
+[data-coreui-theme=dark] .fc-direction-ltr {
     background: #fffbd8 !important;
 }
 
@@ -548,7 +549,8 @@ button {
 
 .input-container input {
     flex: 1;
-    padding-right: 40px; /* Espacio para el ojito */
+    padding-right: 40px;
+    /* Espacio para el ojito */
 }
 
 .eye-button {
@@ -562,23 +564,49 @@ button {
     cursor: pointer;
 }
 
-.status{
+.status {
     font-size: 12px !important;
     font-weight: 700;
-    padding: 2px;
+    padding: 3px;
     border-radius: 10px;
     text-transform: uppercase;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100px !important;
 }
 
-.status.Active{
+.status.Active {
     color: white;
     background-color: #007832;
 }
 
-.status.Inactive{
+.status.Inactive {
     color: white;
     background-color: #747474;
+}
+
+.status.assigned {
+    color: #ffffff !important;
+    background-color: #00304D !important;
+}
+
+.status.pending {
+    color: #ffffff !important;
+    background-color: #ddd456 !important;
+}
+
+.status.completed {
+    color: #ffffff !important;
+    background-color: #007832 !important;
+}
+
+.status.waiting-material {
+    color: #ffffff !important;
+    background-color: #747474 !important;
+}
+
+.status.canceled {
+    color: #ffffff !important;
+    background-color: #c90000 !important;
 }

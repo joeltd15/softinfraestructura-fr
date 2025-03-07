@@ -84,7 +84,7 @@ const Assignment = () => {
 
       let filteredAssignments = []
 
-      if (user.roleId === 1) {
+      if (user.roleId === 1 || user.roleId === 4) {
         filteredAssignments = assignmentsData
       } else if (user.roleId === 2) {
         const userResponsibilities = responsiblesData

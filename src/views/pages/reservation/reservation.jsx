@@ -26,7 +26,7 @@ const Reservation = () => {
 
   useEffect(() => {
     return () => {
-      toast.dismiss() 
+      toast.dismiss()
     }
   }, [])
 
@@ -45,7 +45,7 @@ const Reservation = () => {
 
   const fetchReservations = useCallback(async () => {
     try {
-      const response = await axios.get("http://localhost:2025/api/reservation", {headers})
+      const response = await axios.get("http://localhost:2025/api/reservation", { headers })
       const reservations = response.data
 
       const user = JSON.parse(localStorage.getItem("user"))
@@ -175,7 +175,7 @@ const Reservation = () => {
                   <div className="completed-Circle"></div>
                   <span>Completado</span>
                 </div>
-                {user.roleId == 1 && user.roleId == 5 && (
+                {(user.roleId === 1 || user.roleId === 5) && (
                   <div className="cancelado d-flex align-items-center">
                     <div className="cancelado-Circle"></div>
                     <span>Cancelado</span>

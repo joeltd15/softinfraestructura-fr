@@ -125,8 +125,8 @@ const Application = () => {
   const getApplications = async () => {
     try {
       const [applicationsResponse, assignmentsResponse] = await Promise.all([
-        axios.get(url, {headers}),
-        axios.get("http://localhost:2025/api/assignment", {headers}),
+        axios.get(url, { headers }),
+        axios.get("http://localhost:2025/api/assignment", { headers }),
       ])
 
       const applicationsData = applicationsResponse.data
@@ -136,7 +136,7 @@ const Application = () => {
 
       let filteredApplications = []
 
-      if (user.roleId === 1) {
+      if (user.roleId === 1 || user.roleId === 4) {
         // Si es admin, ve todas las aplicaciones
         filteredApplications = applicationsData
       } else if (user.roleId === 2) {
@@ -145,7 +145,7 @@ const Application = () => {
           .filter((assignment) => assignment.responsibleId === user.id)
           .map((assignment) => assignment.applicationId)
         filteredApplications = applicationsData.filter((app) => assignedApps.includes(app.id))
-      } else if (user.roleId != 1) {
+      } else if (user.roleId != 1 || user.roleId != 4) {
         // Si es usuario normal, solo ve las aplicaciones que él creó
         filteredApplications = applicationsData.filter((app) => app.userId === user.id)
       }
@@ -159,7 +159,7 @@ const Application = () => {
 
   const getUsers = async () => {
     try {
-      const response = await axios.get(urlUsers, {headers})
+      const response = await axios.get(urlUsers, { headers })
       setUsers(response.data)
     } catch (error) {
       console.error("Error obteniendo usuarios:", error)
@@ -206,7 +206,7 @@ const Application = () => {
     }
 
     axios
-      .put(`${url}/${selectedApplication.id}`, formData, {headers}, {
+      .put(`${url}/${selectedApplication.id}`, formData, { headers }, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((response) => {
@@ -235,7 +235,7 @@ const Application = () => {
     if (!selectedId) return
 
     axios
-      .delete(`${url}/${selectedId}`, {headers})
+      .delete(`${url}/${selectedId}`, { headers })
       .then(() => {
         toast.success("El registro ha sido eliminado.")
         getApplications()
@@ -289,7 +289,7 @@ const Application = () => {
     try {
       // Obtener todas las asignaciones
       const assignmentsResponse = await axios.get(
-        "http://localhost:2025/api/assignment", {headers}
+        "http://localhost:2025/api/assignment", { headers }
       )
       const assignments = assignmentsResponse.data
 
@@ -303,7 +303,7 @@ const Application = () => {
 
       // Ahora obtener el tracking con el assignmentId encontrado
       const trackingResponse = await axios.get(
-        "http://localhost:2025/api/tracking",{headers},
+        "http://localhost:2025/api/tracking", { headers },
       )
       const trackings = trackingResponse.data
       const tracking = trackings.find((t) => t.assignmentId === assignment.id)
@@ -335,7 +335,7 @@ const Application = () => {
                   <button className="Register-button Button-save" onClick={() => setShow(true)}>
                     <FaCirclePlus /> Registrar
                   </button>
-                  {user && user.roleId === 1 && (
+                  {user && user.roleId === 1 ||  user.roleId === 4 && (
                     <Tooltip title="Asignar todas las pendientes" arrow>
                       <button
                         className="Register-button ms-3"
@@ -374,7 +374,7 @@ const Application = () => {
 
                 <div className="col-12 col-md-6 d-flex align-items-center justify-content-center justify-content-md-end">
                   <div className="d-flex align-items-center flex-wrap justify-content-center justify-content-md-end">
-                    {user.roleId == 1 && (
+                    {user.roleId === 1 || user.roleId === 4 && (
                       <Tooltip title="Descargar informes" arrow>
                         <button className="Btn-download me-3 mb-2 mb-sm-0" onClick={() => setDateRangeModalOpen(true)}>
                           <svg
@@ -444,7 +444,14 @@ const Application = () => {
                           />
                         </td>
                         <td>{application.reportType}</td>
-                        <td>{application.status}</td>
+                        <td><span className={`status ${application.status === 'Asignada' ? 'assigned' :
+                          application.status === 'En espera' ? 'pending' :
+                            application.status === 'Realizado' ? 'completed' :
+                              application.status === 'En espera por falta de material' ? 'waiting-material' :
+                                application.status === 'Cancelado' ? 'canceled' : ''
+                          }`}>
+                          {application.status}
+                        </span></td>
                         <td>{userName(application.userId)}</td>
                         <td className="content-buttons">
                           <Tooltip title="Ver detalles de la solicitud">
@@ -459,7 +466,7 @@ const Application = () => {
                               </button>
                             </Tooltip>
                           )}
-                          {application.status !== "Realizado" && application.status !== "Asignada" && (
+                          {application.status !== "Realizado" && application.status !== "Asignada" && application.status !== "Cancelado" &&  (
                             <>
                               <Tooltip title="Editar solicitud">
                                 <button className="Table-button Update-button" onClick={() => handleEdit(application)}>
@@ -479,8 +486,9 @@ const Application = () => {
 
                           {application.status !== "Asignada" &&
                             application.status !== "Realizado" &&
+                            application.status !== "Cancelado" &&
                             application.status != "En espera por falta de material" &&
-                            user.roleId == 1 && (
+                            user.roleId == 1 && user.roleId == 4  && (
                               <Tooltip title="Asignar encargado">
                                 <button
                                   className="Table-button Asign-button"
