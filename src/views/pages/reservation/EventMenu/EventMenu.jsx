@@ -178,7 +178,7 @@ const EventMenu = ({ event, onClose, getReservations }) => {
           </Button>
         </CardContent>
       </Card>
-      <ModalEditReservation show={ModalEdit} reservationId={SelectedReservation} onClose={() => setModalEdit(false)} />
+      <ModalEditReservation show={ModalEdit} reservationId={SelectedReservation} onClose={() => setModalEdit(false)} getReservations={() => getReservations()}/>
       <ModalShowReservation show={ModalShow} reservationId={SelectedReservation} onClose={() => setModalShow(false)} />
       <DialogDelete
         open={openDeleteDialog}

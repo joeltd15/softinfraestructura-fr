@@ -175,7 +175,7 @@ const Reservation = () => {
                   <div className="completed-Circle"></div>
                   <span>Completado</span>
                 </div>
-                {user.roleId == 1 || user.roleId == 5 && (
+                {user.roleId == 1 && user.roleId == 5 && (
                   <div className="cancelado d-flex align-items-center">
                     <div className="cancelado-Circle"></div>
                     <span>Cancelado</span>

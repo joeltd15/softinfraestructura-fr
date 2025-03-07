@@ -28,13 +28,19 @@ const Tracking = () => {
   const [loading, setLoading] = useState(true) // Added loading state
   const { showAlert } = useAlert();
 
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  }
+
   const getTracking = async () => {
-    setLoading(true) // Set loading to true before fetching data
+    setLoading(true)
     try {
       const [trackingResponse, assignmentsResponse, responsiblesResponse] = await Promise.all([
-        axios.get("http://localhost:2025/api/tracking"),
-        axios.get("http://localhost:2025/api/assignment"),
-        axios.get("http://localhost:2025/api/responsible"),
+        axios.get("http://localhost:2025/api/tracking", {headers}),
+        axios.get("http://localhost:2025/api/assignment", {headers}),
+        axios.get("http://localhost:2025/api/responsible", {headers}),
       ])
 
       const trackingData = trackingResponse.data
@@ -43,7 +49,6 @@ const Tracking = () => {
       const user = JSON.parse(localStorage.getItem("user"))
       if (!user) return
 
-      // Create a map of assignment IDs to application IDs
       const assignmentMap = {}
       assignmentsData.forEach((assignment) => {
         assignmentMap[assignment.id] = assignment.applicationId
@@ -97,7 +102,7 @@ const Tracking = () => {
 
   const handleUpdate = (formData) => {
     axios
-      .put(`http://localhost:2025/api/tracking/${selectedTracking.id}`, formData, {
+      .put(`http://localhost:2025/api/tracking/${selectedTracking.id}`, formData, {headers}, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then(() => {
@@ -125,7 +130,7 @@ const Tracking = () => {
     if (!selectedId) return
 
     axios
-      .delete(`http://localhost:2025/api/tracking/${selectedId}`)
+      .delete(`http://localhost:2025/api/tracking/${selectedId}`, {headers})
       .then(() => {
         showAlert("El registro ha sido eliminado.", 'success');
 

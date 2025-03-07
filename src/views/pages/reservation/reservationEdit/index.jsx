@@ -39,7 +39,7 @@ const EditReservationModal = ({ show, reservationId, onClose, getReservations })
   useEffect(() => {
     if (reservationId) {
       axios
-        .get(`http://localhost:2025/api/reservation/${reservationId}`, {headers})
+        .get(`http://localhost:2025/api/reservation/${reservationId}`, { headers })
         .then((response) => {
           const reservation = response.data
           setScenery(reservation.scenery)
@@ -66,10 +66,16 @@ const EditReservationModal = ({ show, reservationId, onClose, getReservations })
 
   const fetchAvailability = async () => {
     try {
-      const response = await axios.post(`http://localhost:2025/api/reservation/availability`, {headers},{
+      const response = await axios.post(`http://localhost:2025/api/reservation/availability`, {
         scenery,
         date: selectedDate,
-      })
+      },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
 
       console.log("Respuesta del servidor:", response.data)
 
@@ -272,9 +278,14 @@ const EditReservationModal = ({ show, reservationId, onClose, getReservations })
 
     try {
       // Verificación final de disponibilidad
-      const availabilityCheck = await axios.post(`http://localhost:2025/api/reservation/availability`,{headers}, {
+      const availabilityCheck = await axios.post(`http://localhost:2025/api/reservation/availability`, {
         scenery,
         date: selectedDate,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
 
       let existingReservations = []
@@ -307,16 +318,14 @@ const EditReservationModal = ({ show, reservationId, onClose, getReservations })
       }
 
       // Si está disponible, proceder con la actualización
-      await axios.put(`http://localhost:2025/api/reservation/${reservationId}`, requestData, {headers})
+      await axios.put(`http://localhost:2025/api/reservation/${reservationId}`, requestData, { headers })
 
       toast.success("Reserva actualizada correctamente!", {
         position: "top-right",
         autoClose: 4000,
       })
 
-      if (typeof getReservations === "function") {
-        getReservations()
-      }
+      getReservations()
 
       onClose()
     } catch (error) {

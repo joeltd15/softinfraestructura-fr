@@ -10,7 +10,7 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
     const [editedTracking, setEditedTracking] = useState({
         observations: "",
         buildingMaterials: "",
-        dateService: new Date().toISOString().split("T")[0], // Fecha automática
+        dateService: new Date().toISOString().split("T")[0], 
         actionsTaken: "",
         status: "",
         assignmentId: "",
@@ -18,11 +18,17 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
     });
 
     const [assignments, setAssignments] = useState([]);
-    const [errors, setErrors] = useState({}); // Estado para errores de validación
+    const [errors, setErrors] = useState({});
+
+    const token = localStorage.getItem("token");
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    }
 
     useEffect(() => {
         axios
-            .get("http://localhost:2025/api/assignment")
+            .get("http://localhost:2025/api/assignment", {headers})
             .then((response) => {
                 setAssignments(response.data);
             })

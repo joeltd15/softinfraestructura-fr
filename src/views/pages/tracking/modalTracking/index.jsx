@@ -30,10 +30,16 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
     }
   }, [selectedAssignmentId]);
 
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  }
+
   useEffect(() => {
     const fetchAssignments = async () => {
       try {
-        const response = await axios.get("http://localhost:2025/api/assignment");
+        const response = await axios.get("http://localhost:2025/api/assignment", {headers});
         setAssignments(response.data);
       } catch (error) {
         console.error("Error al obtener asignaciones:", error);
@@ -75,7 +81,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
 
     try {
       await toast.promise(
-        axios.post("http://localhost:2025/api/tracking", formData, {
+        axios.post("http://localhost:2025/api/tracking", formData, {headers},{
           headers: { "Content-Type": "multipart/form-data" },
         }),
         {
