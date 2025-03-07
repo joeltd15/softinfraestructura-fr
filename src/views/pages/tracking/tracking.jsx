@@ -12,7 +12,7 @@ import { useAlert } from '../../../assets/functions/index';
 import { FaEye } from "react-icons/fa";
 import { FaPencilAlt } from "react-icons/fa"
 
-
+const CLOUDINARY_CLOUD_NAME = "dvzjinfzq"
 const Tracking = () => {
   const [trackingData, setTrackingData] = useState([])
   const [show, setShow] = useState(false)
@@ -34,13 +34,32 @@ const Tracking = () => {
     Authorization: `Bearer ${token}`,
   }
 
+  const getImageUrl = (path) => {
+    if (!path || path.trim() === "") return "/noImage.png"
+
+    // If it's already a complete URL, use it directly
+    if (path.startsWith("http://") || path.startsWith("https://")) {
+      // Fix duplicated URLs if they exist
+      if (path.includes("https://res.cloudinary.com") && path.includes("https://res.cloudinary.com", 10)) {
+        return path.replace(
+          /https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\/https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\//,
+          `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/`,
+        )
+      }
+      return path
+    }
+
+    // If it's a relative Cloudinary path, build the complete URL
+    return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${path}`
+  }
+
   const getTracking = async () => {
     setLoading(true)
     try {
       const [trackingResponse, assignmentsResponse, responsiblesResponse] = await Promise.all([
-        axios.get("http://localhost:2025/api/tracking", {headers}),
-        axios.get("http://localhost:2025/api/assignment", {headers}),
-        axios.get("http://localhost:2025/api/responsible", {headers}),
+        axios.get("http://localhost:2025/api/tracking", { headers }),
+        axios.get("http://localhost:2025/api/assignment", { headers }),
+        axios.get("http://localhost:2025/api/responsible", { headers }),
       ])
 
       const trackingData = trackingResponse.data
@@ -57,7 +76,7 @@ const Tracking = () => {
 
       let filteredTracking = []
 
-      if (user.roleId === 1) {
+      if (user.roleId === 1 && user.roleId === 4) {
         filteredTracking = trackingData
       } else if (user.roleId === 2) {
         const userResponsibilities = responsiblesData
@@ -102,7 +121,7 @@ const Tracking = () => {
 
   const handleUpdate = (formData) => {
     axios
-      .put(`http://localhost:2025/api/tracking/${selectedTracking.id}`, formData, {headers}, {
+      .put(`http://localhost:2025/api/tracking/${selectedTracking.id}`, formData, { headers }, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then(() => {
@@ -130,7 +149,7 @@ const Tracking = () => {
     if (!selectedId) return
 
     axios
-      .delete(`http://localhost:2025/api/tracking/${selectedId}`, {headers})
+      .delete(`http://localhost:2025/api/tracking/${selectedId}`, { headers })
       .then(() => {
         showAlert("El registro ha sido eliminado.", 'success');
 
@@ -222,14 +241,14 @@ const Tracking = () => {
                         <td>{tracking.actionsTaken}</td>
                         <td>
                           <img
-                            src={
-                              tracking.photographicEvidence && tracking.photographicEvidence.trim() !== ""
-                                ? `http://localhost:2025/uploads/${tracking.photographicEvidence}`
-                                : "/noImage.png"
-                            }
+                            src={getImageUrl(tracking.photographicEvidence) || "/placeholder.svg"}
                             width="80"
                             className="hover-zoom"
                             alt="Evidencia fotográfica"
+                            onError={(e) => {
+                              e.target.onerror = null
+                              e.target.src = "/noImage.png"
+                            }}
                           />
                         </td>
                         <td>{tracking.status}</td>
