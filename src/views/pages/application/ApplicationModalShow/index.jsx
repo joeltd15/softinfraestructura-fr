@@ -3,6 +3,27 @@ import Modal from "react-bootstrap/Modal"
 import { Col, Row } from "react-bootstrap"
 
 function ShowModal({ show, handleClose, application = null, userName }) {
+  const CLOUDINARY_CLOUD_NAME = "dvzjinfzq"
+
+  const getImageUrl = (path) => {
+    if (!path || path.trim() === "") return "/noImage.png"
+
+    // Si ya es una URL completa, usarla directamente
+    if (path.startsWith("http://") || path.startsWith("https://")) {
+      // Corregir URLs duplicadas si existen
+      if (path.includes("https://res.cloudinary.com") && path.includes("https://res.cloudinary.com", 10)) {
+        return path.replace(
+          /https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\/https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\//,
+          `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/`,
+        )
+      }
+      return path
+    }
+
+    // Si es una ruta relativa de Cloudinary, construir la URL completa
+    return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${path}`
+  }
+
   return (
     <>
       <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
@@ -74,14 +95,13 @@ function ShowModal({ show, handleClose, application = null, userName }) {
               </p>
               <div className="d-flex justify-content-center">
                 <img
-                  src={
-                    application.photographicEvidence && application.photographicEvidence.trim() !== ""
-                      ? `http://localhost:2025/uploads/${application.photographicEvidence}`
-                      : "/noImage.png"
-                  }
-                  width={"200px"}
-                  height={"200px"}
-                  alt="Evidencia"
+                  src={getImageUrl(application.photographicEvidence) || "/noImage.png"}
+                  alt="Evidencia fotográfica"
+                  style={{ Width: "200px", height: "200px" }}
+                  onError={(e) => {
+                    e.target.onerror = null
+                    e.target.src = "/noImage.png"
+                  }}
                 />
               </div>
             </div>

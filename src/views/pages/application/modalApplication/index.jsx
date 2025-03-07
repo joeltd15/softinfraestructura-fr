@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Button from "react-bootstrap/Button"
 import Form from "react-bootstrap/Form"
 import Modal from "react-bootstrap/Modal"
-import { Col, Row } from "react-bootstrap"
+import { Col, Row, Image } from "react-bootstrap"
 import axios from "axios"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
@@ -18,6 +18,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
   const [Place, setPlace] = useState("")
   const [News, setNews] = useState("")
   const [photographicEvidence, setPhotographicEvidence] = useState(null)
+  const [previewImage, setPreviewImage] = useState(null)
   const [TypeReport, setTypeReport] = useState("")
   const [status, setStatus] = useState("En espera")
   const [IdUser, setIdUser] = useState("")
@@ -25,6 +26,8 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
   const { showAlert } = useAlert()
   const [errors, setErrors] = useState({}) // Estado para errores
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const CLOUDINARY_CLOUD_NAME = "dvzjinfzq"
+  const CLOUDINARY_UPLOAD_PRESET = "ml_default" // Asegúrate de que este preset exista en tu cuenta de Cloudinary
 
   useEffect(() => {
     getUsers()
@@ -33,8 +36,12 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
   useEffect(() => {
     return () => {
       toast.dismiss() // Limpia todas las alertas Reservados al desmontar el componente
+      // Limpiar URL de previsualización si existe
+      if (previewImage) {
+        URL.revokeObjectURL(previewImage)
+      }
     }
-  }, [])
+  }, [previewImage])
 
   const getUsers = async () => {
     const response = await axios.get(urlUsers)
@@ -42,7 +49,55 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
   }
 
   const handleFileChange = (e) => {
-    setPhotographicEvidence(e.target.files[0])
+    const file = e.target.files[0]
+    if (file) {
+      setPhotographicEvidence(file)
+      // Crear URL para previsualización
+      const fileUrl = URL.createObjectURL(file)
+      setPreviewImage(fileUrl)
+    }
+  }
+
+  const removeImage = () => {
+    setPhotographicEvidence(null)
+    if (previewImage) {
+      URL.revokeObjectURL(previewImage)
+      setPreviewImage(null)
+    }
+  }
+
+  // Método alternativo usando axios en lugar de fetch
+  const uploadToCloudinary = async (file) => {
+    if (!file) return null
+
+    try {
+      // Crear un FormData para enviar el archivo
+      const formData = new FormData()
+      formData.append("file", file)
+      formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET)
+
+      // Usar axios para la petición
+      const response = await axios.post(
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      )
+
+      // Si la petición es exitosa, devolver la URL segura
+      return response.data.secure_url
+    } catch (error) {
+      console.error("Error al subir imagen a Cloudinary:", error)
+      // Mostrar detalles del error si están disponibles
+      if (error.response) {
+        console.error("Respuesta del servidor:", error.response.data)
+        console.error("Estado HTTP:", error.response.status)
+      }
+      return null
+    }
   }
 
   const validateFields = () => {
@@ -73,7 +128,15 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
     toast.promise(submitFormData(user, today), {
       pending: "Registrando solicitud...",
       success: "Solicitud registrada correctamente",
-      error: "Error al registrar la solicitud",
+      error: {
+        render({ data }) {
+          // Cuando el error es por la imagen, mostrar un mensaje más específico
+          if (data && data.message && data.message.includes("Cloudinary")) {
+            return "Error al subir la imagen. La solicitud se registrará sin evidencia fotográfica."
+          }
+          return "Error al registrar la solicitud"
+        },
+      },
     })
   }
 
@@ -86,31 +149,44 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
       // 2. Determinar el estado de la nueva solicitud
       const newStatus = assignedRequests >= 3 ? "En espera" : "Asignada"
 
-      // 3. Registrar la solicitud con el estado correspondiente
+      // 3. Crear FormData para la solicitud
       const formData = new FormData()
       formData.append("reportDate", today)
       formData.append("dependence", Dependence)
       formData.append("location", Place)
       formData.append("news", News)
-      if (photographicEvidence) {
-        formData.append("photographicEvidence", photographicEvidence)
-      }
       formData.append("reportType", TypeReport)
       formData.append("responsibleForSpace", ResponsibleForSpace)
       formData.append("userId", user.id)
-      formData.append("status", newStatus) // Se envía el estado determinado
+      formData.append("status", newStatus)
 
+      // 4. Subir la imagen a Cloudinary si existe
+      if (photographicEvidence) {
+        try {
+          const cloudinaryUrl = await uploadToCloudinary(photographicEvidence)
+          if (cloudinaryUrl) {
+            // Si se subió correctamente, usar la URL
+            formData.append("photographicEvidence", cloudinaryUrl)
+          } else {
+            // Si falló la subida a Cloudinary pero tenemos un archivo, enviarlo directamente
+            formData.append("photographicEvidence", photographicEvidence)
+          }
+        } catch (imageError) {
+        }
+      }
+
+      // 5. Enviar la solicitud al servidor
       const result = await axios.post(url, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       })
 
       onSolicitudCreated()
       handleClose()
-      return result 
+      return result
     } catch (error) {
       console.error("Error al registrar solicitud:", error)
       setIsSubmitting(false)
-      throw error 
+      throw error
     } finally {
       setIsSubmitting(false)
     }
@@ -214,6 +290,11 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
           <Form.Group className="mb-3 p-2" as={Row} controlId="forType">
             <Form.Label>Evidencia</Form.Label>
             <Form.Control type="file" onChange={handleFileChange} accept="image/*" />
+            {previewImage && (
+              <div className="mt-3 text-center">
+                <Image src={previewImage || "/placeholder.svg"} alt="Vista previa" thumbnail width={200} />
+              </div>
+            )}
           </Form.Group>
         </Form>
       </Modal.Body>

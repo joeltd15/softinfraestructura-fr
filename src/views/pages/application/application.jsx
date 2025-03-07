@@ -41,11 +41,53 @@ const Application = () => {
   const [currentPages, setCurrentPages] = useState(1)
   const [showTrackingModal, setShowTrackingModal] = useState(false)
   const [selectedTracking, setSelectedTracking] = useState(null)
+  const CLOUDINARY_CLOUD_NAME = "dvzjinfzq"
 
   useEffect(() => {
     getApplications()
     getUsers()
   }, [])
+
+  const getImageUrl = (path) => {
+    if (!path || path.trim() === "") return "/noImage.png"
+
+    // Si ya es una URL completa, usarla directamente
+    if (path.startsWith("http://") || path.startsWith("https://")) {
+      // Corregir URLs duplicadas si existen
+      if (path.includes("https://res.cloudinary.com") && path.includes("https://res.cloudinary.com", 10)) {
+        return path.replace(
+          /https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\/https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\//,
+          `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/`,
+        )
+      }
+      return path
+    }
+
+    // Si es una ruta relativa de Cloudinary, construir la URL completa
+    return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${path}`
+  }
+
+  const uploadToCloudinary = async (file) => {
+    if (!file) return null
+
+    const formData = new FormData()
+    formData.append("file", file)
+    formData.append("upload_preset", "ml_default") // Reemplaza con tu upload preset
+
+    try {
+      const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+        method: "POST",
+        body: formData,
+      })
+
+      const data = await response.json()
+      return data.secure_url
+    } catch (error) {
+      console.error("Error uploading to Cloudinary:", error)
+      toast.error("Error al subir la imagen")
+      return null
+    }
+  }
 
   const searcher = (e) => {
     setSearch(e.target.value)
@@ -105,12 +147,18 @@ const Application = () => {
       setApplication(filteredApplications)
     } catch (error) {
       console.error("Error obteniendo aplicaciones:", error)
+      toast.error("Error al cargar las aplicaciones")
     }
   }
 
   const getUsers = async () => {
-    const response = await axios.get(urlUsers)
-    setUsers(response.data)
+    try {
+      const response = await axios.get(urlUsers)
+      setUsers(response.data)
+    } catch (error) {
+      console.error("Error obteniendo usuarios:", error)
+      toast.error("Error al cargar los usuarios")
+    }
   }
 
   const handleSolicitudCreated = () => {
@@ -134,23 +182,36 @@ const Application = () => {
     setShowModal(true)
   }
 
-  const handleUpdate = (formData) => {
+  const handleUpdate = async (formData) => {
     if (!selectedApplication) {
       console.error("No hay una solicitud seleccionada para actualizar")
       return
     }
 
+    // Verificar si hay un archivo para subir a Cloudinary
+    const imageFile = formData.get("photographicEvidence")
+    if (imageFile && imageFile.size > 0) {
+      const cloudinaryUrl = await uploadToCloudinary(imageFile)
+      if (cloudinaryUrl) {
+        // Reemplazar el archivo con la URL de Cloudinary
+        formData.delete("photographicEvidence")
+        formData.append("photographicEvidence", cloudinaryUrl)
+      }
+    }
+
     axios
-      .put(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/application/${selectedApplication.id}`, formData, {
+      .put(`${url}/${selectedApplication.id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((response) => {
         console.log("Respuesta del servidor:", response.data)
+        toast.success("Solicitud actualizada exitosamente")
         getApplications()
         setShowModalEdit(false)
       })
       .catch((error) => {
         console.error("Error al actualizar la solicitud:", error.response ? error.response.data : error.message)
+        toast.error("Error al actualizar la solicitud")
       })
   }
 
@@ -221,7 +282,9 @@ const Application = () => {
   const handleShowTracking = async (applicationId) => {
     try {
       // Obtener todas las asignaciones
-      const assignmentsResponse = await axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/assignment")
+      const assignmentsResponse = await axios.get(
+        "https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/assignment",
+      )
       const assignments = assignmentsResponse.data
 
       // Buscar la asignación relacionada con esta applicationId
@@ -233,7 +296,9 @@ const Application = () => {
       }
 
       // Ahora obtener el tracking con el assignmentId encontrado
-      const trackingResponse = await axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/tracking")
+      const trackingResponse = await axios.get(
+        "https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/tracking",
+      )
       const trackings = trackingResponse.data
       const tracking = trackings.find((t) => t.assignmentId === assignment.id)
 
@@ -282,7 +347,9 @@ const Application = () => {
                         }}
                         onClick={() => {
                           axios
-                            .post("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/application/assign-all-pending")
+                            .post(
+                              "https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/application/assign-all-pending",
+                            )
                             .then((response) => {
                               toast.success("Las solicitudes pendientes han sido asignadas")
                               getApplications()
@@ -335,7 +402,7 @@ const Application = () => {
               </div>
             </div>
             <div className="table-responsive">
-              <table class="table">
+              <table className="table">
                 <thead className="thead">
                   <tr>
                     <th>Código</th>
@@ -361,12 +428,13 @@ const Application = () => {
                         <td>{application.news}</td>
                         <td>
                           <img
-                            src={
-                              application.photographicEvidence && application.photographicEvidence.trim() !== ""
-                                ? `http://localhost:2025/uploads/${application.photographicEvidence}`
-                                : "/noImage.png"
-                            }
-                            alt=""
+                            src={getImageUrl(application.photographicEvidence) || "/noImage.png"}
+                            alt="Evidencia fotográfica"
+                            style={{ maxWidth: "100px", maxHeight: "80px", objectFit: "cover" }}
+                            onError={(e) => {
+                              e.target.onerror = null
+                              e.target.src = "/noImage.png"
+                            }}
                           />
                         </td>
                         <td>{application.reportType}</td>
