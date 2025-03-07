@@ -36,17 +36,23 @@ const RegisterResponsibleModal = ({ show, handleClose, onResponsibleCreated }) =
     getUsers();
   }, []);
 
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  }
+
   const getUsers = async () => {
     try {
       // Obtener todos los usuarios
-      const response = await axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/user");
+      const response = await axios.get("http://localhost:2025/api/user", {headers});
       const allUsers = response.data;
   
       // Filtrar solo los usuarios con rolId 2 (Encargados) y que estén en estado activo
       const encargadosActivos = allUsers.filter(user => user.roleId === 2 && user.status === "Activo");
   
       // Obtener los usuarios ya registrados como responsables
-      const responsibleResponse = await axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/responsible");
+      const responsibleResponse = await axios.get("http://localhost:2025/api/responsible", {headers});
       const registeredResponsibles = responsibleResponse.data.map(responsible => responsible.userId);
   
       // Filtrar los usuarios que no estén ya registrados como responsables
@@ -82,7 +88,7 @@ const RegisterResponsibleModal = ({ show, handleClose, onResponsibleCreated }) =
   
     try {
       // Verificar si el usuario ya está registrado en responsables
-      const responsibleResponse = await axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/responsible");
+      const responsibleResponse = await axios.get("http://localhost:2025/api/responsible", {headers});
       const registeredResponsibles = responsibleResponse.data.map(responsible => responsible.userId);
   
       if (registeredResponsibles.includes(parseInt(userId))) {
@@ -91,7 +97,7 @@ const RegisterResponsibleModal = ({ show, handleClose, onResponsibleCreated }) =
       }
   
       const requestData = { userId, responsibilities };
-      await axios.post("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/responsible", requestData);
+      await axios.post("http://localhost:2025/api/responsible", requestData, {headers});
       showAlert("Responsable registrado correctamente.", "success");
       onResponsibleCreated();
       handleClose();

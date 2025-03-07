@@ -22,7 +22,7 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
 
     useEffect(() => {
         axios
-            .get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/assignment")
+            .get("http://localhost:2025/api/assignment")
             .then((response) => {
                 setAssignments(response.data);
             })

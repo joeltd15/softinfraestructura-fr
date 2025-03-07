@@ -6,7 +6,7 @@ import { useAlert } from '../../../../assets/functions/index';
 import { toast } from "react-toastify";
 
 
-const ModalRegistro = ({ show, handleClose }) => {
+const ModalRegistro = ({ show, handleClose, getUsers }) => {
     const [roles, setRoles] = useState([])
     const [formData, setFormData] = useState({
         name: "",
@@ -28,9 +28,15 @@ const ModalRegistro = ({ show, handleClose }) => {
         };
     }, []);
 
+    const token = localStorage.getItem("token");
+
+    const headers = {
+        Authorization: `Bearer ${token}`,
+    }
+
     useEffect(() => {
         axios
-            .get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/role")
+            .get("http://localhost:2025/api/role", {headers})
             .then((response) => setRoles(response.data))
             .catch((error) => console.error("Error al obtener roles:", error))
     }, [])
@@ -82,7 +88,7 @@ const ModalRegistro = ({ show, handleClose }) => {
         if (Object.values(errors).some((error) => error)) return
 
         try {
-            await axios.post("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/auth/register", formData)
+            await axios.post("http://localhost:2025/api/auth/register", formData)
             showAlert("Usuario registrado correctamente", 'success');
 
 
@@ -95,6 +101,7 @@ const ModalRegistro = ({ show, handleClose }) => {
                 roleId: "",
             })
             setErrors({})
+            getUsers()
             handleClose()
         } catch (error) {
             console.error("Error al registrar usuario:", error)

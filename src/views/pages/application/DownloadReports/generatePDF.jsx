@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
   },
   title: {
-    fontSize: 28,
+    fontSize: 25,
     marginBottom: 20,
     textAlign: "center",
     color: "#2c3e50",
@@ -91,16 +91,16 @@ const ApplicationPDF = ({ applications }) => (
           {app.status === "Realizado" && app.tracking && (
             <View style={styles.trackingSection}>
               <Text style={styles.trackingHeader}>Información de Seguimiento</Text>
-              <Text>
+              <Text style={styles.cell}>
                 <Text style={styles.label}>Observaciones:</Text> {app.tracking.observations}
               </Text>
-              <Text>
+              <Text style={styles.cell}>
                 <Text style={styles.label}>Materiales utilizados:</Text> {app.tracking.buildingMaterials}
               </Text>
-              <Text>
+              <Text style={styles.cell}>
                 <Text style={styles.label}>Fecha de servicio:</Text> {new Date(app.tracking.dateService).toLocaleDateString()}
               </Text>
-              <Text>
+              <Text style={styles.cell}>
                 <Text style={styles.label}>Acciones tomadas:</Text> {app.tracking.actionsTaken}
               </Text>
             </View>

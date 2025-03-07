@@ -15,15 +15,12 @@ function ShowResponsibleModal({ show, handleClose, responsible = null, users = [
         {responsible && (
           <div>
             <Row className="mb-2">
-              <Col sm={6}>
-                <p><strong>Id:</strong> {responsible.id}</p>
-              </Col>
-              <Col sm={6}>
+              <Col sm={12}>
                 <p><strong>Tipo de Responsabilidad:</strong> {responsible.Responsibilities?.map(res => res.name).join(", ") || "Sin responsabilidades"}</p>
               </Col>
             </Row>
             <Row className="mb-2">
-              <Col sm={6}>
+              <Col sm={12}>
                 <p><strong>Usuario:</strong> {user ? user.name : "Desconocido"}</p>
               </Col>
             </Row>

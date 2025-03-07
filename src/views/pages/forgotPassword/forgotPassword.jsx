@@ -42,7 +42,7 @@ const ResetPassword = () => {
     setLoading(true);
     try {
       const { data } = await axios.post(
-        'https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/auth/reset-password',
+        'http://localhost:2025/api/auth/reset-password',
         { email, resetCode, newPassword },
         { headers: { 'Content-Type': 'application/json' } }
       );

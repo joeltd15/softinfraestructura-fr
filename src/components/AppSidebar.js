@@ -21,18 +21,24 @@ import navigation from '../_nav'
 import axios from 'axios'
 
 const AppSidebar = () => {
-  const urlRole = 'https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/role';
+  const urlRole = 'http://localhost:2025/api/role';
   const dispatch = useDispatch()
   const unfoldable = useSelector((state) => state.sidebarUnfoldable)
   const sidebarShow = useSelector((state) => state.sidebarShow)
   const [role, setRole] = useState([]);
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  }
+
 
   useEffect(() => {
     getRoles();
   }, [])
 
   const getRoles = async () => {
-    const response = await axios.get(urlRole);
+    const response = await axios.get(urlRole, {headers});
     setRole(response.data)
   }
 

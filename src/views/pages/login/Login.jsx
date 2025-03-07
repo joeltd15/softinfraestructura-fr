@@ -39,7 +39,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/auth/login", {
+      const response = await axios.post("http://localhost:2025/api/auth/login", {
         email,
         password,
       });
@@ -53,7 +53,7 @@ const Login = () => {
       console.log("User data:", user);
 
       const permissionsResponse = await axios.get(
-        `https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/permissionRole?roleId=${user.roleId}`,
+        `http://localhost:2025/api/permissionRole?roleId=${user.roleId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -66,7 +66,7 @@ const Login = () => {
       console.log("Filtered user role permissions:", userRolePermissions);
 
       const permissionIds = userRolePermissions.map((pr) => pr.permissionId);
-      const permissionsDetailsResponse = await axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/permission", {
+      const permissionsDetailsResponse = await axios.get("http://localhost:2025/api/permission", {
         headers: { Authorization: `Bearer ${token}` },
       });
 

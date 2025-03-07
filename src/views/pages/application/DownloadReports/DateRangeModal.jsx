@@ -55,8 +55,8 @@ const DateRangeModal = ({ open, onClose, onConfirm }) => {
         {error && <p style={{ color: "red" }}>{error}</p>}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
-        <Button onClick={handleConfirm} color="primary">
+        <Button onClick={onClose} className="buttons-form Button-next">Cancelar</Button>
+        <Button onClick={handleConfirm} className="buttons-form Button-blue">
           Confirmar y Descargar
         </Button>
       </DialogActions>

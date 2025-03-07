@@ -38,7 +38,7 @@ const SendEmail = () => {
 
     try {
       // 1️⃣ Consultar la lista de usuarios
-      const usersResponse = await axios.get('https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/user');
+      const usersResponse = await axios.get('http://localhost:2025/api/user');
       const users = usersResponse.data;
 
       // 2️⃣ Verificar si el correo existe en la base de datos
@@ -52,7 +52,7 @@ const SendEmail = () => {
 
       // 3️⃣ Si existe, enviar la solicitud de recuperación de contraseña
       const response = await axios.post(
-        'https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/auth/forgot-password',
+        'http://localhost:2025/api/auth/forgot-password',
         { email },
         { headers: { 'Content-Type': 'application/json' } }
       );

@@ -221,6 +221,10 @@
     background: #00050c !important;
 }
 
+.Button-blue {
+    background: #00304D !important;
+}
+
 .card-body {
     width: 400px;
 }
@@ -556,4 +560,25 @@ button {
     border: none;
     padding: 5px;
     cursor: pointer;
+}
+
+.status{
+    font-size: 12px !important;
+    font-weight: 700;
+    padding: 2px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.status.Active{
+    color: white;
+    background-color: #007832;
+}
+
+.status.Inactive{
+    color: white;
+    background-color: #747474;
 }

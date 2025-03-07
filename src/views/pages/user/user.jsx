@@ -14,8 +14,8 @@ import { useAlert } from '../../../assets/functions/index.jsx';
 import { toast } from "react-toastify";
 
 const User = () => {
-    const userUrl = "https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/user";
-    const roleUrl = "https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/role";
+    const userUrl = "http://localhost:2025/api/user";
+    const roleUrl = "http://localhost:2025/api/role";
     const [users, setUsers] = useState([]);
     const [roles, setRoles] = useState([]);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -41,6 +41,12 @@ const User = () => {
             toast.dismiss();
         };
     }, []);
+
+    const token = localStorage.getItem("token");
+
+    const headers = {
+        Authorization: `Bearer ${token}`,
+    }
 
     //Buscador y paginador
     const searcher = (e) => {
@@ -71,7 +77,7 @@ const User = () => {
 
     const getUsers = async () => {
         try {
-            const response = await axios.get(userUrl);
+            const response = await axios.get(userUrl, {headers});
             setUsers(response.data);
         } catch (error) {
             console.error("Error obteniendo usuarios:", error);
@@ -81,7 +87,7 @@ const User = () => {
 
     const getRoles = async () => {
         try {
-            const response = await axios.get(roleUrl);
+            const response = await axios.get(roleUrl, {headers});
             setRoles(response.data);
         } catch (error) {
             console.error("Error obteniendo roles:", error);
@@ -109,7 +115,7 @@ const User = () => {
         if (!selectedId) return;
 
         try {
-            await axios.delete(`${userUrl}/${selectedId}`);
+            await axios.delete(`${userUrl}/${selectedId}`, {headers});
             showAlert("El usuario ha sido eliminado.", 'success');
             getUsers();
         } catch (error) {
@@ -199,7 +205,7 @@ const User = () => {
                                                 <td>{user.name}</td>
                                                 <td>{user.email}</td>
                                                 <td>{user.phone}</td>
-                                                <td>{user.status}</td>
+                                                <td>{<span className={`status ${user.status === 'Activo' ? 'Active' : 'Inactive'}`}>{user.status}</span>}</td>
                                                 <td>{getRoleName(user.roleId)}</td>
                                                 <td className="content-buttons">
                                                     <Tooltip title="Ver detalle usuario">
@@ -271,7 +277,7 @@ const User = () => {
             <UserModalRegister
                 show={openRegisterModal}
                 handleClose={handleCloseRegisterModal}
-                getUsers={getUsers}
+                getUsers={() => getUsers()}
             />
             <ViewUserModal show={openViewModal} handleClose={handleCloseViewModal} user={selectedUser} roles={roles} />
             <UserEditModal

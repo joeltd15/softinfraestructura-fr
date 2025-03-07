@@ -17,10 +17,15 @@ const UserEditModal = ({ show, handleClose, getUsers, user }) => {
   const [errors, setErrors] = useState({})
   const { showAlert } = useAlert();
 
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  }
 
   useEffect(() => {
     axios
-      .get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/role")
+      .get("http://localhost:2025/api/role", {headers})
       .then((response) => setRoles(response.data))
       .catch((error) => console.error("Error al obtener roles:", error))
   }, [])
@@ -94,7 +99,7 @@ const UserEditModal = ({ show, handleClose, getUsers, user }) => {
     }
 
     try {
-      await axios.put(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/user/${user.id}`, formData)
+      await axios.put(`http://localhost:2025/api/user/${user.id}`, formData,  {headers})
       showAlert("Usuario actualizado correctamente", 'success');
       handleClose()
       getUsers()

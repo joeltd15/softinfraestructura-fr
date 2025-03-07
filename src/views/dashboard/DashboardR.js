@@ -73,10 +73,10 @@ const Dashboard = () => {
       try {
         setLoading(true)
 
-        const usersResponse = await axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/user")
+        const usersResponse = await axios.get("http://localhost:2025/api/user")
         setTotalUsers(usersResponse.data.length)
 
-        const reservationsResponse = await axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/reservation")
+        const reservationsResponse = await axios.get("http://localhost:2025/api/reservation")
         setTotalReservations(reservationsResponse.data.length)
         setReservationData(reservationsResponse.data)
 

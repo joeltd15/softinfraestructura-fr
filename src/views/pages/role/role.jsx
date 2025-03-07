@@ -31,13 +31,19 @@ const Roles = () => {
 
   useEffect(() => {
     return () => {
-      toast.dismiss(); // Limpia todas las alertas Reservados al desmontar el componente
+      toast.dismiss();
     };
   }, []);
 
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  }
+
   const getRoles = async () => {
     try {
-      const response = await axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/role")
+      const response = await axios.get("http://localhost:2025/api/role", {headers})
       setRoles(response.data)
     } catch (error) {
       console.error("Error al obtener los roles:", error)
@@ -59,7 +65,7 @@ const Roles = () => {
     if (!selectedId) return
 
     try {
-      await axios.delete(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/role/${selectedId}`)
+      await axios.delete(`http://localhost:2025/api/role/${selectedId}`, {headers})
       showAlert("Rol eliminado correctamente.", "success");
       getRoles()
     } catch (error) {
@@ -79,8 +85,8 @@ const Roles = () => {
 
     try {
       const [roleResponse, permissionRoleResponse] = await Promise.all([
-        axios.get(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/role/${role.id}`),
-        axios.get(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/permissionRole?roleId=${role.id}`),
+        axios.get(`http://localhost:2025/api/role/${role.id}`, {headers}),
+        axios.get(`http://localhost:2025/api/permissionRole?roleId=${role.id}`, {headers}),
       ])
 
       const roleData = roleResponse.data

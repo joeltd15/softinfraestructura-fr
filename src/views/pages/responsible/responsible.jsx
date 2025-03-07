@@ -38,9 +38,15 @@ const Responsible = () => {
     getUsers()
   }, [])
 
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  }
+
   const getResponsibles = async () => {
     try {
-      const response = await axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/responsible")
+      const response = await axios.get("http://localhost:2025/api/responsible", {headers})
       console.log("Datos obtenidos de responsables:", response.data)
       setResponsibles(response.data)
     } catch (error) {
@@ -50,7 +56,7 @@ const Responsible = () => {
 
   const getUsers = async () => {
     try {
-      const response = await axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/user")
+      const response = await axios.get("http://localhost:2025/api/user", {headers})
       setUsers(response.data)
     } catch (error) {
       console.error("Error al obtener los usuarios:", error)
@@ -71,7 +77,7 @@ const Responsible = () => {
     if (!selectedId) return
 
     try {
-      await axios.delete(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/responsible/${selectedId}`)
+      await axios.delete(`http://localhost:2025/api/responsible/${selectedId}`, {headers})
       showAlert("Responsable eliminado correctamente.", 'success');
       getResponsibles()
     } catch (error) {

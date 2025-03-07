@@ -11,8 +11,8 @@ import "react-toastify/dist/ReactToastify.css"
 import { useAlert } from "../../../../assets/functions/index"
 
 const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
-  const urlUsers = "https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/user"
-  const url = "https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/application"
+  const urlUsers = "http://localhost:2025/api/user"
+  const url = "http://localhost:2025/api/application"
   const [Users, setUsers] = useState([])
   const [Dependence, setDependence] = useState("")
   const [Place, setPlace] = useState("")
@@ -43,8 +43,14 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
     }
   }, [previewImage])
 
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  }
+
   const getUsers = async () => {
-    const response = await axios.get(urlUsers)
+    const response = await axios.get(urlUsers, { headers })
     setUsers(response.data)
   }
 
@@ -66,7 +72,6 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
     }
   }
 
-  // Método alternativo usando axios en lugar de fetch
   const uploadToCloudinary = async (file) => {
     if (!file) return null
 
@@ -76,7 +81,6 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
       formData.append("file", file)
       formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET)
 
-      // Usar axios para la petición
       const response = await axios.post(
         `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
         formData,
@@ -143,7 +147,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
   const submitFormData = async (user, today) => {
     try {
       // 1. Verificar cuántas solicitudes tiene el usuario en estado "Asignada"
-      const response = await axios.get(`${url}?userId=${user.id}&status=Asignada`)
+      const response = await axios.get(`${url}?userId=${user.id}&status=Asignada`, { headers })
       const assignedRequests = response.data.length
 
       // 2. Determinar el estado de la nueva solicitud
@@ -176,9 +180,10 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
       }
 
       // 5. Enviar la solicitud al servidor
-      const result = await axios.post(url, formData, {
+      const result = await axios.post(url, formData, { headers }, {
         headers: { "Content-Type": "multipart/form-data" },
-      })
+      },
+      )
 
       onSolicitudCreated()
       handleClose()

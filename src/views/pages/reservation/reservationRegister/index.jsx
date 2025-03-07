@@ -20,6 +20,12 @@ const ReservationModal = ({ show, selectedDate, onClose, getReservations }) => {
   const [isFullyBooked, setIsFullyBooked] = useState(false)
   const { showAlert } = useAlert()
 
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  }
+
   const user = JSON.parse(localStorage.getItem("user"))
 
   useEffect(() => {
@@ -31,10 +37,16 @@ const ReservationModal = ({ show, selectedDate, onClose, getReservations }) => {
 
   const fetchAvailability = async () => {
     try {
-      const response = await axios.post(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/reservation/availability`, {
+      const response = await axios.post(`http://localhost:2025/api/reservation/availability`, {
         scenery,
         date: selectedDate,
-      })
+      },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
 
       console.log("Respuesta del servidor:", response.data)
 
@@ -43,7 +55,6 @@ const ReservationModal = ({ show, selectedDate, onClose, getReservations }) => {
         updateAvailableTimes(response.data)
         setExistingReservations(response.data)
       } else if (response.data && response.data.data) {
-        // Si la respuesta tiene una estructura { data: [...] }
         updateAvailableTimes(response.data.data)
         setExistingReservations(response.data.data)
       } else {
@@ -62,7 +73,6 @@ const ReservationModal = ({ show, selectedDate, onClose, getReservations }) => {
       }
       showAlert(errorMessage, "error")
 
-      // Resetear los estados relacionados con la disponibilidad
       setAvailableStartTimes([])
       setAvailableEndTimes([])
       setExistingReservations([])
@@ -128,10 +138,8 @@ const ReservationModal = ({ show, selectedDate, onClose, getReservations }) => {
     const startIndex = timeSlots.indexOf(startTime)
     if (startIndex === -1) return
 
-    // Obtener todos los slots de tiempo después de la hora de inicio
     const potentialEndTimes = timeSlots.slice(startIndex + 1)
 
-    // Encontrar la próxima reserva después de nuestra hora de inicio
     let nextReservationStartTime = null
     existingReservations.forEach((reservation) => {
       if (reservation.startTime > startTime) {
@@ -141,12 +149,10 @@ const ReservationModal = ({ show, selectedDate, onClose, getReservations }) => {
       }
     })
 
-    // Si hay una próxima reserva, incluir su hora de inicio como una opción válida para la hora final
     let available = []
     if (nextReservationStartTime) {
       available = potentialEndTimes.filter((time) => time <= nextReservationStartTime)
     } else {
-      // Si no hay próximas reservas, todas las horas posteriores son válidas
       available = potentialEndTimes
     }
 
@@ -215,10 +221,15 @@ const ReservationModal = ({ show, selectedDate, onClose, getReservations }) => {
 
     try {
       // Verificación final de disponibilidad
-      const availabilityCheck = await axios.post(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/reservation/availability`, {
+      const availabilityCheck = await axios.post(`http://localhost:2025/api/reservation/availability`, {
         scenery,
         date: selectedDate,
-      })
+      },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
 
       console.log("Respuesta de verificación de disponibilidad:", availabilityCheck.data)
 
@@ -245,18 +256,15 @@ const ReservationModal = ({ show, selectedDate, onClose, getReservations }) => {
 
       console.log("¿El horario está disponible?", isTimeSlotAvailable)
 
-      // CORRECCIÓN: Verificar si el horario está disponible antes de proceder
       if (!isTimeSlotAvailable) {
         showAlert("El horario seleccionado ya está ocupado. Por favor, seleccione otro horario.", "error")
-        // Actualizar la disponibilidad para mostrar los horarios actualizados
         fetchAvailability()
         return
       }
 
-      // Si está disponible, proceder con la reserva
       console.log("Enviando datos de reserva:", requestData)
       console.log("Datos de reserva a enviar:", requestData)
-      const response = await axios.post("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/reservation", requestData)
+      const response = await axios.post("http://localhost:2025/api/reservation", requestData, {headers})
       console.log("Reserva registrada:", response.data)
 
       toast.success("Reserva registrada correctamente!", {

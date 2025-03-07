@@ -26,11 +26,16 @@ const Reservation = () => {
 
   useEffect(() => {
     return () => {
-      toast.dismiss() // Limpia todas las alertas Reservados al desmontar el componente
+      toast.dismiss() 
     }
   }, [])
 
-  // Función para formatear la hora a formato de 12 horas con AM/PM
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  }
+
   const formatTime = useCallback((timeString) => {
     const [hours, minutes] = timeString.split(":")
     const date = new Date()
@@ -38,13 +43,11 @@ const Reservation = () => {
     return date.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", hour12: true })
   }, [])
 
-  // Función para obtener reservas
   const fetchReservations = useCallback(async () => {
     try {
-      const response = await axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/reservation")
+      const response = await axios.get("http://localhost:2025/api/reservation", {headers})
       const reservations = response.data
 
-      // Obtener usuario logueado
       const user = JSON.parse(localStorage.getItem("user"))
 
       const filteredReservations = reservations.filter((reservation) => {
@@ -61,7 +64,7 @@ const Reservation = () => {
         end: `${reservation.date}T${reservation.finishTime}`,
         className: getEventClass(reservation.estatus),
         extendedProps: {
-          escenario: reservation.escenario || "Sin escenario asignado", // Asumiendo que el escenario viene en la respuesta
+          escenario: reservation.escenario,
           originalTitle: `${formatTime(reservation.startTime)} - ${formatTime(reservation.finishTime)}`,
         },
       }))
@@ -72,7 +75,6 @@ const Reservation = () => {
     }
   }, [formatTime])
 
-  // Asignar clases según estado
   const getEventClass = (estatus) => {
     switch (estatus) {
       case "Pendiente":
@@ -173,7 +175,7 @@ const Reservation = () => {
                   <div className="completed-Circle"></div>
                   <span>Completado</span>
                 </div>
-                {user.roleId == 1 && (
+                {user.roleId == 1 || user.roleId == 5 && (
                   <div className="cancelado d-flex align-items-center">
                     <div className="cancelado-Circle"></div>
                     <span>Cancelado</span>

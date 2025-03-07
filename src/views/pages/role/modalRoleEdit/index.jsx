@@ -21,10 +21,16 @@ const EditRoleModal = ({ show, handleClose, onRoleUpdated, role }) => {
     };
   }, []);
 
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  }
+
   const fetchPermissions = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/permission");
+      const response = await axios.get("http://localhost:2025/api/permission", {headers});
       setPermissions(response.data);
     } catch (error) {
       console.error("❌ Error al obtener permisos:", error);
@@ -73,21 +79,27 @@ const EditRoleModal = ({ show, handleClose, onRoleUpdated, role }) => {
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) return;
-
+    if (!validateForm()) return
+  
     try {
-      await axios.put(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/role/${role.id}`, {
-        name: roleName,
-        permissions: selectedPermissions,
-      });
-      showAlert("Rol actualizado correctamente.", "success");
-      onRoleUpdated();
-      handleClose();
+      // Estructura correcta de axios.put: (url, data, config)
+      await axios.put(
+        `http://localhost:2025/api/role/${role.id}`,
+        {
+          name: roleName,
+          permissions: selectedPermissions,
+        },
+        { headers },
+      )
+  
+      showAlert("Rol actualizado correctamente.", "success")
+      onRoleUpdated()
+      handleClose()
     } catch (error) {
-      console.error("❌ Error al actualizar el rol:", error);
-      showAlert("Error al actualizar el rol.", "error");
+      console.error("❌ Error al actualizar el rol:", error)
+      showAlert("Error al actualizar el rol.", "error")
     }
-  };
+  }
 
   return (
     <Modal show={show} onHide={handleClose} backdrop="static">

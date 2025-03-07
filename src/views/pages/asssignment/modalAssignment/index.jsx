@@ -11,7 +11,7 @@ import Select from "react-select"
 import { useAlert } from "../../../../assets/functions/index"
 
 const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApplication = null }) => {
-  const urlUsers = "https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/user"
+  const urlUsers = "http://localhost:2025/api/user"
   const [applicationId, setApplicationId] = useState("")
   const [responsibleId, setResponsibleId] = useState("")
   const [applications, setApplications] = useState([])
@@ -29,14 +29,20 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
     }
   }, [])
 
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [appRes, respRes, userRes, assignRes] = await Promise.all([
-          axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/application"),
-          axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/responsible"),
-          axios.get(urlUsers),
-          axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/assignment"),
+          axios.get("http://localhost:2025/api/application", {headers}),
+          axios.get("http://localhost:2025/api/responsible", {headers}),
+          axios.get(urlUsers, {headers}),
+          axios.get("http://localhost:2025/api/assignment", {headers}),
         ])
 
         setApplications(appRes.data)
@@ -134,11 +140,11 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
 
     try {
       // Registrar la asignación
-      await axios.post("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/assignment", assignmentData)
+      await axios.post("http://localhost:2025/api/assignment", assignmentData, {headers})
 
       try {
         // Intentar actualizar el estado de la aplicación (si falla, no afectará el flujo principal)
-        await axios.put(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/application/${applicationId}`, {
+        await axios.put(`http://localhost:2025/api/application/${applicationId}`, {headers}, {
           status: "Asignada",
         })
       } catch (updateError) {

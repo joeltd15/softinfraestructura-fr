@@ -20,10 +20,16 @@ const RegisterRoleModal = ({ show, handleClose, onRoleCreated }) => {
         };
     }, []);
 
+    const token = localStorage.getItem("token");
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    }
+  
     useEffect(() => {
         const fetchPermissions = async () => {
             try {
-                const response = await axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/permission");
+                const response = await axios.get("http://localhost:2025/api/permission", {headers});
                 setPermissions(response.data);
             } catch (error) {
                 console.error("Error al obtener permisos:", error);
@@ -93,7 +99,7 @@ const RegisterRoleModal = ({ show, handleClose, onRoleCreated }) => {
         };
 
         try {
-            await axios.post("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/role", requestData);
+            await axios.post("http://localhost:2025/api/role", requestData, {headers});
             showAlert("Rol registrado correctamente.", "success");
             onRoleCreated();
             handleClose();

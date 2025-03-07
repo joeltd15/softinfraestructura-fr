@@ -209,7 +209,6 @@ const Realizado = ({ show, handleClose, application, handleUpdate }) => {
 
     // Enviar el formulario
     handleUpdate(formData)
-    showAlert("Solicitud modificada correctamente", "success")
   }
 
   return (

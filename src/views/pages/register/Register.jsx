@@ -163,7 +163,7 @@ const Register = () => {
     }
 
     try {
-      await axios.post("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/auth/register", dataToSend)
+      await axios.post("http://localhost:2025/api/auth/register", dataToSend)
       showAlert("Registro exitoso.", "success")
       setFormData({ name: "", email: "", password: "", confirmPassword: "", phone: "" })
       setErrors({ name: "", email: "", password: "", confirmPassword: "", phone: "" })

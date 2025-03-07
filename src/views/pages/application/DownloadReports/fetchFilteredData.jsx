@@ -1,11 +1,17 @@
 import axios from "axios"
 
 const fetchFilteredData = async (startDate, endDate) => {
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  }
+
   try {
     const [applicationsResponse, assignmentsResponse, trackingsResponse] = await Promise.all([
-      axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/application"),
-      axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/assignment"),
-      axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/tracking"),
+      axios.get("http://localhost:2025/api/application", {headers}),
+      axios.get("http://localhost:2025/api/assignment", {headers}),
+      axios.get("http://localhost:2025/api/tracking", {headers}),
     ])
 
     const applications = applicationsResponse.data

@@ -23,8 +23,8 @@ import ModalTrackingView from "./../tracking/modalTrackingShow/index.jsx"
 import { MdOutlineDownloading } from "react-icons/md"
 
 const Application = () => {
-  const url = "https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/application"
-  const urlUsers = "https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/user"
+  const url = "http://localhost:2025/api/application"
+  const urlUsers = "http://localhost:2025/api/user"
   const [Users, setUsers] = useState([])
   const [applications, setApplication] = useState([])
   const [show, setShow] = useState(false)
@@ -47,6 +47,12 @@ const Application = () => {
     getApplications()
     getUsers()
   }, [])
+
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  }
 
   const getImageUrl = (path) => {
     if (!path || path.trim() === "") return "/noImage.png"
@@ -119,8 +125,8 @@ const Application = () => {
   const getApplications = async () => {
     try {
       const [applicationsResponse, assignmentsResponse] = await Promise.all([
-        axios.get(url),
-        axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/assignment"),
+        axios.get(url, {headers}),
+        axios.get("http://localhost:2025/api/assignment", {headers}),
       ])
 
       const applicationsData = applicationsResponse.data
@@ -153,7 +159,7 @@ const Application = () => {
 
   const getUsers = async () => {
     try {
-      const response = await axios.get(urlUsers)
+      const response = await axios.get(urlUsers, {headers})
       setUsers(response.data)
     } catch (error) {
       console.error("Error obteniendo usuarios:", error)
@@ -200,7 +206,7 @@ const Application = () => {
     }
 
     axios
-      .put(`${url}/${selectedApplication.id}`, formData, {
+      .put(`${url}/${selectedApplication.id}`, formData, {headers}, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((response) => {
@@ -229,7 +235,7 @@ const Application = () => {
     if (!selectedId) return
 
     axios
-      .delete(`${url}/${selectedId}`)
+      .delete(`${url}/${selectedId}`, {headers})
       .then(() => {
         toast.success("El registro ha sido eliminado.")
         getApplications()
@@ -283,7 +289,7 @@ const Application = () => {
     try {
       // Obtener todas las asignaciones
       const assignmentsResponse = await axios.get(
-        "https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/assignment",
+        "http://localhost:2025/api/assignment", {headers}
       )
       const assignments = assignmentsResponse.data
 
@@ -297,7 +303,7 @@ const Application = () => {
 
       // Ahora obtener el tracking con el assignmentId encontrado
       const trackingResponse = await axios.get(
-        "https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/tracking",
+        "http://localhost:2025/api/tracking",{headers},
       )
       const trackings = trackingResponse.data
       const tracking = trackings.find((t) => t.assignmentId === assignment.id)
@@ -348,7 +354,7 @@ const Application = () => {
                         onClick={() => {
                           axios
                             .post(
-                              "https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/application/assign-all-pending",
+                              "http://localhost:2025/api/application/assign-all-pending",
                             )
                             .then((response) => {
                               toast.success("Las solicitudes pendientes han sido asignadas")

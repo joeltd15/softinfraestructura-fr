@@ -26,16 +26,22 @@ const ModalAssignmentEdit = ({ show, handleClose, assignment, handleUpdate }) =>
     }
   }, [assignment]);
 
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  }
+
   useEffect(() => {
-    axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/application")
+    axios.get("http://localhost:2025/api/application", {headers})
       .then(response => setApplications(response.data))
       .catch(error => console.error("Error al obtener solicitudes:", error));
 
-    axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/responsible")
+    axios.get("http://localhost:2025/api/responsible", {headers})
       .then(response => setResponsibles(response.data))
       .catch(error => console.error("Error al obtener responsables:", error));
 
-    axios.get("https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/user")
+    axios.get("http://localhost:2025/api/user", {headers})
       .then(response => setUsers(response.data))
       .catch(error => console.error("Error al obtener usuarios:", error));
   }, []);

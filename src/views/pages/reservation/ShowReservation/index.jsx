@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import axios from "axios"
 import Button from "react-bootstrap/Button"
@@ -9,7 +7,7 @@ import { toast } from "react-toastify"
 import { useAlert } from "../../../../assets/functions/index"
 
 function ShowModal({ show, onClose, reservationId }) {
-  const urlUsers = 'https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/user'
+  const urlUsers = 'http://localhost:2025/api/user'
   const [Users, setUsers] = useState([])
   const [scenery, setScenery] = useState("")
   const [startTime, setStartTime] = useState("")
@@ -29,8 +27,14 @@ function ShowModal({ show, onClose, reservationId }) {
     getUsers()
   }, [])
 
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  }
+
   const getUsers = async () => {
-    const response = await axios.get(urlUsers)
+    const response = await axios.get(urlUsers, {headers})
     setUsers(response.data)
   }
 
@@ -42,7 +46,7 @@ function ShowModal({ show, onClose, reservationId }) {
   useEffect(() => {
     if (reservationId) {
       axios
-        .get(`https://softinfraestructura-a6yl4j3yy-joeltuiran15-gmailcoms-projects.vercel.app/api/reservation/${reservationId}`)
+        .get(`http://localhost:2025/api/reservation/${reservationId}`, {headers})
         .then((response) => {
           const { scenery, startTime, finishTime, activity, estatus, userId } = response.data
           setScenery(scenery)
