@@ -85,7 +85,7 @@ const Login = () => {
       showAlert("Inicio de sesión exitoso!.", "success");
 
       setTimeout(() => {
-        navigate(user.roleId === 1 ? "/dashboard" : "/");
+        navigate(user.roleId === 1 ? "/" : "/" && user.roleId === 4 ? "/dashboardM" : "/"  && user.roleId === 5 ? "/dashboardR" : "/");
       }, 3000);
     } catch (error) {
       console.error("Error completo:", error);

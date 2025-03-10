@@ -26,6 +26,12 @@ const SendEmail = () => {
     };
   }, []);
 
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -37,20 +43,6 @@ const SendEmail = () => {
     setLoading(true);
 
     try {
-      // 1️⃣ Consultar la lista de usuarios
-      const usersResponse = await axios.get('http://localhost:2025/api/user');
-      const users = usersResponse.data;
-
-      // 2️⃣ Verificar si el correo existe en la base de datos
-      const userExists = users.some(user => user.email === email);
-
-      if (!userExists) {
-        showAlert('El correo ingresado no está registrado.', 'error');
-        setLoading(false);
-        return;
-      }
-
-      // 3️⃣ Si existe, enviar la solicitud de recuperación de contraseña
       const response = await axios.post(
         'http://localhost:2025/api/auth/forgot-password',
         { email },
@@ -61,7 +53,7 @@ const SendEmail = () => {
 
       // 4️⃣ Redirigir a la página de ingreso del código
       setTimeout(() => {
-        window.location.href = 'http://localhost:3000/#/forgotPassword';
+        window.location.href = '/forgotPassword';
       }, 2000); // Espera 2 segundos para mostrar el mensaje antes de redirigir
     } catch (error) {
       showAlert(error.response?.data?.error || 'Error al enviar el código', 'error');
