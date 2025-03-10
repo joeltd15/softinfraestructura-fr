@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect, useRef, useState, useCallback } from "react"
 import FullCalendar from "@fullcalendar/react"
 import dayGridPlugin from "@fullcalendar/daygrid"
@@ -45,7 +43,7 @@ const Reservation = () => {
 
   const fetchReservations = useCallback(async () => {
     try {
-      const response = await axios.get("http://localhost:2025/api/reservation", { headers })
+      const response = await axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/reservation", { headers })
       const reservations = response.data
 
       const user = JSON.parse(localStorage.getItem("user"))
@@ -59,6 +57,7 @@ const Reservation = () => {
         id: reservation.id,
         scenery: reservation.scenery,
         estatus: reservation.estatus,
+        userId: reservation.userId,
         title: `${formatTime(reservation.startTime)} - ${formatTime(reservation.finishTime)}`,
         start: `${reservation.date}T${reservation.startTime}`,
         end: `${reservation.date}T${reservation.finishTime}`,
@@ -124,6 +123,7 @@ const Reservation = () => {
     setSelectedEvent({
       id: clickInfo.event.id,
       estatus: clickInfo.event.extendedProps.estatus,
+      userId: clickInfo.event.extendedProps.userId,
       x: rect.left + window.scrollX,
       y: rect.bottom + window.scrollY,
     })

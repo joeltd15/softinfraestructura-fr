@@ -46,7 +46,7 @@ const Responsible = () => {
 
   const getResponsibles = async () => {
     try {
-      const response = await axios.get("http://localhost:2025/api/responsible", {headers})
+      const response = await axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/responsible", {headers})
       console.log("Datos obtenidos de responsables:", response.data)
       setResponsibles(response.data)
     } catch (error) {
@@ -56,7 +56,7 @@ const Responsible = () => {
 
   const getUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:2025/api/user", {headers})
+      const response = await axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/user", {headers})
       setUsers(response.data)
     } catch (error) {
       console.error("Error al obtener los usuarios:", error)
@@ -77,7 +77,7 @@ const Responsible = () => {
     if (!selectedId) return
 
     try {
-      await axios.delete(`http://localhost:2025/api/responsible/${selectedId}`, {headers})
+      await axios.delete(`https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/responsible/${selectedId}`, {headers})
       showAlert("Responsable eliminado correctamente.", 'success');
       getResponsibles()
     } catch (error) {

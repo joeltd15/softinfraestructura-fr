@@ -47,7 +47,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
   useEffect(() => {
     const fetchAssignments = async () => {
       try {
-        const response = await axios.get("http://localhost:2025/api/assignment", { headers })
+        const response = await axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/assignment", { headers })
         setAssignments(response.data)
       } catch (error) {
         console.error("Error al obtener asignaciones:", error)
@@ -171,7 +171,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
 
       // Send the request to the server
       const result = await axios.post(
-        "http://localhost:2025/api/tracking",
+        "https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/tracking",
         formData,
         { headers },
         {

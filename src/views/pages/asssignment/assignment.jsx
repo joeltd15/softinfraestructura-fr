@@ -62,9 +62,9 @@ const Assignment = () => {
   const getAssignment = async () => {
     try {
       const [assignmentsResponse, responsiblesResponse, applicationsResponse] = await Promise.all([
-        axios.get("http://localhost:2025/api/assignment", {headers}),
-        axios.get("http://localhost:2025/api/responsible", {headers}),
-        axios.get("http://localhost:2025/api/application", {headers}),
+        axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/assignment", {headers}),
+        axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/responsible", {headers}),
+        axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/application", {headers}),
       ])
 
       const assignmentsData = assignmentsResponse.data
@@ -105,7 +105,7 @@ const Assignment = () => {
 
   const handleShow = async (applicationId) => {
     try {
-      const response = await axios.get(`http://localhost:2025/api/application/${applicationId}`, {headers})
+      const response = await axios.get(`https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/application/${applicationId}`, {headers})
       setSelectedAssignmentShow(response.data)
       setShowModalShow(true)
     } catch (error) {
@@ -116,7 +116,7 @@ const Assignment = () => {
 
   const handlePdf = async (applicationId) => {
     try {
-      const response = await axios.get(`http://localhost:2025/api/application/${applicationId}`, {headers})
+      const response = await axios.get(`https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/application/${applicationId}`, {headers})
       setSelectedAssignmentShow(response.data)
       setShowApplicationId(applicationId)
     } catch (error) {
@@ -127,7 +127,7 @@ const Assignment = () => {
 
   const getUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:2025/api/user", {headers})
+      const response = await axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/user", {headers})
       setUsers(response.data)
     } catch (error) {
       console.error("Error al obtener los usuarios:", error)
@@ -147,7 +147,7 @@ const Assignment = () => {
 
   const handleUpdateAssignment = async (updatedAssignment) => {
     try {
-      await axios.put(`http://localhost:2025/api/assignment/${updatedAssignment.id}`, updatedAssignment, {headers})
+      await axios.put(`https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/assignment/${updatedAssignment.id}`, updatedAssignment, {headers})
       showAlert('Asignación actualizada con éxito.', 'success');
       getAssignment()
       setShowEditModal(false)
@@ -161,7 +161,7 @@ const Assignment = () => {
 
   const handlePdfDownload = async (applicationId) => {
     try {
-      const response = await axios.get(`http://localhost:2025/api/application/${applicationId}`, {headers})
+      const response = await axios.get(`https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/application/${applicationId}`, {headers})
       setSelectedAssignmentShow(response.data)
 
       const doc = <DocumentPdf Application={response.data} />

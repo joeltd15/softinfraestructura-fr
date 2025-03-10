@@ -23,8 +23,8 @@ import ModalTrackingView from "./../tracking/modalTrackingShow/index.jsx"
 import { MdOutlineDownloading } from "react-icons/md"
 
 const Application = () => {
-  const url = "http://localhost:2025/api/application"
-  const urlUsers = "http://localhost:2025/api/user"
+  const url = "https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/application"
+  const urlUsers = "https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/user"
   const [Users, setUsers] = useState([])
   const [applications, setApplication] = useState([])
   const [show, setShow] = useState(false)
@@ -126,7 +126,7 @@ const Application = () => {
     try {
       const [applicationsResponse, assignmentsResponse] = await Promise.all([
         axios.get(url, { headers }),
-        axios.get("http://localhost:2025/api/assignment", { headers }),
+        axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/assignment", { headers }),
       ])
 
       const applicationsData = applicationsResponse.data
@@ -289,7 +289,7 @@ const Application = () => {
     try {
       // Obtener todas las asignaciones
       const assignmentsResponse = await axios.get(
-        "http://localhost:2025/api/assignment", { headers }
+        "https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/assignment", { headers }
       )
       const assignments = assignmentsResponse.data
 
@@ -303,7 +303,7 @@ const Application = () => {
 
       // Ahora obtener el tracking con el assignmentId encontrado
       const trackingResponse = await axios.get(
-        "http://localhost:2025/api/tracking", { headers },
+        "https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/tracking", { headers },
       )
       const trackings = trackingResponse.data
       const tracking = trackings.find((t) => t.assignmentId === assignment.id)
@@ -354,7 +354,7 @@ const Application = () => {
                         onClick={() => {
                           axios
                             .post(
-                              "http://localhost:2025/api/application/assign-all-pending",
+                              "https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/application/assign-all-pending",
                             )
                             .then((response) => {
                               toast.success("Las solicitudes pendientes han sido asignadas")

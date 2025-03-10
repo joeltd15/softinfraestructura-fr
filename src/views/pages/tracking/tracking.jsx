@@ -57,9 +57,9 @@ const Tracking = () => {
     setLoading(true)
     try {
       const [trackingResponse, assignmentsResponse, responsiblesResponse] = await Promise.all([
-        axios.get("http://localhost:2025/api/tracking", { headers }),
-        axios.get("http://localhost:2025/api/assignment", { headers }),
-        axios.get("http://localhost:2025/api/responsible", { headers }),
+        axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/tracking", { headers }),
+        axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/assignment", { headers }),
+        axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/responsible", { headers }),
       ])
 
       const trackingData = trackingResponse.data
@@ -121,7 +121,7 @@ const Tracking = () => {
 
   const handleUpdate = (formData) => {
     axios
-      .put(`http://localhost:2025/api/tracking/${selectedTracking.id}`, formData, { headers }, {
+      .put(`https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/tracking/${selectedTracking.id}`, formData, { headers }, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then(() => {
@@ -149,7 +149,7 @@ const Tracking = () => {
     if (!selectedId) return
 
     axios
-      .delete(`http://localhost:2025/api/tracking/${selectedId}`, { headers })
+      .delete(`https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/tracking/${selectedId}`, { headers })
       .then(() => {
         showAlert("El registro ha sido eliminado.", 'success');
 

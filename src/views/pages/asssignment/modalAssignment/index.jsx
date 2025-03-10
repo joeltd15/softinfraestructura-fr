@@ -11,7 +11,7 @@ import Select from "react-select"
 import { useAlert } from "../../../../assets/functions/index"
 
 const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApplication = null }) => {
-  const urlUsers = "http://localhost:2025/api/user"
+  const urlUsers = "https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/user"
   const [applicationId, setApplicationId] = useState("")
   const [responsibleId, setResponsibleId] = useState("")
   const [applications, setApplications] = useState([])
@@ -39,10 +39,10 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
     const fetchData = async () => {
       try {
         const [appRes, respRes, userRes, assignRes] = await Promise.all([
-          axios.get("http://localhost:2025/api/application", {headers}),
-          axios.get("http://localhost:2025/api/responsible", {headers}),
+          axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/application", {headers}),
+          axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/responsible", {headers}),
           axios.get(urlUsers, {headers}),
-          axios.get("http://localhost:2025/api/assignment", {headers}),
+          axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/assignment", {headers}),
         ])
 
         setApplications(appRes.data)
@@ -140,11 +140,11 @@ const ModalAssignment = ({ show, handleClose, onAssignmentCreated, assignmentApp
 
     try {
       // Registrar la asignación
-      await axios.post("http://localhost:2025/api/assignment", assignmentData, {headers})
+      await axios.post("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/assignment", assignmentData, {headers})
 
       try {
         // Intentar actualizar el estado de la aplicación (si falla, no afectará el flujo principal)
-        await axios.put(`http://localhost:2025/api/application/${applicationId}`, {headers}, {
+        await axios.put(`https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/application/${applicationId}`, {headers}, {
           status: "Asignada",
         })
       } catch (updateError) {

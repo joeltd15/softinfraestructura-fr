@@ -73,10 +73,10 @@ const Dashboard = () => {
       try {
         setLoading(true)
 
-        const usersResponse = await axios.get("http://localhost:2025/api/user", {headers})
+        const usersResponse = await axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/user", {headers})
         setTotalUsers(usersResponse.data.length)
 
-        const applicationsResponse = await axios.get("http://localhost:2025/api/application", {headers})
+        const applicationsResponse = await axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/application", {headers})
         setTotalApplications(applicationsResponse.data.length)
         setReportData(applicationsResponse.data)
 
@@ -110,8 +110,8 @@ const Dashboard = () => {
         setDependencyData(dependencyChartData)
 
         // Fetch responsible persons and assignments
-        const responsibleResponse = await axios.get("http://localhost:2025/api/responsible", {headers})
-        const assignmentsResponse = await axios.get("http://localhost:2025/api/assignment", {headers})
+        const responsibleResponse = await axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/responsible", {headers})
+        const assignmentsResponse = await axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/assignment", {headers})
         
         // Process responsible persons data with completed assignments count
         const responsibleWithCompletedAssignments = processResponsibleDataWithCompletedStatus(

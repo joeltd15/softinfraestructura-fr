@@ -7,7 +7,7 @@ import { toast } from "react-toastify"
 import { useAlert } from "../../../../assets/functions/index"
 
 function ShowModal({ show, onClose, reservationId }) {
-  const urlUsers = 'http://localhost:2025/api/user'
+  const urlUsers = 'https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/user'
   const [Users, setUsers] = useState([])
   const [scenery, setScenery] = useState("")
   const [startTime, setStartTime] = useState("")
@@ -46,7 +46,7 @@ function ShowModal({ show, onClose, reservationId }) {
   useEffect(() => {
     if (reservationId) {
       axios
-        .get(`http://localhost:2025/api/reservation/${reservationId}`, {headers})
+        .get(`https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/reservation/${reservationId}`, {headers})
         .then((response) => {
           const { scenery, startTime, finishTime, activity, estatus, userId } = response.data
           setScenery(scenery)

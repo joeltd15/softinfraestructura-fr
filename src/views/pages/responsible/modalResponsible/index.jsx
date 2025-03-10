@@ -45,14 +45,14 @@ const RegisterResponsibleModal = ({ show, handleClose, onResponsibleCreated }) =
   const getUsers = async () => {
     try {
       // Obtener todos los usuarios
-      const response = await axios.get("http://localhost:2025/api/user", {headers});
+      const response = await axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/user", {headers});
       const allUsers = response.data;
   
       // Filtrar solo los usuarios con rolId 2 (Encargados) y que estén en estado activo
       const encargadosActivos = allUsers.filter(user => user.roleId === 2 && user.status === "Activo");
   
       // Obtener los usuarios ya registrados como responsables
-      const responsibleResponse = await axios.get("http://localhost:2025/api/responsible", {headers});
+      const responsibleResponse = await axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/responsible", {headers});
       const registeredResponsibles = responsibleResponse.data.map(responsible => responsible.userId);
   
       // Filtrar los usuarios que no estén ya registrados como responsables
@@ -88,7 +88,7 @@ const RegisterResponsibleModal = ({ show, handleClose, onResponsibleCreated }) =
   
     try {
       // Verificar si el usuario ya está registrado en responsables
-      const responsibleResponse = await axios.get("http://localhost:2025/api/responsible", {headers});
+      const responsibleResponse = await axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/responsible", {headers});
       const registeredResponsibles = responsibleResponse.data.map(responsible => responsible.userId);
   
       if (registeredResponsibles.includes(parseInt(userId))) {
@@ -97,7 +97,7 @@ const RegisterResponsibleModal = ({ show, handleClose, onResponsibleCreated }) =
       }
   
       const requestData = { userId, responsibilities };
-      await axios.post("http://localhost:2025/api/responsible", requestData, {headers});
+      await axios.post("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/responsible", requestData, {headers});
       showAlert("Responsable registrado correctamente.", "success");
       onResponsibleCreated();
       handleClose();

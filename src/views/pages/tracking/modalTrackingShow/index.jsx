@@ -3,11 +3,10 @@ import Button from "react-bootstrap/Button"
 import { useState } from "react"
 import { Image } from "react-bootstrap"
 
-const ModalTrackingView = ({ show, handleClose, tracking }) => {
+const ModalTrackingView = ({ show, handleClose, tracking, userRole }) => {
   const CLOUDINARY_CLOUD_NAME = "dvzjinfzq"
   const [showLargePreview, setShowLargePreview] = useState(false)
   const user = JSON.parse(localStorage.getItem("user"))
-
   const getImageUrl = (path) => {
     if (!path || path.trim() === "") return "/noImage.png"
 
@@ -31,6 +30,7 @@ const ModalTrackingView = ({ show, handleClose, tracking }) => {
       <Modal.Body>
         {tracking ? (
           <div>
+            {/* Solo mostrar estos campos si el usuario tiene rol 1 o 4 */}
             {user.roleId === 1 || user.roleId === 4 ? (
               <>
                 <div className="d-flex align-items-center justify-content-center row">
@@ -46,15 +46,11 @@ const ModalTrackingView = ({ show, handleClose, tracking }) => {
                   </div>
                 </div>
                 <div className="d-flex align-items-center justify-content-center row">
-                  <div className="col-sm-6">
+                  <div className="col-sm-12">
                     <p>
-                      <strong>Responsable:</strong> {tracking.assignmentId}
+                      <strong>Observaciones:</strong> {tracking.observations}
                     </p>
-                  </div>
-                  <div className="col-sm-6">
-                    <p>
-                      <strong>Estado:</strong> {tracking.status}
-                    </p>
+
                   </div>
                 </div>
               </>
@@ -63,7 +59,7 @@ const ModalTrackingView = ({ show, handleClose, tracking }) => {
             <div className="d-flex align-items-center justify-content-center row">
               <div className="col-sm-6">
                 <p>
-                  <strong>Observaciones:</strong> {tracking.observations}
+                  <strong>Estado:</strong> {tracking.status}
                 </p>
               </div>
               <div className="col-sm-6">

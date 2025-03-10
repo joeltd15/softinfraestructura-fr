@@ -69,7 +69,7 @@ const EventMenu = ({ event, onClose, getReservations }) => {
 
   const handleConfirmDelete = async () => {
     try {
-      await fetch(`http://localhost:2025/api/reservation/${event.id}`, {
+      await fetch(`https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/reservation/${event.id}`, {
         method: "DELETE",
         headers: headers,
       })
@@ -84,7 +84,7 @@ const EventMenu = ({ event, onClose, getReservations }) => {
   const handleConfirmCancel = async () => {
     try {
       await axios.put(
-        `http://localhost:2025/api/reservation/${event.id}`,
+        `https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/reservation/${event.id}`,
         { estatus: "Cancelado" },
         { headers: headers },
       )
@@ -100,11 +100,11 @@ const EventMenu = ({ event, onClose, getReservations }) => {
   const handleConfirmReserved = async () => {
     try {
       await axios.put(
-        `http://localhost:2025/api/reservation/${event.id}`,
+        `https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/reservation/${event.id}`,
         { estatus: "Reservado" },
         { headers: headers },
       )
-      showAlert("Reserva confirmada correctamente", "success")
+
       getReservations()
       onClose()
       setOpenConfirmDialog(false)
@@ -116,14 +116,18 @@ const EventMenu = ({ event, onClose, getReservations }) => {
 
   const userStr = localStorage.getItem("user")
   if (!userStr) {
-    return (
-      console.log('No hay datos del usuario')
-    )
+    return console.log("No hay datos del usuario")
   }
 
   const user = JSON.parse(userStr)
   const isAdmin = user.roleId === 1 || user.roleId === 5
-  const isUser = user.roleId === 3
+
+  // Debug to check the structure of event and user objects
+  console.log("Event object:", event)
+  console.log("User object:", user)
+
+  const isCreator = event.userId === user.id
+
   const isCompletedOrCanceled = event.estatus === "Realizado" || event.estatus === "Cancelado"
 
   return (
@@ -157,8 +161,8 @@ const EventMenu = ({ event, onClose, getReservations }) => {
                 </>
               )}
 
-              {/* Si es usuario (rol 3) solo puede ver "Editar" y "Cancelar" */}
-              {isUser && (
+              {/* Si no es admin pero creó la reserva, puede editar, cancelar y ver detalles */}
+              {!isAdmin && isCreator && (
                 <>
                   <Button fullWidth className="Update-button" onClick={handleEdit}>
                     <FaPencilAlt /> Editar
@@ -171,6 +175,13 @@ const EventMenu = ({ event, onClose, getReservations }) => {
                   </Button>
                 </>
               )}
+
+              {/* Si no es admin y no creó la reserva, solo puede ver detalles */}
+              {!isAdmin && !isCreator && (
+                <Button fullWidth className="Show-button" onClick={handleShow}>
+                  <FaEye /> Ver detalle
+                </Button>
+              )}
             </>
           )}
           <Button fullWidth className="Delete-button" id="cerrar" onClick={onClose}>
@@ -178,7 +189,12 @@ const EventMenu = ({ event, onClose, getReservations }) => {
           </Button>
         </CardContent>
       </Card>
-      <ModalEditReservation show={ModalEdit} reservationId={SelectedReservation} onClose={() => setModalEdit(false)} getReservations={() => getReservations()}/>
+      <ModalEditReservation
+        show={ModalEdit}
+        reservationId={SelectedReservation}
+        onClose={() => setModalEdit(false)}
+        getReservations={() => getReservations()}
+      />
       <ModalShowReservation show={ModalShow} reservationId={SelectedReservation} onClose={() => setModalShow(false)} />
       <DialogDelete
         open={openDeleteDialog}

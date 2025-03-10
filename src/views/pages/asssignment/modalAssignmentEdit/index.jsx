@@ -33,15 +33,15 @@ const ModalAssignmentEdit = ({ show, handleClose, assignment, handleUpdate }) =>
   }
 
   useEffect(() => {
-    axios.get("http://localhost:2025/api/application", {headers})
+    axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/application", {headers})
       .then(response => setApplications(response.data))
       .catch(error => console.error("Error al obtener solicitudes:", error));
 
-    axios.get("http://localhost:2025/api/responsible", {headers})
+    axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/responsible", {headers})
       .then(response => setResponsibles(response.data))
       .catch(error => console.error("Error al obtener responsables:", error));
 
-    axios.get("http://localhost:2025/api/user", {headers})
+    axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/user", {headers})
       .then(response => setUsers(response.data))
       .catch(error => console.error("Error al obtener usuarios:", error));
   }, []);

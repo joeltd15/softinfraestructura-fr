@@ -9,9 +9,9 @@ const fetchFilteredData = async (startDate, endDate) => {
 
   try {
     const [applicationsResponse, assignmentsResponse, trackingsResponse] = await Promise.all([
-      axios.get("http://localhost:2025/api/application", {headers}),
-      axios.get("http://localhost:2025/api/assignment", {headers}),
-      axios.get("http://localhost:2025/api/tracking", {headers}),
+      axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/application", {headers}),
+      axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/assignment", {headers}),
+      axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/tracking", {headers}),
     ])
 
     const applications = applicationsResponse.data

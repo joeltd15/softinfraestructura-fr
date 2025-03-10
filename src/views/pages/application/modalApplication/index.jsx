@@ -11,8 +11,8 @@ import "react-toastify/dist/ReactToastify.css"
 import { useAlert } from "../../../../assets/functions/index"
 
 const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
-  const urlUsers = "http://localhost:2025/api/user"
-  const url = "http://localhost:2025/api/application"
+  const urlUsers = "https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/user"
+  const url = "https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/application"
   const [Users, setUsers] = useState([])
   const [Dependence, setDependence] = useState("")
   const [Place, setPlace] = useState("")

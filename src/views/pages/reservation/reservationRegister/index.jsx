@@ -37,7 +37,7 @@ const ReservationModal = ({ show, selectedDate, onClose, getReservations }) => {
 
   const fetchAvailability = async () => {
     try {
-      const response = await axios.post(`http://localhost:2025/api/reservation/availability`, {
+      const response = await axios.post(`https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/reservation/availability`, {
         scenery,
         date: selectedDate,
       },
@@ -221,7 +221,7 @@ const ReservationModal = ({ show, selectedDate, onClose, getReservations }) => {
 
     try {
       // Verificación final de disponibilidad
-      const availabilityCheck = await axios.post(`http://localhost:2025/api/reservation/availability`, {
+      const availabilityCheck = await axios.post(`https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/reservation/availability`, {
         scenery,
         date: selectedDate,
       },
@@ -264,7 +264,7 @@ const ReservationModal = ({ show, selectedDate, onClose, getReservations }) => {
 
       console.log("Enviando datos de reserva:", requestData)
       console.log("Datos de reserva a enviar:", requestData)
-      const response = await axios.post("http://localhost:2025/api/reservation", requestData, {headers})
+      const response = await axios.post("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/reservation", requestData, {headers})
       console.log("Reserva registrada:", response.data)
 
       toast.success("Reserva registrada correctamente!", {
