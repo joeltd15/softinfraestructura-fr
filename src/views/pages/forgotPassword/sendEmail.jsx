@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 import { useAlert } from '../../../assets/functions/index';
 import {
   CButton,
@@ -19,6 +20,8 @@ const SendEmail = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const { showAlert } = useAlert();
+  const navigate = useNavigate();
+  
 
   useEffect(() => {
     return () => {
@@ -53,7 +56,7 @@ const SendEmail = () => {
 
       // 4️⃣ Redirigir a la página de ingreso del código
       setTimeout(() => {
-        window.location.href = '/forgotPassword';
+        navigate('/forgotPassword');
       }, 2000); // Espera 2 segundos para mostrar el mensaje antes de redirigir
     } catch (error) {
       showAlert(error.response?.data?.error || 'Error al enviar el código', 'error');

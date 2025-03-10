@@ -5,6 +5,7 @@ import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { Col, Row, Button } from "react-bootstrap"
 import { useAlert } from "../../../assets/functions/index"
+import { useNavigate } from 'react-router-dom';
 import {
   CButton,
   CCard,
@@ -48,6 +49,8 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const { showAlert } = useAlert()
+  const navigate = useNavigate();
+  
 
   // Validation patterns
   const patterns = {
@@ -168,7 +171,7 @@ const Register = () => {
       setTouched({ name: false, email: false, password: false, confirmPassword: false, phone: false })
 
       setTimeout(() => {
-        window.location.href = "http://localhost:3000/#/login"
+        navigate('/login')
       }, 4500)
     } catch (error) {
       console.log("Error en la solicitud:", error.response?.data)
