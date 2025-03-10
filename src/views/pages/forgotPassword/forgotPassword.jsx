@@ -31,14 +31,13 @@ const ResetPassword = () => {
   }, []);
 
   const handleResetPassword = async (e) => {
-
     e.preventDefault();
-
+  
     if (!email || !resetCode || !newPassword) {
       showAlert('Por favor, completa todos los campos.', 'error');
       return;
     }
-
+  
     setLoading(true);
     try {
       const { data } = await axios.post(
@@ -46,19 +45,20 @@ const ResetPassword = () => {
         { email, resetCode, newPassword },
         { headers: { 'Content-Type': 'application/json' } }
       );
-
-      if (data.success) {
+  
+      // Si la respuesta contiene un mensaje exitoso, mostramos éxito aunque `success` sea falso
+      if (data.success || (data.message && data.message.toLowerCase().includes('contraseña actualizada'))) {
         showAlert(data.message || 'Contraseña restablecida con éxito', 'success');
         setEmail('');
         setResetCode('');
         setNewPassword('');
-
+  
         // Redirigir al login después de 2 segundos
         setTimeout(() => {
           navigate('/login');
         }, 2000);
       } else {
-        showAlert(data.error || 'Código incorrecto, verifica e intenta nuevamente', 'error');
+        showAlert(data.error || data.message || 'Código incorrecto, verifica e intenta nuevamente', 'error');
       }
     } catch (error) {
       showAlert(error.response?.data?.error || 'Error al restablecer la contraseña', 'error');
@@ -66,6 +66,7 @@ const ResetPassword = () => {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center pattern">
