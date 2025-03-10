@@ -264,7 +264,7 @@ const Assignment = () => {
                                 <FaFilePdf />
                               </button>
                             </Tooltip>
-                            {applicationStatuses[assignment.applicationId] !== "Realizado" && (
+                            {applicationStatuses[assignment.applicationId] !== "Realizado" && applicationStatuses[assignment.applicationId] !== "Cancelado" && (
                               <Tooltip title="Reasignar encargado">
                                 <button
                                   className="Table-button Update-button"
@@ -274,7 +274,7 @@ const Assignment = () => {
                                 </button>
                               </Tooltip>
                             )}
-                            {applicationStatuses[assignment.applicationId] !== "Realizado" && (
+                            {applicationStatuses[assignment.applicationId] !== "Realizado" && applicationStatuses[assignment.applicationId] !== "Cancelado" && (
                               <Tooltip title="Registrar detalle de mantenimiento">
                                 <button
                                   className="Table-button Asign-button"
