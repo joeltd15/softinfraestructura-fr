@@ -38,7 +38,7 @@ const AppSidebar = () => {
   }, [])
 
   const getRoles = async () => {
-    const response = await axios.get(urlRole, {headers});
+    const response = await axios.get(urlRole, { headers });
     setRole(response.data)
   }
 
@@ -69,7 +69,10 @@ const AppSidebar = () => {
       <CSidebarHeader className="border-bottom">
         <CSidebarBrand to="/">
           <div className='user-login'>
-            <p><FaUserCircle />{user.name}</p>
+            <p>
+              <FaUserCircle />
+              <span className="user-name">{user.name}</span>
+            </p>
             <div className='user-content'>
               <span className='info-user'>{userRole(user.roleId)}</span>
             </div>

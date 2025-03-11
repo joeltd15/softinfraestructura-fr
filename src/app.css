@@ -34,10 +34,17 @@
     padding-bottom: 0px;
     padding-top: 10px;
     font-family: "Open Sans", sans-serif !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px; /* Ajusta este valor según el ancho de tu sidebar */
+    display: flex;
+    align-items: center;
 }
 
 .user-login p svg {
     margin-right: 10px;
+    flex-shrink: 0; /* Evita que el ícono se encoja */
 }
 
 .user-content {
@@ -51,6 +58,9 @@
     color: #ccc;
     margin: 5px;
     font-family: "Open Sans", sans-serif !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .btn-green {

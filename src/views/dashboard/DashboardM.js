@@ -381,18 +381,6 @@ const Dashboard = () => {
               Análisis
             </button>
           </div>
-          <div className="tabs-actions">
-            <div className="dropdown">
-              <button className="dropdown-button">
-                <span className="more-icon">⋮</span>
-              </button>
-              <div className="dropdown-content">
-                <a href="#">Descargar PDF</a>
-                <a href="#">Exportar datos</a>
-                <a href="#">Compartir</a>
-              </div>
-            </div>
-          </div>
         </div>
 
         <div className="tab-content" style={{ display: activeTab === "overview" ? "block" : "none" }}>
