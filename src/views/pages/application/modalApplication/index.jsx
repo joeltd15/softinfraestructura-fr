@@ -11,8 +11,8 @@ import "react-toastify/dist/ReactToastify.css"
 import { useAlert } from "../../../../assets/functions/index"
 
 const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
-  const urlUsers = "https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/user"
-  const url = "https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/application"
+  const urlUsers = "https://softinfraestructura-gray.vercel.app/api/user"
+  const url = "https://softinfraestructura-gray.vercel.app/api/application"
   const [Users, setUsers] = useState([])
   const [Dependence, setDependence] = useState("")
   const [Place, setPlace] = useState("")
@@ -253,8 +253,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
             />
             <Form.Control.Feedback type="invalid">{errors.News}</Form.Control.Feedback>
           </Form.Group>
-          <Form.Group className="mb-3" as={Row} controlId="formTypeAndResponsible">
-            <Col sm="6">
+          <Form.Group className="mb-3" controlId="formTypeAndResponsible">
               <Form.Label className="required">Tipo de solicitud</Form.Label>
               <Form.Select
                 value={TypeReport}
@@ -276,21 +275,21 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated }) => {
                 <option value="Sistemas y redes">Sistemas y redes</option>
               </Form.Select>
               <Form.Control.Feedback type="invalid">{errors.TypeReport}</Form.Control.Feedback>
-            </Col>
-            <Col sm="6">
-              <Form.Label className="required">Responsable del Espacio</Form.Label>
-              <Form.Control
-                type="text"
-                value={ResponsibleForSpace}
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label className="required">Responsable del Espacio - Teléfono del responsable</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={ResponsibleForSpace}
                 onChange={(e) => {
                   setResponsibleForSpace(e.target.value)
                   setErrors({ ...errors, ResponsibleForSpace: "" })
                 }}
                 isInvalid={!!errors.ResponsibleForSpace}
-                placeholder="Responsable del espacio"
+                placeholder="Responsable del espacio - Teléfono del responsable"
               />
               <Form.Control.Feedback type="invalid">{errors.ResponsibleForSpace}</Form.Control.Feedback>
-            </Col>
+           
           </Form.Group>
           <Form.Group className="mb-3 p-2" as={Row} controlId="forType">
             <Form.Label>Evidencia</Form.Label>

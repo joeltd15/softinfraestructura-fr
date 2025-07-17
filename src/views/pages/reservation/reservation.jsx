@@ -43,7 +43,7 @@ const Reservation = () => {
 
   const fetchReservations = useCallback(async () => {
     try {
-      const response = await axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/reservation", { headers })
+      const response = await axios.get("https://softinfraestructura-gray.vercel.app/api/reservation", { headers })
       const reservations = response.data
 
       const user = JSON.parse(localStorage.getItem("user"))

@@ -36,7 +36,7 @@ const ModalRegistro = ({ show, handleClose, getUsers }) => {
 
     useEffect(() => {
         axios
-            .get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/role", {headers})
+            .get("https://softinfraestructura-gray.vercel.app/api/role", {headers})
             .then((response) => setRoles(response.data))
             .catch((error) => console.error("Error al obtener roles:", error))
     }, [])
@@ -88,7 +88,7 @@ const ModalRegistro = ({ show, handleClose, getUsers }) => {
         if (Object.values(errors).some((error) => error)) return
 
         try {
-            await axios.post("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/auth/register", formData)
+            await axios.post("https://softinfraestructura-gray.vercel.app/api/auth/register", formData)
             showAlert("Usuario registrado correctamente", 'success');
 
 

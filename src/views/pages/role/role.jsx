@@ -43,7 +43,7 @@ const Roles = () => {
 
   const getRoles = async () => {
     try {
-      const response = await axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/role", {headers})
+      const response = await axios.get("https://softinfraestructura-gray.vercel.app/api/role", {headers})
       setRoles(response.data)
     } catch (error) {
       console.error("Error al obtener los roles:", error)
@@ -65,7 +65,7 @@ const Roles = () => {
     if (!selectedId) return
 
     try {
-      await axios.delete(`https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/role/${selectedId}`, {headers})
+      await axios.delete(`https://softinfraestructura-gray.vercel.app/api/role/${selectedId}`, {headers})
       showAlert("Rol eliminado correctamente.", "success");
       getRoles()
     } catch (error) {
@@ -85,8 +85,8 @@ const Roles = () => {
 
     try {
       const [roleResponse, permissionRoleResponse] = await Promise.all([
-        axios.get(`https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/role/${role.id}`, {headers}),
-        axios.get(`https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/permissionRole?roleId=${role.id}`, {headers}),
+        axios.get(`https://softinfraestructura-gray.vercel.app/api/role/${role.id}`, {headers}),
+        axios.get(`https://softinfraestructura-gray.vercel.app/api/permissionRole?roleId=${role.id}`, {headers}),
       ])
 
       const roleData = roleResponse.data

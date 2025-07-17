@@ -14,8 +14,8 @@ import { useAlert } from '../../../assets/functions/index.jsx';
 import { toast } from "react-toastify";
 
 const User = () => {
-    const userUrl = "https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/user";
-    const roleUrl = "https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/role";
+    const userUrl = "https://softinfraestructura-gray.vercel.app/api/user";
+    const roleUrl = "https://softinfraestructura-gray.vercel.app/api/role";
     const [users, setUsers] = useState([]);
     const [roles, setRoles] = useState([]);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);

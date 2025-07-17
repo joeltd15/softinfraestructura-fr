@@ -25,7 +25,7 @@ const UserEditModal = ({ show, handleClose, getUsers, user }) => {
 
   useEffect(() => {
     axios
-      .get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/role", {headers})
+      .get("https://softinfraestructura-gray.vercel.app/api/role", {headers})
       .then((response) => setRoles(response.data))
       .catch((error) => console.error("Error al obtener roles:", error))
   }, [])
@@ -99,7 +99,7 @@ const UserEditModal = ({ show, handleClose, getUsers, user }) => {
     }
 
     try {
-      await axios.put(`https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/user/${user.id}`, formData,  {headers})
+      await axios.put(`https://softinfraestructura-gray.vercel.app/api/user/${user.id}`, formData,  {headers})
       showAlert("Usuario actualizado correctamente", 'success');
       handleClose()
       getUsers()

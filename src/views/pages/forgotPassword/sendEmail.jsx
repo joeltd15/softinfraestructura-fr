@@ -47,7 +47,7 @@ const SendEmail = () => {
 
     try {
       const response = await axios.post(
-        'https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/auth/forgot-password',
+        'https://softinfraestructura-gray.vercel.app/api/auth/forgot-password',
         { email },
         { headers: { 'Content-Type': 'application/json' } }
       );

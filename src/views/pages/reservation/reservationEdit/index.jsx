@@ -39,7 +39,7 @@ const EditReservationModal = ({ show, reservationId, onClose, getReservations })
   useEffect(() => {
     if (reservationId) {
       axios
-        .get(`https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/reservation/${reservationId}`, { headers })
+        .get(`https://softinfraestructura-gray.vercel.app/api/reservation/${reservationId}`, { headers })
         .then((response) => {
           const reservation = response.data
           setScenery(reservation.scenery)
@@ -66,7 +66,7 @@ const EditReservationModal = ({ show, reservationId, onClose, getReservations })
 
   const fetchAvailability = async () => {
     try {
-      const response = await axios.post(`https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/reservation/availability`, {
+      const response = await axios.post(`https://softinfraestructura-gray.vercel.app/api/reservation/availability`, {
         scenery,
         date: selectedDate,
       },
@@ -278,7 +278,7 @@ const EditReservationModal = ({ show, reservationId, onClose, getReservations })
 
     try {
       // Verificación final de disponibilidad
-      const availabilityCheck = await axios.post(`https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/reservation/availability`, {
+      const availabilityCheck = await axios.post(`https://softinfraestructura-gray.vercel.app/api/reservation/availability`, {
         scenery,
         date: selectedDate,
       },
@@ -318,7 +318,7 @@ const EditReservationModal = ({ show, reservationId, onClose, getReservations })
       }
 
       // Si está disponible, proceder con la actualización
-      await axios.put(`https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/reservation/${reservationId}`, requestData, { headers })
+      await axios.put(`https://softinfraestructura-gray.vercel.app/api/reservation/${reservationId}`, requestData, { headers })
 
       toast.success("Reserva actualizada correctamente!", {
         position: "top-right",

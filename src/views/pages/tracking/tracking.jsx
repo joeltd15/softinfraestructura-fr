@@ -57,9 +57,9 @@ const Tracking = () => {
     setLoading(true)
     try {
       const [trackingResponse, assignmentsResponse, responsiblesResponse] = await Promise.all([
-        axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/tracking", { headers }),
-        axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/assignment", { headers }),
-        axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/responsible", { headers }),
+        axios.get("https://softinfraestructura-gray.vercel.app/api/tracking", { headers }),
+        axios.get("https://softinfraestructura-gray.vercel.app/api/assignment", { headers }),
+        axios.get("https://softinfraestructura-gray.vercel.app/api/responsible", { headers }),
       ])
 
       const trackingData = trackingResponse.data
@@ -76,7 +76,8 @@ const Tracking = () => {
 
       let filteredTracking = []
 
-      if (user.roleId === 1 && user.roleId === 4) {
+      if (user.roleId === 1 || user.roleId === 4)
+ {
         filteredTracking = trackingData
       } else if (user.roleId === 2) {
         const userResponsibilities = responsiblesData
@@ -121,7 +122,7 @@ const Tracking = () => {
 
   const handleUpdate = (formData) => {
     axios
-      .put(`https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/tracking/${selectedTracking.id}`, formData, { headers }, {
+      .put(`https://softinfraestructura-gray.vercel.app/api/tracking/${selectedTracking.id}`, formData, { headers }, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then(() => {
@@ -149,7 +150,7 @@ const Tracking = () => {
     if (!selectedId) return
 
     axios
-      .delete(`https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/tracking/${selectedId}`, { headers })
+      .delete(`https://softinfraestructura-gray.vercel.app/api/tracking/${selectedId}`, { headers })
       .then(() => {
         showAlert("El registro ha sido eliminado.", 'success');
 

@@ -41,7 +41,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        "https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/auth/login",
+        "https://softinfraestructura-gray.vercel.app/api/auth/login",
         {
           email,
           password,
@@ -57,7 +57,7 @@ const Login = () => {
       console.log("User data:", user)
 
       const permissionsResponse = await axios.get(
-        `https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/permissionRole?roleId=${user.roleId}`,
+        `https://softinfraestructura-gray.vercel.app/api/permissionRole?roleId=${user.roleId}`,
         { headers: { Authorization: `Bearer ${token}` } },
       )
 
@@ -69,7 +69,7 @@ const Login = () => {
 
       const permissionIds = userRolePermissions.map((pr) => pr.permissionId)
       const permissionsDetailsResponse = await axios.get(
-        "https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/permission",
+        "https://softinfraestructura-gray.vercel.app/api/permission",
         {
           headers: { Authorization: `Bearer ${token}` },
         },

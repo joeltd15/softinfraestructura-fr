@@ -64,7 +64,7 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
 
     useEffect(() => {
         axios
-            .get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/assignment", { headers })
+            .get("https://softinfraestructura-gray.vercel.app/api/assignment", { headers })
             .then((response) => {
                 setAssignments(response.data)
             })
@@ -244,7 +244,7 @@ const ModalTrackingEdit = ({ show, handleClose, tracking, handleUpdate }) => {
                         <Row className="mb-3">
                             <Col sm={6}>
                                 <Form.Group>
-                                    <Form.Label className="required">Materiales de Construcción</Form.Label>
+                                    <Form.Label className="required">Materiales utilizados</Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="buildingMaterials"

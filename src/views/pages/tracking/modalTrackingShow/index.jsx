@@ -41,7 +41,7 @@ const ModalTrackingView = ({ show, handleClose, tracking, userRole }) => {
                   </div>
                   <div className="col-sm-6">
                     <p>
-                      <strong>Materiales:</strong> {tracking.buildingMaterials}
+                      <strong>Materiales utilizados:</strong> {tracking.buildingMaterials}
                     </p>
                   </div>
                 </div>

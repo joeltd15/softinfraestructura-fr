@@ -47,7 +47,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
   useEffect(() => {
     const fetchAssignments = async () => {
       try {
-        const response = await axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/assignment", { headers })
+        const response = await axios.get("https://softinfraestructura-gray.vercel.app/api/assignment", { headers })
         setAssignments(response.data)
       } catch (error) {
         console.error("Error al obtener asignaciones:", error)
@@ -171,7 +171,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
 
       // Send the request to the server
       const result = await axios.post(
-        "https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/tracking",
+        "https://softinfraestructura-gray.vercel.app/api/tracking",
         formData,
         { headers },
         {
@@ -208,7 +208,7 @@ const CustomModal = ({ show, handleClose, onSolicitudCreated, selectedAssignment
           <Row className="mb-3">
             <Col sm={6}>
               <Form.Group>
-                <Form.Label className="required">Materiales de Construcción</Form.Label>
+                <Form.Label className="required">Materiales utilizados</Form.Label>
                 <Form.Control
                   type="text"
                   value={buildingMaterials}

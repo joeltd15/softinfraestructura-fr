@@ -69,7 +69,7 @@ const EventMenu = ({ event, onClose, getReservations }) => {
 
   const handleConfirmDelete = async () => {
     try {
-      await fetch(`https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/reservation/${event.id}`, {
+      await fetch(`https://softinfraestructura-gray.vercel.app/api/reservation/${event.id}`, {
         method: "DELETE",
         headers: headers,
       })
@@ -84,7 +84,7 @@ const EventMenu = ({ event, onClose, getReservations }) => {
   const handleConfirmCancel = async () => {
     try {
       await axios.put(
-        `https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/reservation/${event.id}`,
+        `https://softinfraestructura-gray.vercel.app/api/reservation/${event.id}`,
         { estatus: "Cancelado" },
         { headers: headers },
       )
@@ -100,7 +100,7 @@ const EventMenu = ({ event, onClose, getReservations }) => {
   const handleConfirmReserved = async () => {
     try {
       await axios.put(
-        `https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/reservation/${event.id}`,
+        `https://softinfraestructura-gray.vercel.app/api/reservation/${event.id}`,
         { estatus: "Reservado" },
         { headers: headers },
       )

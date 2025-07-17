@@ -29,7 +29,7 @@ const RegisterRoleModal = ({ show, handleClose, onRoleCreated }) => {
     useEffect(() => {
         const fetchPermissions = async () => {
             try {
-                const response = await axios.get("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/permission", {headers});
+                const response = await axios.get("https://softinfraestructura-gray.vercel.app/api/permission", {headers});
                 setPermissions(response.data);
             } catch (error) {
                 console.error("Error al obtener permisos:", error);
@@ -99,7 +99,7 @@ const RegisterRoleModal = ({ show, handleClose, onRoleCreated }) => {
         };
 
         try {
-            await axios.post("https://softinfraestructura-86fdvmh2g-ingdanielbs-projects.vercel.app/api/role", requestData, {headers});
+            await axios.post("https://softinfraestructura-gray.vercel.app/api/role", requestData, {headers});
             showAlert("Rol registrado correctamente.", "success");
             onRoleCreated();
             handleClose();
